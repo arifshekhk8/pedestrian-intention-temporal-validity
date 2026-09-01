@@ -29,6 +29,12 @@ around it — so the *concept* is not new and must be cited as such. What did no
 measures its cost. The enabling detail is itself checkable — the standard parser reads only the
 `crossing` attribute and never `crossing_point`, so the leak is structural rather than a bug.
 
+**External corroboration of the mechanism.** GTransPDM (Xie et al., IEEE SPL 2025), Fig. 4, sweeps
+the time-to-event gap and reports that "as TTE decreased, the model's performance improved rapidly.
+**Without a TTE interval (TTE = 0), the accuracy and F1 score reached 99.32 % and 98.73 %.**"
+That is a paper with no stake in this argument showing the task collapses to near-perfect
+solvability once the gap closes. The audit here explains why.
+
 **Also note.** PIE's official loader (`pie_data.py::_get_crossing`) already truncates tracks at the
 crossing. A reviewer will raise this. The defensible residue: it is undocumented as a leakage
 safeguard, it is not what the common track-end pipeline does, and **it does not fix the negative-class
@@ -116,8 +122,14 @@ measurably weaker onset marker. A strict `min(crossing_point, first_onset)` anch
 
 **Evidence.** `results/cross_dataset/idd_results/IDD_PeD_temporal_audit.csv`, `table2_temporal_audit.csv`.
 
-This is a defect the IDD-PeD paper (ICRA 2025) does not report, found by an independent parse that
-recovers the authors' exact track count (4,916 = 3,284 + 1,632).
+Found by an independent parse that recovers the authors' exact track count (4,916 = 3,284 + 1,632).
+
+⚠ **State this precisely — it contradicts an explicit claim in the dataset paper.** IDD-PeD asserts
+that "for all the crossing cases, both the observation period and the time-to-event precede the
+pedestrian's road crossing." Rebuilding windows from their released annotations does not reproduce
+that. The disagreement is specifically that **their `crossing_point` does not reliably mark onset** —
+a property of the annotation, reproducible from their public files. Frame it that way, not as an
+accusation. Expect this to be the most contested claim in review.
 
 ## C8. Zero-shot transfer fails, measured against trivial baselines
 
@@ -161,6 +173,28 @@ Each of these is a plausible-sounding lever that does not work, measured rather 
   verbatim, so 36 of 78 configs were wasted. It was purely an architecture search.
 - **Window-level bootstrap CIs are anti-conservative** on this benchmark: 2,094 test windows come
   from only 541 pedestrians, and clustering widens the interval ~1.8×.
+
+---
+
+## Note on the "statistical rigour" framing
+
+Do **not** claim that this field reports no uncertainty. Three papers do:
+
+- **BiPed** (Rasouli et al., ICCV 2021) — standard deviation over **20 random initialisations**
+  (F1 std 0.006 vs PCPA's 0.01).
+- **MFT** (Li et al., 2025) — ± on every metric (PIE acc 0.899 ± 0.005, AUC 0.885 ± 0.031).
+- **Gesnouin et al.** (IV 2022) — 11 methods under one protocol with **Friedman + Wilcoxon–Holm**
+  post-hoc testing (α = 0.1) and a critical-difference diagram. This is the closest methodological
+  prior art to a "controlled, statistically rigorous comparison" and must be cited as such.
+
+What remains genuinely unoccupied is narrower and should be stated narrowly:
+**pedestrian-clustered resampling** (nobody respects the clustered structure of the test set),
+**equivalence margins / reported power** for null results, and **search-budget control** across
+compared families (Gesnouin uses each method's published configuration).
+
+Likewise, do not claim observation-window length is never varied — **PIT** (TITS 2023, Table 4) and
+**GTransPDM** (SPL 2025, Fig. 5) both sweep it. The unoccupied version is varying it *across
+architecture families under one protocol*, with the horizon confound controlled (LIMITATIONS §4).
 
 ---
 

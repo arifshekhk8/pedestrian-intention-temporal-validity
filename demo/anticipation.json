@@ -1,0 +1,18 @@
+{
+  "scene": "anticipation",
+  "title": "Anticipating a crossing",
+  "video_id": "video_0016",
+  "start_frame": 4270,
+  "frames": 190,
+  "threshold": 0.5164303779602051,
+  "hidden": 256,
+  "model": "BiLSTM-F1 (clean crossing-point protocol), 5-seed ensemble",
+  "yolo_conf": 0.3,
+  "blur_faces": true,
+  "ego_frames_held": 0,
+  "pipeline_fps": 22.52,
+  "ms_per_frame_detector": 36.08,
+  "ms_per_window_ensemble": 2.0708,
+  "ms_per_frame_privacy_blur": 40.39,
+  "wall_seconds": 18.4
+}

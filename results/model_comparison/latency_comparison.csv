@@ -1,0 +1,5 @@
+family,cpu_b1_ms,gpu_b1_ms,cpu_b32_ms,note,src
+BiLSTM,0.575,1.647,0.135,h128,Issue 9
+Transformer,0.459,1.388,0.084,d128/ff512/L4,transformer/phase5
+GRU,0.721,,,h256,gru/phase5
+RNN,0.316,4.293,0.065,h256,rnn/phase5

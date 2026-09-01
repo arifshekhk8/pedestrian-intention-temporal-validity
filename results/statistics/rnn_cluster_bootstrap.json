@@ -1,0 +1,204 @@
+{
+  "n_clusters": 541,
+  "B": 10000,
+  "endpoints": [
+    {
+      "name": "1",
+      "rnn": "rnn_f1_winner",
+      "target": "frozen_bilstm",
+      "metric": "f1",
+      "delta": 0.022010507188924056,
+      "window_ci": [
+        0.011129154834486916,
+        0.032734427730097215
+      ],
+      "cluster_ci": [
+        0.009680993991646339,
+        0.03536984468819751
+      ],
+      "window_verdict": "WIN",
+      "cluster_verdict": "WIN",
+      "survives": true,
+      "label": "Frozen BiLSTM (F1 0.828 / AUC 0.9324)"
+    },
+    {
+      "name": "2",
+      "rnn": "rnn_f1_winner",
+      "target": "bilstm_f1",
+      "metric": "f1",
+      "delta": 0.0033360521501724083,
+      "window_ci": [
+        -0.008256417089330254,
+        0.014997261957579009
+      ],
+      "cluster_ci": [
+        -0.012996273707742315,
+        0.018743361116680995
+      ],
+      "window_verdict": "TIE",
+      "cluster_verdict": "TIE",
+      "survives": true,
+      "label": "BiLSTM-F1 (0.844)"
+    },
+    {
+      "name": "3",
+      "rnn": "rnn_f1_winner",
+      "target": "transformer_f1",
+      "metric": "f1",
+      "delta": 0.0025090420651544543,
+      "window_ci": [
+        -0.007920720815422519,
+        0.013064887464047267
+      ],
+      "cluster_ci": [
+        -0.011084842032692005,
+        0.01706168684475258
+      ],
+      "window_verdict": "TIE",
+      "cluster_verdict": "TIE",
+      "survives": true,
+      "label": "Transformer-F1 (0.847)"
+    },
+    {
+      "name": "4",
+      "rnn": "rnn_f1_winner",
+      "target": "gru_f1",
+      "metric": "f1",
+      "delta": -0.0037814578870675186,
+      "window_ci": [
+        -0.011681565659448782,
+        0.003946219951251464
+      ],
+      "cluster_ci": [
+        -0.012754486153328484,
+        0.004874247691335358
+      ],
+      "window_verdict": "TIE",
+      "cluster_verdict": "TIE",
+      "survives": true,
+      "label": "GRU-F1 (0.849)"
+    },
+    {
+      "name": "5",
+      "rnn": "rnn_default_f1",
+      "target": "frozen_bilstm",
+      "metric": "f1",
+      "delta": 0.013958027271136153,
+      "window_ci": [
+        0.0022518176318767264,
+        0.02552261016329099
+      ],
+      "cluster_ci": [
+        -0.0004692843982673803,
+        0.02878703785552291
+      ],
+      "window_verdict": "WIN",
+      "cluster_verdict": "TIE",
+      "survives": false,
+      "label": "Frozen BiLSTM (F1 0.828 / AUC 0.9324)"
+    },
+    {
+      "name": "6",
+      "rnn": "rnn_default_auc",
+      "target": "frozen_bilstm",
+      "metric": "auc",
+      "delta": 0.00593087264991643,
+      "window_ci": [
+        0.0031692094149290253,
+        0.008825333212652614
+      ],
+      "cluster_ci": [
+        0.0012251527113144756,
+        0.01099201622217337
+      ],
+      "window_verdict": "WIN",
+      "cluster_verdict": "WIN",
+      "survives": true,
+      "label": "Frozen BiLSTM (F1 0.828 / AUC 0.9324)"
+    },
+    {
+      "name": "7",
+      "rnn": "rnn_winner_auc",
+      "target": "frozen_bilstm",
+      "metric": "auc",
+      "delta": 0.012124669915292596,
+      "window_ci": [
+        0.00869556848767943,
+        0.01566832576968551
+      ],
+      "cluster_ci": [
+        0.006307425479187787,
+        0.01873694096950607
+      ],
+      "window_verdict": "WIN",
+      "cluster_verdict": "WIN",
+      "survives": true,
+      "label": "Frozen BiLSTM (F1 0.828 / AUC 0.9324)"
+    },
+    {
+      "name": "8",
+      "rnn": "rnn_winner_auc",
+      "target": "searched_tf",
+      "metric": "auc",
+      "delta": -0.001343721453713309,
+      "window_ci": [
+        -0.004140386741698351,
+        0.0015225628354752926
+      ],
+      "cluster_ci": [
+        -0.00607665047590632,
+        0.003311765746395063
+      ],
+      "window_verdict": "TIE",
+      "cluster_verdict": "TIE",
+      "survives": true,
+      "label": "Searched Transformer (AUC 0.9497)"
+    }
+  ],
+  "absolute": {
+    "rnn_f1_winner": {
+      "tau": 0.530394434928894,
+      "f1_cluster_ci": [
+        0.8218179400386847,
+        0.8928109362480536
+      ],
+      "auc_cluster_ci": [
+        0.9341791149578266,
+        0.972236349306785
+      ]
+    },
+    "rnn_winner_auc": {
+      "tau": 0.49702954292297363,
+      "f1_cluster_ci": [
+        0.8270891021150762,
+        0.8960692911679392
+      ],
+      "auc_cluster_ci": [
+        0.9338721562758415,
+        0.9721840544432641
+      ]
+    },
+    "rnn_default_f1": {
+      "tau": 0.6083852052688599,
+      "f1_cluster_ci": [
+        0.8118668313806033,
+        0.8861675853362186
+      ],
+      "auc_cluster_ci": [
+        0.9253764617569993,
+        0.966440039147315
+      ]
+    },
+    "rnn_default_auc": {
+      "tau": 0.5547094345092773,
+      "f1_cluster_ci": [
+        0.8129532163742691,
+        0.8871652929647152
+      ],
+      "auc_cluster_ci": [
+        0.9270468398711669,
+        0.9672127510662105
+      ]
+    }
+  }
+}

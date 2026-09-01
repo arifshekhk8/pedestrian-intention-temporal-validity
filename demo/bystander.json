@@ -1,0 +1,18 @@
+{
+  "scene": "bystander",
+  "title": "Correctly ignoring a bystander",
+  "video_id": "video_0012",
+  "start_frame": 460,
+  "frames": 200,
+  "threshold": 0.5164303779602051,
+  "hidden": 256,
+  "model": "BiLSTM-F1 (clean crossing-point protocol), 5-seed ensemble",
+  "yolo_conf": 0.3,
+  "blur_faces": true,
+  "ego_frames_held": 98,
+  "pipeline_fps": 24.49,
+  "ms_per_frame_detector": 34.95,
+  "ms_per_window_ensemble": 2.3134,
+  "ms_per_frame_privacy_blur": 36.65,
+  "wall_seconds": 18.0
+}

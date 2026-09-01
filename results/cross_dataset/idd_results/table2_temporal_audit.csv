@@ -1,0 +1,7 @@
+dataset,anchor,nominal_windows,contaminated_pct,valid_strict_windows,source
+PIE,naive (track-end),—,67.9 % of crossers,—,journal_prep/issue1_leakage_audit
+PIE,clean (crossing_point),"4,906",0.0 %,"4,906",journal_prep/issue2_clean_protocol
+JAAD,clean (event),972,0.0 %,972,journal_prep/cross_dataset_validation
+IDD-PeD,naive (track-end),"8,651",81.3 % of crossers / 28.1 % of all,"6,659",this work
+IDD-PeD,crossing_point (literal PIE port),"7,919",29.6 % of crossers / 6.5 % of all,"7,404",this work
+IDD-PeD,"**strict — min(cp, onset)**","**7,318**",**0.0 %**,"**7,318**",this work

@@ -1,0 +1,29 @@
+{
+  "(a)": {
+    "video": "gp_set_0002_vid_0002",
+    "ped": "gp_5022",
+    "label": 1,
+    "first": 8459,
+    "last": 8733,
+    "crossing_point": 8600,
+    "onset": 8528
+  },
+  "(b)": {
+    "video": "gp_set_0001_vid_0005",
+    "ped": "gp_397",
+    "label": 1,
+    "first": 98,
+    "last": 656,
+    "crossing_point": 300,
+    "onset": 300
+  },
+  "(c)": {
+    "video": "gp_set_0001_vid_0002",
+    "ped": "gp_575",
+    "label": 1,
+    "first": 13077,
+    "last": 13368,
+    "crossing_point": 13077,
+    "onset": 13077
+  }
+}

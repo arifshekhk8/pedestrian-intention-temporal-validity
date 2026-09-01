@@ -1,0 +1,15 @@
+model,cell,width,layers,dropout,lr,pos_weight,checkpoint,threshold
+BiLSTM (baseline),BiLSTM,h128,2,0.3,1e-3,1.682,best val AUC,0.50
+BiLSTM bbox-only (4-D),BiLSTM (4-D input),h128,2,0.3,1e-3,1.682,best val AUC,0.50
+BiLSTM + attention,BiLSTM + additive attn,"h128, attn64",2,0.3,1e-3,1.682,best val AUC,0.50
+BiLSTM-F1 (h256),BiLSTM,h256,2,0.3,1e-3,1.682,best val F1,val-τ* ≈0.52
+Transformer (searched),Transformer (4 heads),d128/ff512,4,0.1,1e-3,1.682,best val AUC,0.50
+"Transformer (default, un-searched)",Transformer (4 heads),d128/ff256,2,0.1,1e-3,1.682,best val F1,val-τ* ≈0.50
+Transformer-F1,Transformer (4 heads),d128/ff512,4,0.1,1e-3,2.5→1.682,best val F1,val-τ* ≈0.65
+GRU-F1 (h256),BiGRU,h256,2,0.3,5e-4,1.682,best val F1,val-τ* ≈0.53
+"GRU (default h128, F1)",BiGRU,h128,2,0.3,1e-3,1.682,best val F1,val-τ* ≈0.50
+"GRU (default h128, AUC)",BiGRU,h128,2,0.3,1e-3,1.682,best val AUC,val-τ* ≈0.49
+Vanilla RNN-F1 (h256),Bi vanilla RNN (tanh),h256,2,0.2,1e-4,1.682,best val F1,val-τ* ≈0.53
+"Vanilla RNN (winner h256, AUC)",Bi vanilla RNN (tanh),h256,2,0.2,1e-4,1.682,best val AUC,val-τ* ≈0.50
+"Vanilla RNN (default h128, F1)",Bi vanilla RNN (tanh),h128,2,0.3,1e-3,1.682,best val F1,val-τ* ≈0.61
+"Vanilla RNN (default h128, AUC)",Bi vanilla RNN (tanh),h128,2,0.3,1e-3,1.682,best val AUC,val-τ* ≈0.55

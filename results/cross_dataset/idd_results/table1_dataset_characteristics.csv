@@ -1,0 +1,20 @@
+characteristic,PIE,IDD_PeD
+Source / venue,"PIE (Rasouli et al., ICCV 2017)","IDD-PeD (Bokkasam et al., ICRA 2025)"
+Traffic environment,"Structured urban (Toronto, Canada)","Unstructured, rule-flexible (South-Asian urban, India)"
+Geography / climate,"North America, temperate, daytime","South Asia, dense mixed traffic, day + night"
+Annotated videos,53 (6 recording sets),33 (9 recording sets); ~100 h source footage
+Camera / frame rate,1920×1080 @ 30 fps,GoPro Hero 8 @ 30 fps; 1920×1440 (29 videos) + 1920×1080 (4)
+Pedestrian tracks,"1,842 annotated","4,916 (3,284 train + 1,632 test)"
+Annotated box-frames,~740 k,"494,854 pedestrian (686 k incl. traffic objects)"
+Bounding boxes,"✅ per-frame [x1,y1,x2,y2]","✅ per-frame [xtl,ytl,xbr,ybr] (CVAT)"
+Ego-vehicle speed,✅ per-frame OBD (km/h),"✅ per-frame OBD (km/h), 10 Hz sensor upsampled to 30 fps"
+Ego-speed ↔ frame sync,index-aligned,"index-aligned (OBD `id` = frame index), 0 missing"
+Crossing label,`crossing` binary,`crossing` binary (*in front of the ego-vehicle*)
+Crossing-onset annotation,`crossing_point` (99.4 % == true onset),`crossing_point` (**68.9 % == true onset; late in 19.0 %**)
+Observation window used,16 frames (0.53 s),16 frames (0.53 s) — identical
+Prediction horizon (TTE),30–60 frames (1.0–2.0 s),30–60 frames (1.0–2.0 s) — identical
+Usable windows (this protocol),"4,906","7,318"
+Test windows,"2,094 (set03)","2,357 (official test sets)"
+**Test positive rate**,**32.5 %**,**7.1 %**
+pos_weight (train neg/pos),1.682,27.58
+Licence,research use (registration),CC BY 4.0

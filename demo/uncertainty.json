@@ -1,0 +1,18 @@
+{
+  "scene": "uncertainty",
+  "title": "Where the model is least sure",
+  "video_id": "video_0016",
+  "start_frame": 4415,
+  "frames": 340,
+  "threshold": 0.5164303779602051,
+  "hidden": 256,
+  "model": "BiLSTM-F1 (clean crossing-point protocol), 5-seed ensemble",
+  "yolo_conf": 0.3,
+  "blur_faces": true,
+  "ego_frames_held": 0,
+  "pipeline_fps": 23.64,
+  "ms_per_frame_detector": 34.44,
+  "ms_per_window_ensemble": 2.0016,
+  "ms_per_frame_privacy_blur": 37.66,
+  "wall_seconds": 31.5
+}

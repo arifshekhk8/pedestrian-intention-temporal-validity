@@ -1,0 +1,107 @@
+{
+  "n_test": 2094,
+  "B": 10000,
+  "rng_seed": 42,
+  "per_seed": [
+    {
+      "seed": 42,
+      "lstm_auc": 0.9131143264817049,
+      "transformer_searched_auc": 0.9488637603623995,
+      "transformer_default_auc": 0.9362111627607294
+    },
+    {
+      "seed": 0,
+      "lstm_auc": 0.93342395399131,
+      "transformer_searched_auc": 0.947425469185339,
+      "transformer_default_auc": 0.9293709658478589
+    },
+    {
+      "seed": 1,
+      "lstm_auc": 0.9431885377338393,
+      "transformer_searched_auc": 0.9499336453094976,
+      "transformer_default_auc": 0.9408939229080087
+    },
+    {
+      "seed": 2,
+      "lstm_auc": 0.9362953402067853,
+      "transformer_searched_auc": 0.9484075393893289,
+      "transformer_default_auc": 0.9264060491367654
+    },
+    {
+      "seed": 3,
+      "lstm_auc": 0.9358224915900496,
+      "transformer_searched_auc": 0.9537824252041822,
+      "transformer_default_auc": 0.9355658023409643
+    }
+  ],
+  "headline_auc": {
+    "lstm": 0.94234260636236,
+    "transformer_searched": 0.9558109977313659,
+    "transformer_default": 0.9428268864841158
+  },
+  "headline_pr_auc": {
+    "lstm": 0.8890999695255781,
+    "transformer_searched": 0.9103750881350688,
+    "transformer_default": 0.8957171320571893
+  },
+  "absolute_ci": {
+    "lstm": {
+      "roc_ci": [
+        0.9305619465536747,
+        0.9533496172183256
+      ],
+      "pr_ci": [
+        0.8607476152423684,
+        0.9161043652496259
+      ]
+    },
+    "transformer_searched": {
+      "roc_ci": [
+        0.945285550168899,
+        0.9655563348671474
+      ],
+      "pr_ci": [
+        0.8832269726330589,
+        0.9363364572819792
+      ]
+    },
+    "transformer_default": {
+      "roc_ci": [
+        0.9312499204552823,
+        0.9538166499351676
+      ],
+      "pr_ci": [
+        0.8712137000218344,
+        0.9184837182561056
+      ]
+    }
+  },
+  "primary_comparison": {
+    "pair": "transformer_searched - lstm",
+    "delta_mean": 0.013452903539414644,
+    "ci": [
+      0.009705059543287153,
+      0.017368442928736773
+    ],
+    "per_seed_deltas": [
+      0.035749433880694625,
+      0.014001515194029035,
+      0.006745107575658382,
+      0.012112199182543582,
+      0.017959933614132617
+    ],
+    "paired_t_stat": 3.4978287281917826,
+    "paired_t_p": 0.024945175178448707,
+    "verdict": "WIN"
+  },
+  "secondary_comparison": {
+    "pair": "transformer_default - lstm",
+    "delta_mean": 0.00046808469249332816,
+    "ci": [
+      -0.0034244466743591187,
+      0.004261271019397122
+    ],
+    "paired_t_stat": 0.2326800435404879,
+    "paired_t_p": 0.8274307216756136
+  }
+}

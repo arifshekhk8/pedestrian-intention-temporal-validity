@@ -1,0 +1,155 @@
+{
+  "n_clusters": 541,
+  "B": 10000,
+  "endpoints": [
+    {
+      "name": "1",
+      "gru": "gru_f1_winner",
+      "target": "frozen_bilstm",
+      "metric": "f1",
+      "delta": 0.025791965075991574,
+      "window_ci": [
+        0.01619776937405997,
+        0.035773793350572056
+      ],
+      "cluster_ci": [
+        0.014794880352261962,
+        0.03804951452905074
+      ],
+      "window_verdict": "WIN",
+      "cluster_verdict": "WIN",
+      "survives": true,
+      "label": "Frozen BiLSTM (F1 0.828 / AUC 0.9324)"
+    },
+    {
+      "name": "2",
+      "gru": "gru_f1_winner",
+      "target": "bilstm_f1",
+      "metric": "f1",
+      "delta": 0.007117510037239927,
+      "window_ci": [
+        -0.004287149515671202,
+        0.01871354211220506
+      ],
+      "cluster_ci": [
+        -0.008910831207549305,
+        0.022339213331907037
+      ],
+      "window_verdict": "TIE",
+      "cluster_verdict": "TIE",
+      "survives": true,
+      "label": "BiLSTM-F1 (0.844)"
+    },
+    {
+      "name": "3",
+      "gru": "gru_f1_winner",
+      "target": "transformer_f1",
+      "metric": "f1",
+      "delta": 0.006290499952221973,
+      "window_ci": [
+        -0.00461105893769686,
+        0.017401709587365078
+      ],
+      "cluster_ci": [
+        -0.00852167748843382,
+        0.021593834969620706
+      ],
+      "window_verdict": "TIE",
+      "cluster_verdict": "TIE",
+      "survives": true,
+      "label": "Transformer-F1 (0.847)"
+    },
+    {
+      "name": "4",
+      "gru": "gru_default_f1",
+      "target": "frozen_bilstm",
+      "metric": "f1",
+      "delta": 0.014974883410203366,
+      "window_ci": [
+        0.006460200596482249,
+        0.023839689425788454
+      ],
+      "cluster_ci": [
+        0.005177581492623443,
+        0.02530691717645773
+      ],
+      "window_verdict": "WIN",
+      "cluster_verdict": "WIN",
+      "survives": true,
+      "label": "Frozen BiLSTM (F1 0.828 / AUC 0.9324)"
+    },
+    {
+      "name": "5",
+      "gru": "gru_default_auc",
+      "target": "frozen_bilstm",
+      "metric": "auc",
+      "delta": -0.0007991661236701475,
+      "window_ci": [
+        -0.003932786743578914,
+        0.0021485957292857573
+      ],
+      "cluster_ci": [
+        -0.006728231690859221,
+        0.004537987336179119
+      ],
+      "window_verdict": "TIE",
+      "cluster_verdict": "TIE",
+      "survives": true,
+      "label": "Frozen BiLSTM (F1 0.828 / AUC 0.9324)"
+    },
+    {
+      "name": "6",
+      "gru": "gru_f1_winner",
+      "target": "searched_tf",
+      "metric": "auc",
+      "delta": -0.006953472735340971,
+      "window_ci": [
+        -0.010081766861853492,
+        -0.003753008411227399
+      ],
+      "cluster_ci": [
+        -0.012903644121363017,
+        -0.0017545880937920356
+      ],
+      "window_verdict": "LOSS",
+      "cluster_verdict": "LOSS",
+      "survives": true,
+      "label": "Searched Transformer (AUC 0.9497)"
+    }
+  ],
+  "absolute": {
+    "gru_f1_winner": {
+      "tau": 0.5258722305297852,
+      "f1_cluster_ci": [
+        0.8256066180569491,
+        0.8960591726342991
+      ],
+      "auc_cluster_ci": [
+        0.9273261176217623,
+        0.9677033873731143
+      ]
+    },
+    "gru_default_f1": {
+      "tau": 0.5,
+      "f1_cluster_ci": [
+        0.8136981043696049,
+        0.8864271001390115
+      ],
+      "auc_cluster_ci": [
+        0.9239718303300455,
+        0.9656225482847715
+      ]
+    },
+    "gru_default_auc": {
+      "tau": 0.48633211851119995,
+      "f1_cluster_ci": [
+        0.8077806636675194,
+        0.8812819408219981
+      ],
+      "auc_cluster_ci": [
+        0.9183434839676766,
+        0.9622725819589212
+      ]
+    }
+  }
+}

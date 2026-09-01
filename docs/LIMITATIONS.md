@@ -1,0 +1,136 @@
+# Limitations
+
+Written against the code and the machine-written artifacts, not against the project's own notes.
+Everything below was verified by re-reading the source or re-opening the result files.
+
+---
+
+## 1. Residual confound: the negative class is anchored at track termination
+
+For **all 855 non-crossing pedestrians in PIE, `crossing_point` equals the last annotated frame
+minus exactly 2** (median = mean = 5th pct = 95th pct = 2.0).
+
+The clean builder truncates at `crossing_point` for both classes. The consequence:
+
+| | anchor position relative to end of track |
+|---|---|
+| negatives | 32–62 frames before track end (median 46) |
+| positives | 158–741 frames before track end (median 287) |
+
+Negatives are therefore **always observed as the ego vehicle is about to reach them**, while
+positives are observed 1–2 s before a mid-track crossing. Any cue correlated with imminent passing —
+ego deceleration, box growth rate — becomes a class signal produced by the *annotation termination
+rule*, not by pedestrian behaviour.
+
+This is inherited from PIE's own `extract_tracks_tte` and is not specific to this work, but it is a
+plausible source of the residual box-area separability (+0.247) that survives the leak fix. **The
+field has never questioned this asymmetric anchor.** It is measured here and not solved.
+
+## 2. "The four families tie" is a weaker claim than it appears
+
+The tie rests on bootstrap confidence intervals that include zero. That is not sufficient:
+
+- **No equivalence margin was pre-specified.** A defensible tie needs a δ such that |ΔF1| < δ is
+  agreed to be practically irrelevant, plus a demonstration that the whole CI lies inside [−δ, +δ]
+  (a TOST-style procedure). None of the endpoints does this.
+- **Power is not reported.** Koehn (EMNLP 2004) found a genuine 0.5-point gap was detected on only
+  **12 %** of 300-item test sets. At these test sizes "not significant" is the expected outcome
+  whether or not the families differ.
+- **No multiple-comparison correction** across the 14 GRU/RNN endpoints.
+- Hyperparameter-search variance is not randomised: one search, then k seeds — the biased
+  `FixHOptEst` estimator in Bouthillier et al. (MLSys 2021).
+
+The honest phrasing is *"we could not detect a difference at this sample size"*, not *"the families
+are equivalent."*
+
+## 3. The transformer's AUC win is not capacity-matched
+
+`transformer_searched` has 794,241 parameters against the BiLSTM's 594,561 (1.34×), and received
+2.2× the search budget (78 configs vs 36). The transformer that *ties* the BiLSTM has 268,417.
+No capacity-matched transformer was ever evaluated on test, so **"attention wins" and "more
+parameters win" are not separated**.
+
+Related: the win does not survive leave-one-set-out cleanly. 6-fold LOSO gives 0.9392 vs 0.9285, but
+only **+0.0016** once the degenerate 47-window `set05` fold (AUC 1.0000) is dropped.
+
+## 4. The observation-window result is confounded with prediction horizon
+
+The window builder ties the sliding stride to `obs_len`, so the fraction of windows sitting at the
+maximum TTE = 60 rises **23.6 % → 46.7 % → 87.1 %** across OW16/32/64.
+
+The project's own matched-cohort ablation
+(`results/statistics/matched_cohort_tte_ablation.csv`) shows moving the horizon 45 → 60 costs
+**0.070 F1** — larger than the entire window effect being attributed to window length. Within OW32
+alone, far-TTE windows score 0.034–0.065 lower F1 than near-TTE windows.
+
+**"F1 declines with observation window" is therefore not established by these runs.** What *is*
+supported is that the four families remain indistinguishable at OW32.
+
+The related claim that the un-gated RNN alone falls behind at OW64 rests on a 5-seed ensemble that
+scores *worse than its own seed mean* (0.7841 vs 0.8015), with τ\* fitted on 138 validation windows
+containing 31 positives.
+
+## 5. Cell-type equivalence largely restates Chung (2014)
+
+Chung et al. already showed that an un-gated tanh RNN ties gated cells over **short** sequences and
+falls behind as the horizon grows. A 16-frame window is exactly that short-horizon regime, so
+"gating buys nothing over 16 steps" is confirmation, not discovery. Likewise, "equalising the search
+budget makes architecture differences vanish" is Melis et al. (2017) Table 1 in a new domain.
+
+Note also that Chung fixes parameter count while Greff et al. (2017) explicitly refuse to. This work
+compares at matched *hidden width*, which at h128 means a 149,121-parameter RNN against a
+594,561-parameter BiLSTM — a 4× difference. That convention needs to be declared and defended.
+
+## 6. The headline F1 model cannot be reproduced by re-running the code
+
+All 65 runs in the F1-optimisation program record `device: mps`, and `nn.LSTM` training on Apple MPS
+is process-history-dependent (same config + same seed gives different results depending on what ran
+earlier in the process). **The published arm reproduces only from the saved checkpoints**, which is
+why they are published as a release asset rather than regenerated on demand.
+
+CPU training *is* bit-reproducible — that is the path `src/engine.py` uses and the one this
+repository recommends.
+
+## 7. A pre-registered gate failed and its documented fallback was not executed
+
+The F1-first program pre-registered gate G1; it failed for the LSTM (2/5) and the stated fallback
+("fall back to AUC checkpointing and document the amendment") was never run. An independent CPU
+replication later showed the discarded alternative was **better** on test (ensemble F1 0.8550 with
+AUC-checkpointing vs 0.8468 with F1-checkpointing). The shipped headline model embodies a lever its
+own gate rejected.
+
+Relatedly, `--select f1` is only half F1-first: early stopping and the LR scheduler still step on
+validation **AUC**, and validation F1 is scored at a hardcoded 0.5 while the reported metric uses a
+validation-fitted τ\*.
+
+## 8. The JAAD model comparison is a null result
+
+All 20 runs are at chance (AUC 0.494–0.520; 8 of 20 below 0.5) and every one is beaten by a constant
+all-positive classifier (F1 0.8143 vs best 0.8006). The JAAD *leakage* replication is sound and
+independent; the JAAD *four-family comparison* establishes nothing about architecture equivalence.
+
+The naive JAAD window set was built but never trained on, so the **consequence** of leakage was never
+tested on JAAD — only its prevalence.
+
+## 9. The deployed model behaves close to a pure function of ego speed
+
+Over 3,652 live window predictions from the demo, the published ensemble gives
+**Pearson r(ego_speed, p_cross) = −0.908**. At 0 km/h it flags **96.8 %** of all tracked pedestrians
+(100 % in six of sixteen segments); above 20 km/h it flags **0.45 %**.
+
+This corroborates "the input signal dominates" — and independently matches Diving Deeper (IV 2024)
+Table IV, where PIE action mAP falls from 0.950 at 0 km/h to 0.163 above 30 km/h. But it also means
+the deployed system has almost **no within-frame discrimination between pedestrians**. Any demo
+narrative describing per-pedestrian judgement is describing a speed threshold.
+
+## 10. Scope
+
+- Single dataset for the main protocol (PIE), single test split (`set03`, 2,094 windows from 541
+  pedestrians). External validity rests on JAAD and IDD-PeD, one of which is a null result.
+- Validation is 634 windows / 164 pedestrians, and one of its two recording sets contributes only 13
+  pedestrians. Best epochs scatter 5–17 across seeds.
+- The same 634 validation windows are reused for four sequential selections plus the threshold fit,
+  so every validation number should be read as an upper bound. The val→test gap is visible: the
+  h256-vs-baseline gap is +0.0137 on validation but +0.0051 on test.
+- Labels are a track-level attribute broadcast to every window of that track.
+- Daytime, dry-weather, single-city driving data.

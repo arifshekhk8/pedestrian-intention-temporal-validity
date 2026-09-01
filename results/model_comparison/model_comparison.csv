@@ -1,0 +1,15 @@
+family,model,variant,params,arch_source,selection,tau,seedmean_acc,seedmean_auc,seedmean_f1,ens_acc,ens_auc,ens_f1,ens_prec,ens_rec,ens_pr_auc,TN,FP,FN,TP
+BiLSTM,BiLSTM (baseline),clean baseline,594561,LSTM,val AUC,0.5,0.883,0.932,0.828,0.8906,0.9423,0.837,0.8122,0.8634,0.8891,1277,136,93,588
+BiLSTM,BiLSTM bbox-only (4-D),ablation: no ego-speed,594497,LSTM,val AUC,0.5,0.7437440305635148,0.7532077322699955,0.5509544500656149,0.7603,0.8017,0.551,0.7048,0.4523,0.6435,1284,129,373,308
+BiLSTM,BiLSTM + attention,variant: additive attention,611265,LSTM + additive attention,val AUC,0.5,0.8794651384909266,0.9249316967575055,0.8211899261795992,0.882,0.9326,0.8247,0.7981,0.8532,0.8719,1266,147,100,581
+BiLSTM,BiLSTM-F1 (h256),F1-optimised,2237313,LSTM,val F1 (hybrid),0.516,0.897,0.94,0.844,0.9054,0.9467,0.8557,0.8495,0.862,0.8875,1309,104,94,587
+Transformer,Transformer (searched),searched (AUC headline),794241,pre-LN Transformer encoder,val AUC,0.5,0.894,0.95,0.845,0.8983,0.9558,0.849,0.8205,0.8796,0.9104,1282,131,82,599
+Transformer,"Transformer (default, un-searched)",architecture control,268417,pre-LN Transformer encoder,val F1 (hybrid),0.5,0.878,0.942,0.821,0.8911,0.9421,0.8378,0.8124,0.8649,0.8925,1277,136,92,589
+Transformer,Transformer-F1,F1-optimised,794241,pre-LN Transformer encoder,val F1 (hybrid),0.654,0.896,0.947,0.847,0.9069,0.955,0.8565,0.8584,0.8546,0.9112,1317,96,99,582
+GRU,GRU-F1 (h256),F1-winner,1678209,GRU,val F1 (hybrid),0.526,0.901,0.941,0.849,0.9107,0.9489,0.8628,0.8622,0.8634,0.8961,1319,94,93,588
+GRU,"GRU (default h128, F1)",un-searched control,446081,GRU,val F1 (hybrid),0.5,0.898,0.939,0.844,0.9021,0.946,0.852,0.8381,0.8664,0.8922,1299,114,91,590
+GRU,"GRU (default h128, AUC)",matched-size AUC twin,446081,GRU,val AUC,0.486,0.898,0.933,0.84,0.8988,0.9415,0.8466,0.8345,0.859,0.8868,1297,116,96,585
+RNN,Vanilla RNN-F1 (h256),F1-winner,560001,"vanilla (Elman) RNN, tanh",val F1 (hybrid),0.53,0.902,0.948,0.852,0.9078,0.9546,0.859,0.8547,0.8634,0.9115,1313,100,93,588
+RNN,"Vanilla RNN (winner h256, AUC)",AUC-selected winner,560001,"vanilla (Elman) RNN, tanh",val AUC,0.497,0.91,0.948,0.845,0.9102,0.9545,0.8634,0.8547,0.8722,0.9056,1312,101,87,594
+RNN,"Vanilla RNN (default h128, F1)",un-searched control,149121,"vanilla (Elman) RNN, tanh",val F1 (hybrid),0.608,0.897,0.942,0.844,0.9045,0.947,0.851,0.8638,0.8385,0.8904,1323,90,110,571
+RNN,"Vanilla RNN (default h128, AUC)",matched-size AUC twin,149121,"vanilla (Elman) RNN, tanh",val AUC,0.555,0.889,0.942,0.836,0.9045,0.9483,0.8519,0.8595,0.8443,0.8926,1319,94,106,575

@@ -1,0 +1,22 @@
+# Datasets and derived intermediates (rebuildable — see docs/REPRODUCE.md)
+PIE/
+JAAD/
+build/
+pie_annotations.pkl
+*.mp4
+*.avi
+
+# Trained checkpoints ship as a GitHub release asset, not in git
+checkpoints/
+runs/
+*.pt
+
+# Python
+__pycache__/
+*.py[cod]
+.venv/
+venv/
+.ipynb_checkpoints/
+
+# OS / editor
+.DS_Store

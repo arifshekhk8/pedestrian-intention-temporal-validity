@@ -1,0 +1,159 @@
+{
+  "n_test": 2357,
+  "n_pos": 168,
+  "n_clusters": 757,
+  "bootstrap_B": 10000,
+  "cluster_unit": "pedestrian track",
+  "comparisons": {
+    "A_zero_shot": {
+      "BiLSTM - Transformer": {
+        "delta_auc": -0.028790421557141663,
+        "ci95": [
+          -0.06193448748768838,
+          0.0022310434987252385
+        ],
+        "excludes_zero": false
+      },
+      "BiLSTM - GRU": {
+        "delta_auc": 0.001314870934695272,
+        "ci95": [
+          -0.02079430078303284,
+          0.02482889599550789
+        ],
+        "excludes_zero": false
+      },
+      "BiLSTM - Vanilla RNN": {
+        "delta_auc": 0.010339937055504109,
+        "ci95": [
+          -0.023421344729606556,
+          0.04644509635698438
+        ],
+        "excludes_zero": false
+      },
+      "Transformer - GRU": {
+        "delta_auc": 0.030105292491836935,
+        "ci95": [
+          -0.000512260912469886,
+          0.06102044197455861
+        ],
+        "excludes_zero": false
+      },
+      "Transformer - Vanilla RNN": {
+        "delta_auc": 0.03913035861264577,
+        "ci95": [
+          0.004988975691914352,
+          0.07357026873081093
+        ],
+        "excludes_zero": true
+      },
+      "GRU - Vanilla RNN": {
+        "delta_auc": 0.009025066120808835,
+        "ci95": [
+          -0.023502486404607635,
+          0.04445938422323549
+        ],
+        "excludes_zero": false
+      }
+    },
+    "B_independent": {
+      "BiLSTM - Transformer": {
+        "delta_auc": -0.021123491979894504,
+        "ci95": [
+          -0.04418236443739595,
+          0.0013107571018488703
+        ],
+        "excludes_zero": false
+      },
+      "BiLSTM - GRU": {
+        "delta_auc": 0.020658122003002422,
+        "ci95": [
+          0.0030476016487063005,
+          0.03665490768705562
+        ],
+        "excludes_zero": true
+      },
+      "BiLSTM - Vanilla RNN": {
+        "delta_auc": 0.05054750305828115,
+        "ci95": [
+          0.023128202992294008,
+          0.07730281010191911
+        ],
+        "excludes_zero": true
+      },
+      "Transformer - GRU": {
+        "delta_auc": 0.04178161398289693,
+        "ci95": [
+          0.018724147749384485,
+          0.06288005344181369
+        ],
+        "excludes_zero": true
+      },
+      "Transformer - Vanilla RNN": {
+        "delta_auc": 0.07167099503817566,
+        "ci95": [
+          0.04143581070141884,
+          0.10187536518740592
+        ],
+        "excludes_zero": true
+      },
+      "GRU - Vanilla RNN": {
+        "delta_auc": 0.029889381055278726,
+        "ci95": [
+          0.006921060343967692,
+          0.053110961671781635
+        ],
+        "excludes_zero": true
+      }
+    }
+  },
+  "rank_agreement": {
+    "A_zero_shot": {
+      "iddped_auc": {
+        "BiLSTM-F1": 0.723403271770106,
+        "Transformer-F1": 0.7522936652961778,
+        "GRU-F1": 0.7221293154082099,
+        "Vanilla_RNN-F1": 0.7130838173551741
+      },
+      "iddped_order": [
+        "Transformer-F1",
+        "BiLSTM-F1",
+        "GRU-F1",
+        "Vanilla_RNN-F1"
+      ],
+      "pie_order": [
+        "Vanilla_RNN-F1",
+        "Transformer-F1",
+        "GRU-F1",
+        "BiLSTM-F1"
+      ],
+      "spearman_rho": -0.39999999999999997,
+      "spearman_p": 0.6,
+      "kendall_tau": -0.3333333333333334,
+      "kendall_p": 0.75
+    },
+    "B_independent": {
+      "iddped_auc": {
+        "BiLSTM-F1": 0.7546852226500468,
+        "Transformer-F1": 0.7758190302160152,
+        "GRU-F1": 0.7339021949574713,
+        "Vanilla_RNN-F1": 0.7039771367660815
+      },
+      "iddped_order": [
+        "Transformer-F1",
+        "BiLSTM-F1",
+        "GRU-F1",
+        "Vanilla_RNN-F1"
+      ],
+      "pie_order": [
+        "Vanilla_RNN-F1",
+        "Transformer-F1",
+        "GRU-F1",
+        "BiLSTM-F1"
+      ],
+      "spearman_rho": -0.39999999999999997,
+      "spearman_p": 0.6,
+      "kendall_tau": -0.3333333333333334,
+      "kendall_p": 0.75
+    }
+  }
+}

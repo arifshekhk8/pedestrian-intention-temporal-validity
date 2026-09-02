@@ -63,25 +63,25 @@ Rank-biserial effect size at the anchor frame, legacy → clean: area **+0.654 �
 
 **Evidence.** `results/leakage/*_leakage_report.md` (both produced by the same script on both datasets).
 
-## C4. The ego-speed shortcut is partly a contamination artefact
+## C4. Ego-speed's contribution is architecture-dependent, and it masks architecture differences
 
-**Claim.** The contribution of ego-speed is **three times larger** under the clean protocol than the
-leaky one — the leak was masking how much the model leans on it.
+**Claim.** Removing the ego-speed channel under an otherwise identical protocol costs between
++0.0126 AUC (Transformer, not significant after correction) and +0.1477 (BiLSTM). With the channel
+present the four families span 0.024 AUC; without it, **0.153** — six times wider.
 
-| protocol | 5-D | 4-D bbox-only | gap |
-|---|---|---|---|
-| legacy | 0.948 ± 0.013 | 0.887 ± 0.011 | +0.06 |
-| clean | 0.932 ± 0.011 | 0.753 ± 0.020 | **+0.179** |
+**Evidence.** `experiments/02_model_comparison/EGO_SPEED_ABLATION.md` and its results JSON.
+Pedestrian-clustered bootstrap, B=10,000, Holm-corrected across 12 tests.
 
-**Evidence.** `results/clean_protocol/bilstm_multiseed_results.csv`,
-`results/clean_protocol/variants_multiseed_results.csv`.
+**Prior art — read carefully.** That ego-speed dominates on PIE is **settled** (IntFormer 2021,
+speed-only AUC 0.817; CAPFI 2024, 0.83; Diving Deeper 2024). "Ego speed is a shortcut" is a
+quantified 2024 result. **Do not claim the sign of the effect.** What is new: (a) that the effect is
+architecture-dependent by an order of magnitude, so a single headline figure is wrong; (b) that the
+channel **flattens** architectural differences; (c) that the leaky protocol understated the
+dependence (+0.06 leaky vs +0.15 clean on the BiLSTM).
 
-**Prior art — read carefully.** That ego-speed dominates on PIE is **settled**, reported
-independently by IntFormer (2021, speed-only AUC 0.817), CAPFI (2024, speed-only AUC 0.83) and
-Diving Deeper (2024). "Ego speed is a shortcut" is a quantified 2024 result with a failed fix.
-**Do not claim the sign of the effect.** The unoccupied ground — and the actual contribution — is
-asking whether that shortcut is a *temporal-contamination* artefact. Nobody had separated ego-speed's
-predictive contribution from its leakage contribution.
+**Bonus.** A bbox-only Transformer (0.9291 AUC) matches a bbox+speed BiLSTM (0.9242). This resolves
+the standing 3x disagreement between Achaji et al. (2022, bbox-only near-ceiling) and IntFormer
+(bbox-only F1 0.287): both are right, and the architecture is the reason.
 
 ## C5. The transformer's AUC advantage comes from the search, not from attention
 
@@ -98,21 +98,31 @@ This control is the cleanest experiment in the project: 102 search runs are prov
 (0/102 result files contain a `test` key), and the winner selection is re-derived from raw per-seed
 files and cross-checked to 1e-9. See LIMITATIONS §3 for the capacity confound.
 
-## C6. Cell-type isolation, structurally verified
+**Note on scope.** These numbers come from the original per-family study, not the matched protocol
+of C6, so quote them only for the searched-vs-unsearched *control* — the point that an un-searched
+transformer ties the BiLSTM. For any cross-family ranking use C6, which holds device, class weight
+and checkpoint rule constant as well. The budget question is settled separately: the winner is an
+architecture config ranked #2 of 36, so a matched 36-config budget selects the same model.
 
-**Claim.** LSTM, GRU and un-gated tanh RNN are indistinguishable on F1 at a 16-frame horizon.
+## C6. A matched four-family comparison — and the families do not tie
 
-The ablation is genuine rather than a re-implementation: parameter counts sit in an exact **4 : 3 : 1**
-recurrent ratio (594,561 / 446,081 / 149,121 at h128) with identical non-recurrent parts and identical
-state-dict keys — the difference really is one expression. The un-gated RNN's instability ledger is
-empty (0 of 93 search runs diverged), and its search independently rediscovered the **same
-configuration** the BiLSTM's own grid selected.
+**Claim.** Under one engine, one device, one selection rule, matched class weight and matched search
+budget, with pedestrian-clustered Holm-corrected inference, the **un-gated vanilla RNN (560,001
+parameters — the smallest model tested) is the best**. It beats the BiLSTM on AUC and F1, the h128
+baseline on AUC and PR-AUC, and the GRU on AUC and F1. It **ties the searched Transformer**
+(AUC delta +0.0006, p = 0.83).
 
-**Evidence.** `results/model_comparison/{gru,rnn}_comparison.json`,
-`results/statistics/{gru,rnn}_cluster_bootstrap.json`.
+**Evidence.** `experiments/02_model_comparison/MATCHED_COMPARISON.md`. Nine of 30 tests survive Holm.
+
+The ablation is structurally genuine: parameter counts sit in an exact **4 : 3 : 1** recurrent ratio
+(594,561 / 446,081 / 149,121 at h128) with identical non-recurrent parts and identical state-dict
+keys, so "only the cell changed" is verified, not asserted.
 
 **Prior art.** Chung et al. (2014) already showed un-gated RNNs tie gated cells over short sequences.
-This is confirmation with modern statistics, not discovery — see LIMITATIONS §5.
+This is confirmation with modern statistics — see LIMITATIONS §5.
+
+**Superseded.** An earlier framing claimed the four families *tie* on F1. The matched experiment
+refutes it: they differ, and the differences run in a consistent direction.
 
 ## C7. External validity: leakage generalises; the fix does not, unmodified
 

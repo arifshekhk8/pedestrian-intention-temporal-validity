@@ -71,16 +71,25 @@ Rank-biserial effect size at the anchor frame, legacy → clean:
 
 Temporal leakage and the "static shortcut" are the same phenomenon.
 
-**Ego-speed dependence turns out to be far larger than the leaky protocol suggested.**
+**Ego-speed dependence turns out to be architecture-dependent, not a single number.**
+Same family, same config, same protocol, ego-speed column removed (`ego_speed_ablation.py`):
 
-| protocol | 5-D (bbox + ego-speed) | 4-D (bbox only) | gap |
+| family | 5-D AUC | 4-D (bbox only) | drop |
 |---|---|---|---|
-| legacy (leaky) | 0.948 ± 0.013 | 0.887 ± 0.011 | +0.06 |
-| clean | **0.932 ± 0.011** | **0.753 ± 0.020** | **+0.179** |
+| BiLSTM | 0.9242 | 0.7765 | **+0.1477** |
+| GRU | 0.9375 | 0.8836 | +0.0538 |
+| Vanilla RNN | 0.9481 | 0.8766 | +0.0715 |
+| Transformer | 0.9447 | **0.9291** | +0.0156 (n.s.) |
 
 That ego-speed dominates on PIE is already established (IntFormer 2021; CAPFI 2024; Diving Deeper
-2024). What is new here is that **the leak was masking how much the model leans on it** — the
-question of whether the ego-speed shortcut is itself a contamination artefact had not been asked.
+2024). Two things here are not. First, **the leak was masking how much the model leans on it**.
+Second, **ego-speed masks architectural differences**: with the channel present the families span
+0.024 AUC; without it they span **0.153 — six times wider**. When an easy channel is available every
+architecture rides it and they look alike.
+
+A bounding-box-only Transformer (0.9291) matches a bbox+speed BiLSTM (0.9242). That resolves a
+standing disagreement — Achaji et al. (2022) report bbox-only is near-ceiling, IntFormer reports a
+bbox-only F1 of 0.287. Both are right; it depends on the architecture consuming the boxes.
 
 **Headline AUC does not collapse, but the honest comparison is not the flattering one.** Matched
 5-seed against 5-seed the change is 0.948 → 0.932 (−0.016), and even that compares different test
@@ -89,23 +98,32 @@ moves from 3 to 17, usable windows grow 1,389 → 4,906, and the shortcut disapp
 
 ## Model comparison under one engine
 
-All four families train through **one training loop** (`src/engine.py`) on identical data, so a
-cross-family difference cannot be a protocol difference. Test set (`set03`) is touched once.
+All four families train through **one training loop** (`src/engine.py`) on identical data, same
+device, same seeds, same class weight, same checkpoint rule, one validation-fitted threshold each.
+Test set touched once. Inference is pedestrian-clustered and Holm-corrected across all 30 tests
+(`matched_comparison.py`).
 
-| family | params | test AUC | ensemble F1 | CPU latency (ms/window) |
+| family | params | F1@tau | AUC | PR-AUC |
 |---|---|---|---|---|
-| BiLSTM | 594,561 | 0.932 ± 0.011 | 0.8557 | 0.575 |
-| Transformer (searched) | 794,241 | **0.9497 ± 0.0025** | 0.8565 | 0.459 |
-| GRU | 446,081 | 0.941 ± 0.007 | **0.8628** | 0.721 |
-| Vanilla RNN (un-gated) | 149,121 | 0.948 ± 0.001 | 0.8590 | **0.316** |
+| BiLSTM (search winner, h256) | 2,237,313 | 0.8276 ± 0.0174 | 0.9242 ± 0.0086 | 0.8688 |
+| Transformer (searched) | 794,241 | 0.8250 ± 0.0274 | 0.9447 ± 0.0090 | 0.8964 |
+| GRU | 1,678,209 | 0.8419 ± 0.0083 | 0.9375 ± 0.0029 | 0.8890 |
+| **Vanilla RNN (un-gated)** | **560,001** | **0.8487 ± 0.0154** | **0.9481 ± 0.0058** | 0.8925 |
+| BiLSTM-h128 (baseline) | 594,561 | 0.8256 ± 0.0130 | 0.9349 ± 0.0053 | 0.8808 |
 
-**The transformer's AUC win comes from the search, not from attention.** ΔAUC = +0.0135, 10k paired
-bootstrap CI [+0.0097, +0.0174]; it survives a pedestrian-cluster bootstrap at [+0.0068, +0.0208].
-But the *same encoder* trained with the BiLSTM's un-searched recipe ties the BiLSTM exactly:
-Δ +0.0005, CI [−0.0034, +0.0043], p = 0.827. That control is the cleanest result in the project.
+**The families do not tie.** Nine of thirty comparisons survive Holm correction, six of them with
+the vanilla RNN as winner: it beats the BiLSTM (AUC, F1), the h128 baseline (AUC, PR-AUC) and the
+GRU (AUC, F1). The smallest model tested is the best one.
 
-On **F1**, the families are indistinguishable. See [docs/LIMITATIONS.md](docs/LIMITATIONS.md) for why
-"indistinguishable" is a weaker statement than it looks.
+**Transformer ≈ Vanilla RNN is a genuine tie** (AUC p = 0.83). Correction can only remove
+differences, never create them, so this null is the most robust entry in the table.
+
+Not established, and not claimed: Transformer > GRU (p_holm = 0.0546, just over the line).
+Full table and caveats in [MATCHED_COMPARISON.md](experiments/02_model_comparison/MATCHED_COMPARISON.md).
+
+**The transformer's advantage is not a search-budget artefact.** Its 78 configurations decompose
+into 36 architecture + 42 recipe configs; the winner is an architecture config ranked #2 of 36, so a
+matched 36-config budget selects the same model. The 42 recipe configs changed nothing.
 
 ## Does it generalise?
 

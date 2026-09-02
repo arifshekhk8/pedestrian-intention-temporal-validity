@@ -110,24 +110,27 @@ class RecurrentIntentPredictor(nn.Module):
 
 # ---------------------------------------------------------------- registry
 def _build_bilstm(cfg):
-    return BiLSTM(input_dim=5, hidden_dim=cfg["hidden"],
+    # input_dim defaults to the 5-D contract [x1,y1,x2,y2,ego_speed]; set 4 to drop ego speed.
+    return BiLSTM(input_dim=cfg.get("input_dim", 5), hidden_dim=cfg["hidden"],
                   num_layers=cfg["num_layers"], dropout=cfg["dropout"])
 
 
 def _build_transformer(cfg):
     return TransformerIntentPredictor(
-        input_dim=5, d_model=cfg["d_model"], nhead=cfg.get("nhead", 4),
+        input_dim=cfg.get("input_dim", 5), d_model=cfg["d_model"], nhead=cfg.get("nhead", 4),
         num_layers=cfg["num_layers"], dim_ff=cfg["dim_ff"], dropout=cfg["dropout"],
         pool=cfg["pool"], pos=cfg["pos"])
 
 
 def _build_gru(cfg):
-    return RecurrentIntentPredictor("gru", hidden_dim=cfg["hidden"],
+    return RecurrentIntentPredictor("gru", input_dim=cfg.get("input_dim", 5),
+                                    hidden_dim=cfg["hidden"],
                                     num_layers=cfg["num_layers"], dropout=cfg["dropout"])
 
 
 def _build_birnn(cfg):
-    return RecurrentIntentPredictor("rnn", hidden_dim=cfg["hidden"],
+    return RecurrentIntentPredictor("rnn", input_dim=cfg.get("input_dim", 5),
+                                    hidden_dim=cfg["hidden"],
                                     num_layers=cfg["num_layers"], dropout=cfg["dropout"])
 
 

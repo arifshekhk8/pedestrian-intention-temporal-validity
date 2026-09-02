@@ -5,10 +5,22 @@ Grouped by the claim each supports. Tier numbers refer to `docs/REPRODUCE.md`.
 | folder | what it establishes | needs |
 |---|---|---|
 | `01_leakage/` | overlapping windows do not inflate the estimate; the clean 5-seed baseline | Tier 1 |
-| `02_model_comparison/` | four-family comparison; the searched-vs-unsearched transformer control | Tier 3 (checkpoints) |
+| `02_model_comparison/` | four-family comparison; ego-speed ablation; trivial baselines | Tier 1 for the three matched scripts; Tier 3 for the older per-study ones |
 | `03_statistics/` | pedestrian-clustered bootstraps, LOSO, latency, detector-vs-GT robustness | Tier 3 |
 | `04_observation_window/` | 32- and 64-frame windows — **read the caveat below** | Tier 3 + rebuilt tensors |
 | `05_cross_dataset/` | JAAD and IDD-PeD replication and transfer | Tier 4 (external datasets) |
+
+## The three scripts that carry the headline results
+
+These need **no checkpoint download** — they train from `data/pie_clean/` and cache into `runs/`:
+
+| script | what it produces | runtime |
+|---|---|---|
+| `matched_comparison.py` | the four-family table, Holm-corrected → `MATCHED_COMPARISON.md` | ~15 min first run |
+| `ego_speed_ablation.py` | 5-D vs 4-D per family → `EGO_SPEED_ABLATION.md` | ~20 min first run |
+| `trivial_baselines.py` | linear baselines vs the best network → `TRIVIAL_BASELINES.md` | ~2 min |
+
+Run them in that order; each reuses the previous one's cached runs.
 
 ## Caveats attached to specific experiments
 

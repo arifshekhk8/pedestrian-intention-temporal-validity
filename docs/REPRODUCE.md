@@ -53,6 +53,18 @@ done
 ⚠ Use `--device cpu`. On Apple MPS, `nn.LSTM` training is process-history-dependent and the numbers
 will not reproduce (see `docs/PROTOCOL.md`).
 
+### Tier 1b — the headline comparisons (still no download, ~35 CPU-minutes)
+
+```bash
+python experiments/02_model_comparison/matched_comparison.py   # four families, Holm-corrected
+python experiments/02_model_comparison/ego_speed_ablation.py   # 5-D vs 4-D, per family
+python experiments/02_model_comparison/trivial_baselines.py    # linear baselines
+```
+
+These three produce `MATCHED_COMPARISON.md`, `EGO_SPEED_ABLATION.md` and `TRIVIAL_BASELINES.md`
+beside themselves. They supersede the older per-study numbers in `results/model_comparison/` for any
+cross-family claim.
+
 ## Tier 2 — verify the leakage claim (needs PIE annotations only, no video)
 
 PIE's annotation XML is a small download; the ~1.5 GB video clips are **not** needed.
@@ -129,7 +141,10 @@ flags 96.8 % of pedestrians when the vehicle is stopped (`docs/LIMITATIONS.md` �
 | `results/leakage/pie_legacy_per_sequence.csv` | 67.9 % contamination, per-window |
 | `results/leakage/pie_clean_leakage_report.md` | 0/4906 after the fix |
 | `results/clean_protocol/bilstm_multiseed_results.csv` | clean 5-seed AUC 0.932 ± 0.011 |
-| `results/clean_protocol/variants_multiseed_results.csv` | bbox-only 0.753 ± 0.020 → the +0.179 ego-speed gap |
+| `results/clean_protocol/variants_multiseed_results.csv` | the *superseded* bbox-only arm (0.753 ± 0.020). Provenance is mixed — see EGO_SPEED_ABLATION.md |
+| `experiments/02_model_comparison/ego_speed_ablation_results.json` | the matched ego-speed ablation (+0.0126 to +0.1477 by family) |
+| `experiments/02_model_comparison/trivial_baselines_results.json` | logistic regression matches all four neural families |
+| `experiments/02_model_comparison/matched_comparison_results.json` | the matched four-family comparison, Holm-corrected |
 | `results/clean_protocol/eval_parity_report.md` | overlapping windows do not inflate the estimate |
 | `results/model_comparison/transformer_vs_bilstm.json` | ΔAUC +0.0135 and the un-searched control tie |
 | `results/model_comparison/f1_final_arms.json` | the F1 headline arms and τ\* |

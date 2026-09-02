@@ -26,22 +26,42 @@ This is inherited from PIE's own `extract_tracks_tte` and is not specific to thi
 plausible source of the residual box-area separability (+0.247) that survives the leak fix. **The
 field has never questioned this asymmetric anchor.** It is measured here and not solved.
 
-## 2. "The four families tie" is a weaker claim than it appears
+## 2. What "tie" can and cannot mean here
 
-The tie rests on bootstrap confidence intervals that include zero. That is not sufficient:
+The earlier framing — that all four families tie — is **refuted by this project's own matched
+experiment**: nine of thirty comparisons survive Holm correction. Two limitations remain around the
+ties that *do* survive:
 
-- **No equivalence margin was pre-specified.** A defensible tie needs a δ such that |ΔF1| < δ is
-  agreed to be practically irrelevant, plus a demonstration that the whole CI lies inside [−δ, +δ]
-  (a TOST-style procedure). None of the endpoints does this.
+- **No equivalence margin was pre-specified.** The surviving null (Transformer ≈ Vanilla RNN,
+  AUC p = 0.83) rests on a confidence interval containing zero. A defensible equivalence claim needs
+  a margin δ agreed in advance plus a demonstration that the whole interval lies inside [−δ, +δ]
+  (a TOST procedure). Bouthillier et al. (MLSys 2021) is the standing prior art against
+  "CI includes 0 ⇒ equivalent".
 - **Power is not reported.** Koehn (EMNLP 2004) found a genuine 0.5-point gap was detected on only
-  **12 %** of 300-item test sets. At these test sizes "not significant" is the expected outcome
-  whether or not the families differ.
-- **No multiple-comparison correction** across the 14 GRU/RNN endpoints.
-- Hyperparameter-search variance is not randomised: one search, then k seeds — the biased
-  `FixHOptEst` estimator in Bouthillier et al. (MLSys 2021).
+  12 % of 300-item test sets. At this sample size "not significant" is a likely outcome either way,
+  so every null here should be read as *we could not detect a difference*, not *there is none*.
+- **Hyperparameter-search variance is not randomised** — one search, then k seeds, which Bouthillier
+  identifies as the biased `FixHOptEst` estimator.
 
-The honest phrasing is *"we could not detect a difference at this sample size"*, not *"the families
-are equivalent."*
+## 2b. Every architecture claim is bounded by a linear baseline
+
+Logistic regression on the 80 raw window features is statistically indistinguishable from the best
+of the four searched neural families (AUC p = 0.27, PR-AUC p = 0.77, F1 p = 0.45). Ego-speed alone —
+16 features, linear — scores 0.9335, above the 2.24M-parameter BiLSTM; a single frame scores 0.9251.
+
+This does not invalidate the family comparison, but it does bound its importance: the differences
+being measured sit at or below the level a linear model already reaches. Any statement of the form
+"architecture X is better for this task" must be read against that ceiling.
+
+## 2c. The 4-D BiLSTM result is a fitting failure, and its cause is untested
+
+Removing ego-speed drops the BiLSTM to 0.7765 AUC while logistic regression on the same bbox-only
+input reaches 0.9129. The information is present; the BiLSTM does not extract it. A plausible
+mechanism is the recurrent last-timestep readout (`out[:, -1, :]`) discarding trajectory information
+that ego-speed otherwise substitutes for, while attention and an explicit flattened linear model both
+retain it. **This mechanism has not been tested here** — doing so would require re-running the
+recurrent families with mean-pooled readout. Until then it is a hypothesis, and the 4-D per-family
+numbers should not be read as a capability ranking.
 
 ## 3. The transformer's AUC win is not capacity-matched
 

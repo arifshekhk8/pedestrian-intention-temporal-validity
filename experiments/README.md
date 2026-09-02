@@ -19,6 +19,7 @@ These need **no checkpoint download** — they train from `data/pie_clean/` and 
 | `matched_comparison.py` | the four-family table, Holm-corrected → `MATCHED_COMPARISON.md` | ~15 min first run |
 | `ego_speed_ablation.py` | 5-D vs 4-D per family → `EGO_SPEED_ABLATION.md` | ~20 min first run |
 | `trivial_baselines.py` | linear baselines vs the best network → `TRIVIAL_BASELINES.md` | ~2 min |
+| `phase_matched_control.py` | control for class-dependent timing bias → `PHASE_MATCHED_CONTROL.md` | ~15 min |
 
 Run them in that order; each reuses the previous one's cached runs.
 

@@ -59,9 +59,14 @@ will not reproduce (see `docs/PROTOCOL.md`).
 python experiments/02_model_comparison/matched_comparison.py   # four families, Holm-corrected
 python experiments/02_model_comparison/ego_speed_ablation.py   # 5-D vs 4-D, per family
 python experiments/02_model_comparison/trivial_baselines.py    # linear baselines
+python experiments/02_model_comparison/phase_matched_control.py # timing-bias control*
 ```
 
-These three produce `MATCHED_COMPARISON.md`, `EGO_SPEED_ABLATION.md` and `TRIVIAL_BASELINES.md`
+*The control re-trains from the tracked `data/pie_phase_matched/`, so it needs no download either;
+only *rebuilding* that dataset requires `pie_annotations.pkl` (Tier 2), via `--annotations`.
+
+These produce `MATCHED_COMPARISON.md`, `EGO_SPEED_ABLATION.md`, `TRIVIAL_BASELINES.md` and
+`PHASE_MATCHED_CONTROL.md`
 beside themselves. They supersede the older per-study numbers in `results/model_comparison/` for any
 cross-family claim.
 
@@ -145,6 +150,7 @@ flags 96.8 % of pedestrians when the vehicle is stopped (`docs/LIMITATIONS.md` �
 | `experiments/02_model_comparison/ego_speed_ablation_results.json` | the matched ego-speed ablation (+0.0126 to +0.1477 by family) |
 | `experiments/02_model_comparison/trivial_baselines_results.json` | logistic regression matches all four neural families |
 | `experiments/02_model_comparison/matched_comparison_results.json` | the matched four-family comparison, Holm-corrected |
+| `experiments/02_model_comparison/phase_matched_results.json` | the timing-bias control; ego-speed advantage reverses |
 | `results/clean_protocol/eval_parity_report.md` | overlapping windows do not inflate the estimate |
 | `results/model_comparison/transformer_vs_bilstm.json` | ΔAUC +0.0135 and the un-searched control tie |
 | `results/model_comparison/f1_final_arms.json` | the F1 headline arms and τ\* |

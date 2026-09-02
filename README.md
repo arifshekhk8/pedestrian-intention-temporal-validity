@@ -85,6 +85,39 @@ Read this against the linear baseline below: **logistic regression on the same b
 0.9129**. The BiLSTM's collapse to 0.7765 is therefore an *optimisation failure*, not evidence that
 boxes lack signal — the information is plainly there, and a linear model extracts it.
 
+## A second, separate sampling bias — and a control for it
+
+The leakage fix does not touch a different problem inherited from PIE's windowing. For a
+**non**-crosser, `crossing_point` is defined as the last annotated frame minus 2, so negative
+windows land in the final 1–2 s of the track. For a crosser it is a real event, usually mid-track:
+
+| class | frames from anchor to end of track (min / median / max) |
+|---|---|
+| non-crossers | 32 / 46 / 62 |
+| crossers | 88 / 287 / 6606 |
+
+**Zero overlap** — that nuisance variable alone separates the classes with **AUC = 1.0000**. The
+model never sees it, but box growth and ego-speed encode "this pedestrian is about to be passed".
+
+Re-sampling negatives earlier so their phase distribution matches the positives'
+(`phase_matched_control.py`) reduces that separability to 0.7779 and gives:
+
+| model | AUC: original → phase-matched |
+|---|---|
+| LR, ego-speed only (16 feats) | 0.9335 → **0.8257** (−0.108) |
+| LR, bbox only (64 feats) | 0.9129 → **0.8987** (−0.014) |
+| LR, bbox + ego-speed | 0.9488 → 0.9031 |
+| Vanilla RNN | 0.9481 → 0.8852 |
+| Transformer | 0.9447 → 0.8928 |
+
+**The ego-speed advantage reverses.** Speed-only beat bbox-only on the original sampling; under
+phase-matched sampling bounding boxes are clearly the stronger stream. So a substantial part of the
+apparent ego-speed dominance was the *sampling artefact*, not crossing behaviour.
+
+Full numbers and caveats — including that the two conditions have different test sets and that a
+distance-based competing explanation is not excluded — in
+[PHASE_MATCHED_CONTROL.md](experiments/02_model_comparison/PHASE_MATCHED_CONTROL.md).
+
 ## The result that matters most: a linear model matches everything
 
 No published work on PIE/JAAD reports a genuinely trivial baseline — PCPA's weakest comparison is a

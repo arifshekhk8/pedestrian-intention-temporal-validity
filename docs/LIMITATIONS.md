@@ -22,9 +22,19 @@ positives are observed 1–2 s before a mid-track crossing. Any cue correlated w
 ego deceleration, box growth rate — becomes a class signal produced by the *annotation termination
 rule*, not by pedestrian behaviour.
 
-This is inherited from PIE's own `extract_tracks_tte` and is not specific to this work, but it is a
-plausible source of the residual box-area separability (+0.247) that survives the leak fix. **The
-field has never questioned this asymmetric anchor.** It is measured here and not solved.
+This is inherited from PIE's own `extract_tracks_tte` and is not specific to this work — MFT (2025)
+states the same convention explicitly, so it is field-wide. **The field has never questioned this
+asymmetric anchor.**
+
+Quantified: frames-from-anchor-to-track-end separates the classes with **AUC = 1.0000** (negatives
+32–62, positives 88–6606, zero overlap).
+
+**A control now exists** (`phase_matched_control.py`, LIMITATIONS is not the last word here):
+re-sampling negatives earlier drops that separability to 0.7779 and costs every model 0.04–0.06 AUC,
+with the linear speed-only model losing 0.108 and the ego-speed-vs-bbox advantage reversing. So the
+bias is real and material. It is reduced, **not eliminated** — negative tracks are simply shorter —
+and a distance-based competing explanation has not been excluded. See
+`experiments/02_model_comparison/PHASE_MATCHED_CONTROL.md`.
 
 ## 2. What "tie" can and cannot mean here
 

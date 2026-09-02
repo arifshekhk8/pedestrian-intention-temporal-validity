@@ -96,8 +96,13 @@ recurrent last-timestep readout discarding trajectory information that ego-speed
 substitutes for, but that mechanism is **untested here** and should be stated as a hypothesis.
 
 **Prior art.** Ego-speed dominance is settled (IntFormer 2021; CAPFI 2024; Diving Deeper 2024).
-Do not claim the sign of the effect. New: the architecture-dependence, and that the leaky protocol
-understated the dependence (+0.06 leaky vs +0.15 clean on the BiLSTM).
+Do not claim the sign of the effect.
+
+⚠ **And now qualify the magnitude too.** Under phase-matched negative sampling
+(`PHASE_MATCHED_CONTROL.md`) the linear speed-only model falls 0.9335 → 0.8257 while bbox-only
+barely moves (0.9129 → 0.8987), reversing which stream is stronger. A substantial share of the
+apparent ego-speed dominance on this benchmark is a class-dependent *sampling* artefact rather than
+a property of crossing behaviour. This is the single most important qualification in this document.
 
 ## C5. The transformer's AUC advantage comes from the search, not from attention
 

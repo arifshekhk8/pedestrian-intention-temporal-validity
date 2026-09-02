@@ -11,7 +11,8 @@
     "select": "auc",
     "device": "cpu",
     "threshold": "one tau per family, pooled val",
-    "bootstrap": "pedestrian-clustered, B=2000",
+    "bootstrap": "pedestrian-clustered, shared replicates, B=10000",
+    "correction": "Holm-Bonferroni across all 30 tests, alpha=0.05",
     "n_test": 2094,
     "n_test_pedestrians": 541
   },
@@ -90,7 +91,7 @@
         "auc": 0.9319700743983131,
         "pr_auc": 0.8768263023465308
       },
-      "seconds": 1.6
+      "seconds": 1.8
     },
     "Transformer": {
       "family": "transformer",
@@ -401,249 +402,339 @@
         "auc": 0.9417907764382132,
         "pr_auc": 0.885613977241694
       },
-      "seconds": 93.1
+      "seconds": 0.7
     }
   },
   "pairwise": {
     "BiLSTM - Transformer [AUC]": {
       "delta": -0.02305838485304801,
       "ci": [
-        -0.03449679852685841,
-        -0.01291088456452906
+        -0.03449452952887927,
+        -0.012837751197513443
       ],
-      "excludes_zero": true
+      "p": 0.00019998000199980003,
+      "p_holm": 0.005999400059994001,
+      "significant_holm": true,
+      "significant_uncorrected": true
     },
     "BiLSTM - Transformer [PR-AUC]": {
       "delta": -0.030562072126273154,
       "ci": [
-        -0.059394912763660185,
-        -0.007184710835795363
+        -0.059233965632613184,
+        -0.007403731959538806
       ],
-      "excludes_zero": true
+      "p": 0.0117988201179882,
+      "p_holm": 0.19718028197180282,
+      "significant_holm": false,
+      "significant_uncorrected": true
     },
     "BiLSTM - Transformer [F1@tau]": {
       "delta": -0.021005377475681652,
       "ci": [
-        -0.039034147976065116,
-        -0.0025969625972904905
+        -0.04012305286853936,
+        -0.0027608602839836872
       ],
-      "excludes_zero": true
+      "p": 0.025397460253974602,
+      "p_holm": 0.3555644435556444,
+      "significant_holm": false,
+      "significant_uncorrected": true
     },
     "BiLSTM - GRU [AUC]": {
       "delta": -0.010366296597672298,
       "ci": [
-        -0.019705690127004974,
-        -0.0012467924154142872
+        -0.01952626055440815,
+        -0.0013028650990546237
       ],
-      "excludes_zero": true
+      "p": 0.0263973602639736,
+      "p_holm": 0.3555644435556444,
+      "significant_holm": false,
+      "significant_uncorrected": true
     },
     "BiLSTM - GRU [PR-AUC]": {
       "delta": -0.015612247150445291,
       "ci": [
-        -0.0399497420953305,
-        0.005448262846052607
+        -0.04031876974355317,
+        0.0046194617695388875
       ],
-      "excludes_zero": false
+      "p": 0.11778822117788221,
+      "p_holm": 1.0,
+      "significant_holm": false,
+      "significant_uncorrected": false
     },
     "BiLSTM - GRU [F1@tau]": {
       "delta": -0.013493782396028497,
       "ci": [
-        -0.028700549928106354,
-        0.0021374508651026123
+        -0.02934429075178429,
+        0.002661635486683832
       ],
-      "excludes_zero": false
+      "p": 0.09619038096190381,
+      "p_holm": 1.0,
+      "significant_holm": false,
+      "significant_uncorrected": false
     },
     "BiLSTM - Vanilla RNN [AUC]": {
       "delta": -0.022497201879339457,
       "ci": [
-        -0.034152651585663156,
-        -0.01151406762689763
+        -0.03399676425745154,
+        -0.011374179755819004
       ],
-      "excludes_zero": true
+      "p": 0.00019998000199980003,
+      "p_holm": 0.005999400059994001,
+      "significant_holm": true,
+      "significant_uncorrected": true
     },
     "BiLSTM - Vanilla RNN [PR-AUC]": {
       "delta": -0.02813971901238299,
       "ci": [
-        -0.056475628516701515,
-        -0.005876383158973985
+        -0.05668440352029035,
+        -0.006246731028604892
       ],
-      "excludes_zero": true
+      "p": 0.0143985601439856,
+      "p_holm": 0.215978402159784,
+      "significant_holm": false,
+      "significant_uncorrected": true
     },
     "BiLSTM - Vanilla RNN [F1@tau]": {
       "delta": -0.032038289212387716,
       "ci": [
-        -0.04805803892067976,
-        -0.01582831977423837
+        -0.04897664235332651,
+        -0.01637102762777545
       ],
-      "excludes_zero": true
+      "p": 0.00019998000199980003,
+      "p_holm": 0.005999400059994001,
+      "significant_holm": true,
+      "significant_uncorrected": true
     },
     "BiLSTM - BiLSTM-h128 [AUC]": {
       "delta": -0.009820702039900042,
       "ci": [
-        -0.017947544007791534,
-        -0.002234867370715638
+        -0.017841376358769537,
+        -0.002234867370715639
       ],
-      "excludes_zero": true
+      "p": 0.0115988401159884,
+      "p_holm": 0.19718028197180282,
+      "significant_holm": false,
+      "significant_uncorrected": true
     },
     "BiLSTM - BiLSTM-h128 [PR-AUC]": {
       "delta": -0.008787674895163189,
       "ci": [
-        -0.0338516932265055,
-        0.011597655608008375
+        -0.03492159048478724,
+        0.011396491991007842
       ],
-      "excludes_zero": false
+      "p": 0.35776422357764226,
+      "p_holm": 1.0,
+      "significant_holm": false,
+      "significant_uncorrected": false
     },
     "BiLSTM - BiLSTM-h128 [F1@tau]": {
       "delta": -0.01038756745098457,
       "ci": [
-        -0.02550844122550572,
-        0.004191718240187389
+        -0.02531345201862511,
+        0.004522722390808873
       ],
-      "excludes_zero": false
+      "p": 0.1645835416458354,
+      "p_holm": 1.0,
+      "significant_holm": false,
+      "significant_uncorrected": false
     },
     "Transformer - GRU [AUC]": {
       "delta": 0.01269208825537571,
       "ci": [
-        0.0041033047375017145,
-        0.022996887708527033
+        0.0038714330773625045,
+        0.023462369588210574
       ],
-      "excludes_zero": true
+      "p": 0.0025997400259974,
+      "p_holm": 0.054594540545945404,
+      "significant_holm": false,
+      "significant_uncorrected": true
     },
     "Transformer - GRU [PR-AUC]": {
       "delta": 0.014949824975827863,
       "ci": [
-        0.0038065163562348127,
-        0.02671678303158721
+        0.003442468866143961,
+        0.026600047753635808
       ],
-      "excludes_zero": true
+      "p": 0.0081991800819918,
+      "p_holm": 0.14758524147585242,
+      "significant_holm": false,
+      "significant_uncorrected": true
     },
     "Transformer - GRU [F1@tau]": {
       "delta": 0.007511595079653155,
       "ci": [
-        -0.004129403484023797,
-        0.019692587207246152
+        -0.004036426822336228,
+        0.01969125810788625
       ],
-      "excludes_zero": false
+      "p": 0.20857914208579142,
+      "p_holm": 1.0,
+      "significant_holm": false,
+      "significant_uncorrected": false
     },
     "Transformer - Vanilla RNN [AUC]": {
       "delta": 0.0005611829737085516,
       "ci": [
-        -0.0038346662978341467,
-        0.005028575815828373
+        -0.0037327059723749915,
+        0.005258043064833565
       ],
-      "excludes_zero": false
+      "p": 0.8267173282671733,
+      "p_holm": 1.0,
+      "significant_holm": false,
+      "significant_uncorrected": false
     },
     "Transformer - Vanilla RNN [PR-AUC]": {
       "delta": 0.0024223531138901633,
       "ci": [
-        -0.006293670870748574,
-        0.009432432579142815
+        -0.0065061262273287705,
+        0.009573375142267733
       ],
-      "excludes_zero": false
+      "p": 0.7225277472252775,
+      "p_holm": 1.0,
+      "significant_holm": false,
+      "significant_uncorrected": false
     },
     "Transformer - Vanilla RNN [F1@tau]": {
       "delta": -0.011032911736706064,
       "ci": [
-        -0.026896995263826794,
-        0.003393276586865437
+        -0.026785330088557387,
+        0.0035925122601149955
       ],
-      "excludes_zero": false
+      "p": 0.1473852614738526,
+      "p_holm": 1.0,
+      "significant_holm": false,
+      "significant_uncorrected": false
     },
     "Transformer - BiLSTM-h128 [AUC]": {
       "delta": 0.013237682813147966,
       "ci": [
-        0.007000099524423084,
-        0.020263690361927295
+        0.0071777610751960486,
+        0.020145414564029303
       ],
-      "excludes_zero": true
+      "p": 0.00019998000199980003,
+      "p_holm": 0.005999400059994001,
+      "significant_holm": true,
+      "significant_uncorrected": true
     },
     "Transformer - BiLSTM-h128 [PR-AUC]": {
       "delta": 0.021774397231109965,
       "ci": [
-        0.008946938506850896,
-        0.033042394239523785
+        0.00936653370477295,
+        0.033770833493158785
       ],
-      "excludes_zero": true
+      "p": 0.00039996000399960006,
+      "p_holm": 0.009599040095990401,
+      "significant_holm": true,
+      "significant_uncorrected": true
     },
     "Transformer - BiLSTM-h128 [F1@tau]": {
       "delta": 0.010617810024697083,
       "ci": [
-        -0.0026737894530990984,
-        0.02397876004423714
+        -0.002657111056399597,
+        0.02472820962950091
       ],
-      "excludes_zero": false
+      "p": 0.12118788121187882,
+      "p_holm": 1.0,
+      "significant_holm": false,
+      "significant_uncorrected": false
     },
     "GRU - Vanilla RNN [AUC]": {
       "delta": -0.01213090528166716,
       "ci": [
-        -0.021482959809986935,
-        -0.004517842557362002
+        -0.021650407909566988,
+        -0.004218621948907561
       ],
-      "excludes_zero": true
+      "p": 0.0007999200079992001,
+      "p_holm": 0.018398160183981604,
+      "significant_holm": true,
+      "significant_uncorrected": true
     },
     "GRU - Vanilla RNN [PR-AUC]": {
       "delta": -0.0125274718619377,
       "ci": [
-        -0.0231488340284516,
-        -0.004013570632894751
+        -0.02310290218863829,
+        -0.0036975469094951935
       ],
-      "excludes_zero": true
+      "p": 0.003999600039996,
+      "p_holm": 0.075992400759924,
+      "significant_holm": false,
+      "significant_uncorrected": true
     },
     "GRU - Vanilla RNN [F1@tau]": {
       "delta": -0.01854450681635922,
       "ci": [
-        -0.03208234007603945,
-        -0.00632309430250154
+        -0.03234862630800647,
+        -0.006191300679824936
       ],
-      "excludes_zero": true
+      "p": 0.0015998400159984002,
+      "p_holm": 0.03519648035196481,
+      "significant_holm": true,
+      "significant_uncorrected": true
     },
     "GRU - BiLSTM-h128 [AUC]": {
       "delta": 0.0005455945577722554,
       "ci": [
-        -0.008174820414603493,
-        0.008418770235366878
+        -0.00818320171733965,
+        0.008397240595506127
       ],
-      "excludes_zero": false
+      "p": 0.8677132286771323,
+      "p_holm": 1.0,
+      "significant_holm": false,
+      "significant_uncorrected": false
     },
     "GRU - BiLSTM-h128 [PR-AUC]": {
       "delta": 0.006824572255282102,
       "ci": [
-        -0.0029778313986904615,
-        0.015350004908271238
+        -0.002996392332423095,
+        0.015584547750497698
       ],
-      "excludes_zero": false
+      "p": 0.17718228177182282,
+      "p_holm": 1.0,
+      "significant_holm": false,
+      "significant_uncorrected": false
     },
     "GRU - BiLSTM-h128 [F1@tau]": {
       "delta": 0.003106214945043928,
       "ci": [
-        -0.009645297363896146,
-        0.01573046850724592
+        -0.008980279339942245,
+        0.0158318295517893
       ],
-      "excludes_zero": false
+      "p": 0.6247375262473752,
+      "p_holm": 1.0,
+      "significant_holm": false,
+      "significant_uncorrected": false
     },
     "Vanilla RNN - BiLSTM-h128 [AUC]": {
       "delta": 0.012676499839439415,
       "ci": [
-        0.006637840952311186,
-        0.019900866662547444
+        0.006428555287880664,
+        0.019792979405052372
       ],
-      "excludes_zero": true
+      "p": 0.00019998000199980003,
+      "p_holm": 0.005999400059994001,
+      "significant_holm": true,
+      "significant_uncorrected": true
     },
     "Vanilla RNN - BiLSTM-h128 [PR-AUC]": {
       "delta": 0.019352044117219802,
       "ci": [
-        0.009657802200617785,
-        0.030589765121284602
+        0.009810390063133459,
+        0.030763493920892396
       ],
-      "excludes_zero": true
+      "p": 0.00019998000199980003,
+      "p_holm": 0.005999400059994001,
+      "significant_holm": true,
+      "significant_uncorrected": true
     },
     "Vanilla RNN - BiLSTM-h128 [F1@tau]": {
       "delta": 0.021650721761403147,
       "ci": [
-        0.007429989530456832,
-        0.03710806553931381
+        0.0076667047937197036,
+        0.03701862550668641
       ],
-      "excludes_zero": true
+      "p": 0.0025997400259974,
+      "p_holm": 0.054594540545945404,
+      "significant_holm": false,
+      "significant_uncorrected": true
     }
   }
 }

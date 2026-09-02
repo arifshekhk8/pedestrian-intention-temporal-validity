@@ -145,41 +145,52 @@ def probs_for(run_dir, family, cfg, X):
 
 
 # ---------------------------------------------------------------- clustered bootstrap
-def cluster_bootstrap_delta(y, pa, pb, groups, stat, B=10000, seed=42):
-    """Paired bootstrap resampling PEDESTRIANS, not windows."""
+def make_resamples(groups, B, seed=42):
+    """Precompute B pedestrian-level resamples ONCE so every comparison is paired
+    on the same bootstrap replicates (and so we only pay for this once)."""
     rng = np.random.default_rng(seed)
     uniq, inv = np.unique(groups, return_inverse=True)
     idx_by_g = [np.where(inv == i)[0] for i in range(len(uniq))]
-    obs = stat(y, pa) - stat(y, pb)
-    deltas = np.empty(B)
     G = len(uniq)
-    for b in range(B):
-        pick = rng.integers(0, G, G)
-        idx = np.concatenate([idx_by_g[i] for i in pick])
-        yy = y[idx]
-        if yy.sum() == 0 or yy.sum() == len(yy):
-            deltas[b] = np.nan; continue
-        deltas[b] = stat(yy, pa[idx]) - stat(yy, pb[idx])
-    d = deltas[~np.isnan(deltas)]
-    return float(obs), float(np.percentile(d, 2.5)), float(np.percentile(d, 97.5))
+    picks = rng.integers(0, G, size=(B, G), dtype=np.int32)
+    return idx_by_g, picks
 
 
-def cluster_bootstrap_delta_2(y, pa, pb, groups, stat_a, stat_b, B=10000, seed=42):
-    """Paired pedestrian-clustered bootstrap where each arm uses its OWN threshold."""
-    rng = np.random.default_rng(seed)
-    uniq, inv = np.unique(groups, return_inverse=True)
-    idx_by_g = [np.where(inv == i)[0] for i in range(len(uniq))]
+def cluster_delta(y, pa, pb, idx_by_g, picks, stat_a, stat_b):
+    """Paired pedestrian-clustered bootstrap. Each arm may use its own statistic
+    (needed for F1, where each family keeps its own threshold).
+    Returns observed delta, 95% percentile CI, and a two-sided bootstrap p-value."""
     obs = stat_a(y, pa) - stat_b(y, pb)
-    deltas = np.empty(B); G = len(uniq)
+    B = len(picks)
+    deltas = np.empty(B)
     for b in range(B):
-        pick = rng.integers(0, G, G)
-        idx = np.concatenate([idx_by_g[i] for i in pick])
+        idx = np.concatenate([idx_by_g[i] for i in picks[b]])
         yy = y[idx]
-        if yy.sum() == 0 or yy.sum() == len(yy):
-            deltas[b] = np.nan; continue
+        sm = yy.sum()
+        if sm == 0 or sm == len(yy):
+            deltas[b] = np.nan
+            continue
         deltas[b] = stat_a(yy, pa[idx]) - stat_b(yy, pb[idx])
     d = deltas[~np.isnan(deltas)]
-    return float(obs), float(np.percentile(d, 2.5)), float(np.percentile(d, 97.5))
+    n = len(d)
+    # two-sided bootstrap p: how often the replicate distribution sits on the
+    # other side of zero (add-one smoothing so p is never exactly 0)
+    p_lo = (1 + np.sum(d <= 0)) / (n + 1)
+    p_hi = (1 + np.sum(d >= 0)) / (n + 1)
+    pval = float(min(1.0, 2 * min(p_lo, p_hi)))
+    return float(obs), float(np.percentile(d, 2.5)), float(np.percentile(d, 97.5)), pval
+
+
+def holm(pvals, alpha=0.05):
+    """Holm-Bonferroni step-down. Returns (adjusted p, reject) in input order."""
+    m = len(pvals)
+    order = sorted(range(m), key=lambda i: pvals[i])
+    adj = [0.0] * m
+    running = 0.0
+    for rank, i in enumerate(order):
+        running = max(running, (m - rank) * pvals[i])   # enforce monotonicity
+        adj[i] = min(1.0, running)
+    return adj, [adj[i] <= alpha for i in range(m)]
 
 
 def main():
@@ -232,31 +243,45 @@ def main():
               f"AUC={agg['auc'][0]:.4f}+-{agg['auc'][1]:.4f}  "
               f"PR-AUC={agg['pr_auc'][0]:.4f}  ({table[label]['seconds']}s)")
 
-    # pairwise pedestrian-clustered bootstrap on the seed-averaged probabilities
+    # pairwise pedestrian-clustered bootstrap, shared replicates, Holm-corrected
     labels = list(FAMILIES)
-    pairs = {}
+    idx_by_g, picks = make_resamples(groups, args.bootstrap)
+    print(f"\nbootstrap: B={args.bootstrap}, pedestrian-clustered, shared replicates")
+    tests = []
     for i in range(len(labels)):
         for j in range(i + 1, len(labels)):
             a, b = labels[i], labels[j]
-            f1a = (lambda yy, pp, t=table[a]["tau"]: f1_at(yy, pp, t))
-            f1b = (lambda yy, pp, t=table[b]["tau"]: f1_at(yy, pp, t))
-            for name, stat in (("AUC", auc), ("PR-AUC", pr_auc), ("F1@tau", None)):
-                if name == "F1@tau":
-                    o, lo, hi = cluster_bootstrap_delta_2(np.asarray(yte), probs_store[a],
-                                                          probs_store[b], groups, f1a, f1b,
-                                                          B=args.bootstrap)
-                else:
-                    o, lo, hi = cluster_bootstrap_delta(np.asarray(yte), probs_store[a],
-                                                        probs_store[b], groups, stat,
-                                                        B=args.bootstrap)
-                pairs[f"{a} - {b} [{name}]"] = dict(delta=o, ci=[lo, hi],
-                                                    excludes_zero=bool(lo > 0 or hi < 0))
-                print(f"  {a} - {b} [{name}]: {o:+.4f}  95% CI [{lo:+.4f}, {hi:+.4f}]"
-                      f"  {'DIFFERENT' if (lo > 0 or hi < 0) else 'not distinguishable'}")
+            ta, tb = table[a]["tau"], table[b]["tau"]
+            for name, sa, sb in (
+                ("AUC", auc, auc),
+                ("PR-AUC", pr_auc, pr_auc),
+                ("F1@tau", (lambda y_, p_, t=ta: f1_at(y_, p_, t)),
+                           (lambda y_, p_, t=tb: f1_at(y_, p_, t))),
+            ):
+                o, lo, hi, pv = cluster_delta(np.asarray(yte), probs_store[a],
+                                              probs_store[b], idx_by_g, picks, sa, sb)
+                tests.append(dict(key=f"{a} - {b} [{name}]", delta=o, ci=[lo, hi], p=pv))
+            print(f"  done {a} vs {b}")
+
+    adj, rej = holm([t["p"] for t in tests])
+    pairs = {}
+    for t, pa_, rj in zip(tests, adj, rej):
+        t["p_holm"] = pa_
+        t["significant_holm"] = bool(rj)
+        t["significant_uncorrected"] = bool(t["ci"][0] > 0 or t["ci"][1] < 0)
+        pairs[t["key"]] = {k: v for k, v in t.items() if k != "key"}
+
+    print(f"\n{'comparison':38s} {'delta':>9s} {'95% CI':>22s} {'p':>8s} {'p_holm':>8s}  verdict")
+    for t in tests:
+        v = "DIFFERENT" if t["significant_holm"] else (
+            "drops after Holm" if t["significant_uncorrected"] else "not distinguishable")
+        print(f"  {t['key']:36s} {t['delta']:+9.4f} "
+              f"[{t['ci'][0]:+.4f},{t['ci'][1]:+.4f}] {t['p']:8.4f} {t['p_holm']:8.4f}  {v}")
 
     out = dict(protocol=dict(seeds=SEEDS, pos_weight=POS_WEIGHT, select=SELECT,
                              device=DEVICE, threshold="one tau per family, pooled val",
-                             bootstrap="pedestrian-clustered, B=%d" % args.bootstrap,
+                             bootstrap="pedestrian-clustered, shared replicates, B=%d" % args.bootstrap,
+                             correction="Holm-Bonferroni across all %d tests, alpha=0.05" % (len(pairs)),
                              n_test=len(yte), n_test_pedestrians=len(set(groups))),
                families=table, pairwise=pairs)
     (HERE / "matched_comparison_results.json").write_text(json.dumps(out, indent=2))

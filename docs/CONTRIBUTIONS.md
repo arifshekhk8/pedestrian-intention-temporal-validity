@@ -63,25 +63,41 @@ Rank-biserial effect size at the anchor frame, legacy → clean: area **+0.654 �
 
 **Evidence.** `results/leakage/*_leakage_report.md` (both produced by the same script on both datasets).
 
-## C4. Ego-speed's contribution is architecture-dependent, and it masks architecture differences
+## C4. A linear model on raw features matches four tuned neural families
 
-**Claim.** Removing the ego-speed channel under an otherwise identical protocol costs between
-+0.0126 AUC (Transformer, not significant after correction) and +0.1477 (BiLSTM). With the channel
-present the four families span 0.024 AUC; without it, **0.153** — six times wider.
+**Claim.** On the leak-free protocol, logistic regression on the 80 raw window features scores
+AUC 0.9488 / PR-AUC 0.9121 / F1 0.8546 and is **statistically indistinguishable** from the best of
+four searched neural families (pedestrian-clustered bootstrap: AUC p = 0.27, PR-AUC p = 0.77,
+F1 p = 0.45). Ego-speed alone (16 features, linear) scores 0.9335 — above the 2.24M-parameter
+BiLSTM. Five numbers from a single frame score 0.9251.
 
-**Evidence.** `experiments/02_model_comparison/EGO_SPEED_ABLATION.md` and its results JSON.
-Pedestrian-clustered bootstrap, B=10,000, Holm-corrected across 12 tests.
+**Evidence.** `experiments/02_model_comparison/trivial_baselines_results.json`.
 
-**Prior art — read carefully.** That ego-speed dominates on PIE is **settled** (IntFormer 2021,
-speed-only AUC 0.817; CAPFI 2024, 0.83; Diving Deeper 2024). "Ego speed is a shortcut" is a
-quantified 2024 result. **Do not claim the sign of the effect.** What is new: (a) that the effect is
-architecture-dependent by an order of magnitude, so a single headline figure is wrong; (b) that the
-channel **flattens** architectural differences; (c) that the leaky protocol understated the
-dependence (+0.06 leaky vs +0.15 clean on the BiLSTM).
+**Why it is novel.** The field reports no trivial baseline: PCPA's weakest comparison is a deep CNN
+on a single frame, and no paper reports majority-class, speed-only, or a linear model on the raw
+window. This is the gap, measured.
 
-**Bonus.** A bbox-only Transformer (0.9291 AUC) matches a bbox+speed BiLSTM (0.9242). This resolves
-the standing 3x disagreement between Achaji et al. (2022, bbox-only near-ceiling) and IntFormer
-(bbox-only F1 0.287): both are right, and the architecture is the reason.
+**Why it matters.** It bounds every architecture claim in this literature, including our own. It
+also reframes the leakage result: removing the contamination removes the *detection* shortcut, but
+what remains is still largely a linear function of ego-vehicle dynamics.
+
+## C4b. Ego-speed's contribution is architecture-dependent
+
+**Claim.** Removing ego-speed costs +0.0126 AUC (Transformer, n.s.) to +0.1477 (BiLSTM). A single
+"ego speed is worth +0.18 AUC" figure is wrong; that figure describes the BiLSTM.
+
+**Evidence.** `experiments/02_model_comparison/EGO_SPEED_ABLATION.md`.
+
+⚠ **Do not claim that ego-speed "masks architectural differences."** The 4-D spread across families
+(0.7765–0.9291) looks like architectures separating, but logistic regression on the same bbox-only
+input scores 0.9129 — above three of the four networks. The spread is the BiLSTM (and to a lesser
+degree GRU/RNN) failing to fit, not architectures revealing capability. A plausible mechanism is the
+recurrent last-timestep readout discarding trajectory information that ego-speed otherwise
+substitutes for, but that mechanism is **untested here** and should be stated as a hypothesis.
+
+**Prior art.** Ego-speed dominance is settled (IntFormer 2021; CAPFI 2024; Diving Deeper 2024).
+Do not claim the sign of the effect. New: the architecture-dependence, and that the leaky protocol
+understated the dependence (+0.06 leaky vs +0.15 clean on the BiLSTM).
 
 ## C5. The transformer's AUC advantage comes from the search, not from attention
 

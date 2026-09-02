@@ -71,25 +71,44 @@ Rank-biserial effect size at the anchor frame, legacy → clean:
 
 Temporal leakage and the "static shortcut" are the same phenomenon.
 
-**Ego-speed dependence turns out to be architecture-dependent, not a single number.**
+**Ego-speed dependence is architecture-dependent, and the biggest number is a fitting failure.**
 Same family, same config, same protocol, ego-speed column removed (`ego_speed_ablation.py`):
 
 | family | 5-D AUC | 4-D (bbox only) | drop |
 |---|---|---|---|
-| BiLSTM | 0.9242 | 0.7765 | **+0.1477** |
-| GRU | 0.9375 | 0.8836 | +0.0538 |
+| BiLSTM | 0.9242 | 0.7765 | +0.1477 |
 | Vanilla RNN | 0.9481 | 0.8766 | +0.0715 |
+| GRU | 0.9375 | 0.8836 | +0.0538 |
 | Transformer | 0.9447 | **0.9291** | +0.0156 (n.s.) |
 
-That ego-speed dominates on PIE is already established (IntFormer 2021; CAPFI 2024; Diving Deeper
-2024). Two things here are not. First, **the leak was masking how much the model leans on it**.
-Second, **ego-speed masks architectural differences**: with the channel present the families span
-0.024 AUC; without it they span **0.153 — six times wider**. When an easy channel is available every
-architecture rides it and they look alike.
+Read this against the linear baseline below: **logistic regression on the same bbox-only input scores
+0.9129**. The BiLSTM's collapse to 0.7765 is therefore an *optimisation failure*, not evidence that
+boxes lack signal — the information is plainly there, and a linear model extracts it.
 
-A bounding-box-only Transformer (0.9291) matches a bbox+speed BiLSTM (0.9242). That resolves a
-standing disagreement — Achaji et al. (2022) report bbox-only is near-ceiling, IntFormer reports a
-bbox-only F1 of 0.287. Both are right; it depends on the architecture consuming the boxes.
+## The result that matters most: a linear model matches everything
+
+No published work on PIE/JAAD reports a genuinely trivial baseline — PCPA's weakest comparison is a
+deep CNN on a single frame. On the leak-free protocol, fitted on train only, thresholded on
+validation only, scored once on test (`trivial_baselines.py`):
+
+| baseline | AUC | PR-AUC | F1 |
+|---|---|---|---|
+| majority class (always positive) | 0.5000 | 0.3252 | 0.4908 |
+| **LR, bbox + ego-speed (80 raw features)** | **0.9488** | **0.9121** | **0.8546** |
+| LR, ego-speed only (16 features) | 0.9335 | 0.8538 | 0.8199 |
+| LR, last frame only (5 features) | 0.9251 | 0.8757 | 0.7903 |
+| LR, bbox only (64 features) | 0.9129 | 0.8035 | 0.7812 |
+| *best neural model (Vanilla RNN, 560k params)* | *0.9481* | *0.8925* | *0.8487* |
+
+**Logistic regression is statistically indistinguishable from the best of four tuned neural
+families** — AUC p = 0.27, PR-AUC p = 0.77, F1 p = 0.45 under a pedestrian-clustered bootstrap.
+
+Two further facts follow. **Ego-speed alone — 16 numbers, linear — scores 0.9335**, beating the
+2.24M-parameter BiLSTM on all inputs. And **five numbers from a single frame** score 0.9251, so the
+temporal model is not carrying the result either.
+
+So the leakage fix removes the shortcut that made the task look like detection, but what remains is
+still largely a linear function of ego-vehicle dynamics. That is the honest state of the benchmark.
 
 **Headline AUC does not collapse, but the honest comparison is not the flattering one.** Matched
 5-seed against 5-seed the change is 0.948 → 0.932 (−0.016), and even that compares different test

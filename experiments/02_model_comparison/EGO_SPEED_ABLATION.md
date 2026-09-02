@@ -45,10 +45,11 @@ The drop ranges from +0.0126 AUC (Transformer, not significant) to +0.1477 (BiLS
 Quoting a single 'ego speed is worth +0.18 AUC' figure is therefore wrong: that figure
 describes the BiLSTM specifically.
 
-**Ego-speed masks architectural differences.** With the channel present the four families
-span 0.9242-0.9481 AUC (a 0.024 spread). With it removed they span 0.7765-0.9291 — a spread
-of **0.153, six times larger**. When an easy predictive channel is available every
-architecture rides it and they look alike; remove it and modelling capacity separates them.
+**RETRACTED: "ego-speed masks architectural differences."** An earlier version of this file
+claimed the widened 4-D spread (0.153 vs 0.024) showed architectures separating once the easy
+channel is removed. That reading does not survive a trivial baseline: logistic regression on the
+same bbox-only input scores **0.9129**, above three of the four networks. The widened spread is the
+BiLSTM failing to fit, not architectures revealing capability. See `trivial_baselines.py`.
 
 **A bounding-box-only Transformer (0.9291) is on par with a bbox+speed BiLSTM (0.9242).**
 This resolves a standing disagreement in the literature: Achaji et al. (2022) report that

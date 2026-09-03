@@ -101,8 +101,9 @@ substitutes for, but that mechanism is **untested here** and should be stated as
 Do not claim the sign of the effect.
 
 ⚠ **And now qualify the magnitude too.** Under phase-matched negative sampling
-(`PHASE_MATCHED_CONTROL.md`) the linear speed-only model falls 0.9335 → 0.8257 while bbox-only
-barely moves (0.9129 → 0.8987), reversing which stream is stronger. A substantial share of the
+(`PHASE_MATCHED_CONTROL.md`) the linear speed-only model falls 0.9335 → 0.8309 while bbox-only
+barely moves (0.9129 → 0.8979), reversing which stream is stronger. Tested, not asserted:
+speed-only degrades significantly on all three metrics (p_Holm ≤ 0.0136), box-only on none. A substantial share of the
 apparent ego-speed dominance on this benchmark is a class-dependent *sampling* artefact rather than
 a property of crossing behaviour. This is the single most important qualification in this document.
 

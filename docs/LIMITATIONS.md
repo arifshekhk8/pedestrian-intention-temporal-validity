@@ -32,11 +32,14 @@ Quantified: frames-from-anchor-to-track-end separates the classes with **AUC = 1
 32–62, positives 88–6606, zero overlap).
 
 **A control now exists** (`phase_matched_control.py`, LIMITATIONS is not the last word here):
-re-sampling negatives earlier drops that separability to 0.7779 and costs every model 0.04–0.06 AUC,
-with the linear speed-only model losing 0.108 and the ego-speed-vs-bbox advantage reversing. So the
-bias is real and material. It is reduced, **not eliminated** — negative tracks are simply shorter —
-and a distance-based competing explanation has not been excluded. See
-`experiments/02_model_comparison/PHASE_MATCHED_CONTROL.md`.
+re-sampling negatives earlier drops that separability to 0.7919 and costs every model 0.03–0.06 AUC,
+with the linear speed-only model losing 0.103 and the ego-speed-vs-bbox advantage reversing. So the
+bias is real and material. It is reduced, **not eliminated** — negative tracks are simply shorter,
+and `to_end` still scores 0.8241 on the test split — and a distance-based competing explanation has
+not been excluded. Under the control no contrast between the four families survives correction,
+against 7 of the same 18 under the standard protocol; the strongest survivor misses by a hair
+(p = 0.0032 against a threshold of 0.00278), so this is a failure to resolve differences, not
+evidence of equivalence. See `experiments/02_model_comparison/PHASE_MATCHED_CONTROL.md`.
 
 ## 2. What "tie" can and cannot mean here
 

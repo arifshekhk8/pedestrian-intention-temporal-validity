@@ -100,15 +100,18 @@ windows land in the final 1–2 s of the track. For a crosser it is a real event
 model never sees it, but box growth and ego-speed encode "this pedestrian is about to be passed".
 
 Re-sampling negatives earlier so their phase distribution matches the positives'
-(`phase_matched_control.py`) reduces that separability to 0.7779 and gives:
+(`phase_matched_control.py`) reduces that separability to 0.7919 and gives:
 
 | model | AUC: original → phase-matched |
 |---|---|
-| LR, ego-speed only (16 feats) | 0.9335 → **0.8257** (−0.108) |
-| LR, bbox only (64 feats) | 0.9129 → **0.8987** (−0.014) |
-| LR, bbox + ego-speed | 0.9488 → 0.9031 |
-| Vanilla RNN | 0.9481 → 0.8852 |
-| Transformer | 0.9447 → 0.8928 |
+| LR, ego-speed only (16 feats) | 0.9335 → **0.8309** (−0.103) |
+| LR, bbox only (64 feats) | 0.9129 → **0.8979** (−0.015) |
+| LR, bbox + ego-speed | 0.9488 → 0.9053 |
+| Vanilla RNN | 0.9481 → 0.8872 |
+| Transformer | 0.9447 → 0.8971 |
+
+The target phase distribution is estimated from training positives only, then frozen and
+applied to all three splits.
 
 **The ego-speed advantage reverses.** Speed-only beat bbox-only on the original sampling; under
 phase-matched sampling bounding boxes are clearly the stronger stream. So a substantial part of the

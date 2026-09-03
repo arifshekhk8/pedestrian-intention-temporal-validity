@@ -1,0 +1,21 @@
+{
+  "phase_source": "train",
+  "splits_used": [
+    "set01",
+    "set02",
+    "set04"
+  ],
+  "n_source_positives": 812,
+  "n_all_positives": 1648,
+  "min_to_end": 88,
+  "quantiles": {
+    "0": 88.0,
+    "25": 209.0,
+    "50": 268.0,
+    "75": 357.0,
+    "100": 6606.0
+  },
+  "seed": 42,
+  "obs_len": 16,
+  "note": "Frozen before any negative is drawn; applied unchanged to train, val and test. Negative placement uses only this rule and the pedestrian's own track bounds."
+}

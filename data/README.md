@@ -47,14 +47,19 @@ mid-track. Frames-to-track-end therefore separates the two classes with **AUC = 
 overlap — a class-dependent sampling bias distinct from the temporal leakage the clean protocol
 fixes.
 
-This set re-samples negatives earlier, drawing frames-to-track-end from the positive empirical
-distribution (floor 88 = the positive minimum, clipped to each track's length, seed 42). Positives
-are untouched. 115 negative pedestrians are dropped (833 → 718): 114 because their tracks are too
-short to place an early window, and one more that loses every window to the 16-consecutive-frames
-check. The script prints 114 because its counter tracks only the first cause.
+This set re-samples negatives earlier, drawing frames-to-track-end from the **training**
+positives' empirical distribution (n = 812, floor 88, clipped to each track's length, seed 42).
+The distribution and the floor are frozen to `phase_rule.json` before any negative is drawn, then
+applied unchanged to train, validation and test, so no held-out timing enters the construction.
+Positives are untouched. 115 negative pedestrians are dropped (833 → 718): 114 because their tracks
+are too short to place an early window, and one more that loses every window to the
+16-consecutive-frames check. The script prints 114 because its counter tracks only the first cause.
 
-Separability of `to_end` falls from 1.0000 to **0.7779** — reduced, not eliminated,
-because negative tracks are simply shorter than positive ones.
+Separability of `to_end` falls from 1.0000 to **0.7919** overall (test split 0.8241) — reduced,
+not eliminated, because negative tracks are simply shorter than positive ones.
+
+`pie_phase_matched/` is the superseded first version, kept for provenance. It estimated the
+target distribution from all three splits; see `experiments/02_model_comparison/PHASE_RULE_LEAK_FIX.md`.
 
 Built by `experiments/02_model_comparison/phase_matched_control.py`. Results and caveats in
 `experiments/02_model_comparison/PHASE_MATCHED_CONTROL.md`.

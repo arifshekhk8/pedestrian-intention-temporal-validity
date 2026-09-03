@@ -10,14 +10,25 @@ comparison uses, so the controlled arm is tested to the same standard:
   - every contrast paired on the SAME bootstrap replicates
   - Holm-Bonferroni across the whole family of tests
 
-It re-uses the checkpoints already in runs/phase_matched/ (20 of them: 4 families
-x 5 seeds), so nothing is retrained.
+It re-uses checkpoints that already exist (20 of them: 4 families x 5 seeds), so
+nothing is retrained.
 
 Two families of tests are reported separately, each Holm-corrected within itself:
   A. between models, on the phase-matched data  (does the ranking survive?)
   B. standard vs phase-matched, per model       (is the drop real?)
 
-Usage:  python experiments/02_model_comparison/phase_matched_stats.py
+Arm A additionally reports a SYMMETRIC sub-analysis. Arm A corrects across 63 tests
+(7 models) while the standard-protocol run corrects across 30 (5 models), so "how many
+survive here" and "how many survive there" are not comparable as printed. The
+sub-analysis re-applies Holm to the 18 family-vs-family contrasts alone, using the
+same 18 tests under both protocols, which is the comparison the architecture claim
+actually rests on.
+
+Usage:
+  python experiments/02_model_comparison/phase_matched_stats.py \
+      --pm-dir data/pie_phase_matched_trainonly \
+      --runs-subdir phase_matched_trainonly \
+      --out phase_matched_trainonly_stats.json
 """
 import argparse
 import importlib.util
@@ -42,7 +53,7 @@ E = _load("engine", ROOT / "src" / "engine.py")
 M = _load("matched", HERE / "matched_comparison.py")
 
 FAMILIES = {k: v for k, v in M.FAMILIES.items() if k != "BiLSTM-h128"}
-PM_DIR = ROOT / "data" / "pie_phase_matched"
+NEURAL = set(FAMILIES)          # the four architecture families, no baselines
 
 
 def splits(meta, X, y):
@@ -64,10 +75,28 @@ def lr_probs(Xtr, ytr, Xva, Xte, sel, pw):
             lr.predict_proba(sc.transform(B))[:, 1])
 
 
+def family_only_holm(tests, alpha=0.05):
+    """Re-apply Holm to the family-vs-family contrasts alone.
+
+    The full arm-A family is 63 tests (7 models) but the standard-protocol run
+    corrects across 30 (5 models), so survivor counts are not comparable between
+    them. Restricting both to the same 18 architecture contrasts makes them so."""
+    keys = [k for k in tests
+            if k.split(" - ")[0] in NEURAL and k.split(" - ")[1].rsplit(" [", 1)[0] in NEURAL]
+    adj, rej = M.holm([tests[k]["p"] for k in keys], alpha)
+    return {k: dict(delta=tests[k]["delta"], ci=tests[k]["ci"], p=tests[k]["p"],
+                    p_holm_18=a, significant_holm_18=bool(r))
+            for k, a, r in zip(keys, adj, rej)}
+
+
 def main():
     ap = argparse.ArgumentParser()
     ap.add_argument("--bootstrap", type=int, default=10000)
+    ap.add_argument("--pm-dir", default=str(ROOT / "data" / "pie_phase_matched_trainonly"))
+    ap.add_argument("--runs-subdir", default="phase_matched_trainonly")
+    ap.add_argument("--out", default="phase_matched_trainonly_stats.json")
     args = ap.parse_args()
+    PM_DIR = Path(args.pm_dir)
 
     # ---------------------------------------------------------------- data
     Xp = np.load(PM_DIR / "X.npy")
@@ -87,7 +116,7 @@ def main():
     for label, (family, cfg) in FAMILIES.items():
         pv, pt = [], []
         for s in M.SEEDS:
-            d = ROOT / "runs" / "phase_matched" / label.replace(" ", "_") / f"seed{s}"
+            d = ROOT / "runs" / args.runs_subdir / label.replace(" ", "_") / f"seed{s}"
             if not (d / "best.pt").exists():
                 raise SystemExit(f"missing checkpoint: {d}")
             pv.append(M.probs_for(d, family, cfg, Xp[va]))
@@ -132,6 +161,15 @@ def main():
     for k, v in sorted(tests_a.items(), key=lambda t: t[1]["p"]):
         if v["significant_holm"]:
             print(f"  {k:52s} {v['delta']:+.4f}  p_holm={v['p_holm']:.4f}")
+
+    fam_a = family_only_holm(tests_a)
+    n_fam = sum(v["significant_holm_18"] for v in fam_a.values())
+    print(f"\n--- A'. the {len(fam_a)} family-vs-family contrasts, Holm within those "
+          f"{len(fam_a)} only: {n_fam} survive ---")
+    for k, v in sorted(fam_a.items(), key=lambda t: t[1]["p"])[:4]:
+        mark = "*" if v["significant_holm_18"] else " "
+        print(f" {mark}{k:44s} {v['delta']:+.4f}  p={v['p']:.4f}  "
+              f"p_holm18={v['p_holm_18']:.4f}")
 
     # ------------------------------- B. standard vs phase-matched, same model
     # The two protocols have DIFFERENT test sets (phase-matching drops 115 negative
@@ -207,16 +245,21 @@ def main():
               f"{v['delta']:+.4f}  CI[{v['ci'][0]:+.4f},{v['ci'][1]:+.4f}]  "
               f"p_holm={v['p_holm']:.4f}")
 
-    note = ("Arm B is unpaired: phase-matching drops 115 negative pedestrians, so the two "
-            "protocols have different test sets (1,873 windows / 476 pedestrians vs 2,094 "
-            "/ 541). Each arm is bootstrapped over its own pedestrians and the difference "
-            "of the two independent distributions is reported. This is valid but less "
-            "powerful than the paired procedure used in arm A.")
+    n_drop = len(set(gc)) - len(set(groups))
+    note = (f"Arm B is unpaired: phase-matching drops {n_drop} negative pedestrians, so "
+            f"the two protocols have different test sets ({int(tt.sum())} windows / "
+            f"{len(set(groups))} pedestrians vs {int(ctt.sum())} / {len(set(gc))}). Each "
+            "arm is bootstrapped over its own pedestrians and the difference of the two "
+            "independent distributions is reported. This is valid but less powerful than "
+            "the paired procedure used in arm A.")
 
+    rule_path = PM_DIR / "phase_rule.json"
     out = dict(
+        phase_rule=json.loads(rule_path.read_text()) if rule_path.exists() else None,
         protocol=dict(bootstrap=args.bootstrap,
                       correction="Holm-Bonferroni within each arm separately",
                       seeds=M.SEEDS, device=M.DEVICE, pos_weight=pw,
+                      pm_dir=str(PM_DIR), runs_subdir=args.runs_subdir,
                       n_test=int(tt.sum()), n_test_pedestrians=len(set(groups)),
                       n_test_standard=int(ctt.sum()),
                       n_test_pedestrians_standard=len(set(gc)),
@@ -226,10 +269,11 @@ def main():
                         pr_auc=M.pr_auc(yte, P[k]), f1=M.f1_at(yte, P[k], TAU[k]))
                 for k in P}),
         between_models=tests_a,
+        between_families_holm18=fam_a,
         standard_vs_matched=tests_b,
         note_on_cross_protocol=note)
-    (HERE / "phase_matched_stats.json").write_text(json.dumps(out, indent=2))
-    print(f"\nwrote {HERE/'phase_matched_stats.json'}")
+    (HERE / args.out).write_text(json.dumps(out, indent=2))
+    print(f"\nwrote {HERE/args.out}")
 
 
 if __name__ == "__main__":

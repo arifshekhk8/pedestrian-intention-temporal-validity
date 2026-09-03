@@ -26,11 +26,27 @@ THE CONTROL
 -----------
 Positives cannot move: their anchor is pinned by the crossing event. So negatives are
 re-sampled EARLIER, with their frames-to-track-end drawn from the positive empirical
-distribution (clipped to what each track allows, floor MIN_TO_END). Everything else --
-features, splits, engine, seeds, class weight, selection rule -- is unchanged.
+distribution (clipped to what each track allows, floor = the source minimum).
+Everything else -- features, splits, engine, seeds, class weight, selection rule --
+is unchanged.
 
 Then the four families and the linear baselines are retrained on the matched data and
 compared against the same models on the original data.
+
+WHERE THE TARGET DISTRIBUTION COMES FROM  (--phase-source)
+----------------------------------------------------------
+  train   DEFAULT AND CORRECT. The target distribution and the floor are estimated
+          from TRAINING positives only (set01/02/04), frozen, and then applied to
+          construct negatives in all three splits. No validation or test label or
+          timing informs the matching rule.
+
+  all     The original v1 behaviour, kept only so the superseded artefact can be
+          rebuilt. It pools positives from every split, so 50.7% of the sampled
+          distribution came from validation and test. For a paper about temporal
+          validity that is not defensible: test-set positive timing shaped how test
+          negatives were drawn. Do not use for new results.
+
+The frozen rule is written to <out>/phase_rule.json.
 
 Requires pie_annotations.pkl (Tier 2 of docs/REPRODUCE.md) because track start/end
 frames are needed, and meta.pkl does not carry them.
@@ -49,8 +65,11 @@ HERE = Path(__file__).resolve().parent
 ROOT = HERE.parent.parent
 FEATURE_COLS = ["x1", "y1", "x2", "y2", "vehicle_speed"]
 OBS_LEN = 16
-MIN_TO_END = 88          # the positive minimum; establishes common support
 SEED = 42
+# The floor was a hard-coded 88 in v1 -- the minimum over POOLED positives. It is now
+# derived from whichever source --phase-source selects, so the rule is estimated from
+# one split rather than read off the whole dataset. (Both happen to give 88: the global
+# minimum is owned by set01, which is a training set.)
 
 
 def _load(name, path):
@@ -64,7 +83,7 @@ E = _load("engine", ROOT / "src" / "engine.py")
 M = _load("matched", HERE / "matched_comparison.py")
 
 
-def build(annotations, out_dir):
+def build(annotations, out_dir, phase_source="train"):
     df = pd.read_pickle(annotations)
     meta = pickle.load(open(E.SEQ_DIR / "meta.pkl", "rb"))
     y = np.load(E.SEQ_DIR / "y.npy")
@@ -80,7 +99,10 @@ def build(annotations, out_dir):
         bounds[key] = (int(fr[o][0]), int(fr[o][-1]))
         index[key] = (idx[o], fr[o])
 
-    pos_to_end, per_ped = [], {}
+    # The target phase distribution is estimated from ONE split (training, by default)
+    # and then frozen. Drawing it from every split would let validation and test
+    # positive timing decide where validation and test negatives are placed.
+    pos_to_end, pos_all, per_ped = [], [], {}
     for m, lab in zip(meta, y):
         k = (m["set_id"], m["video_id"], m["ped_id"])
         if k not in bounds:
@@ -88,8 +110,26 @@ def build(annotations, out_dir):
         te = bounds[k][1] - m["anchor_frame"]
         per_ped.setdefault((k, int(lab)), []).append((m, te))
         if lab == 1:
-            pos_to_end.append(te)
+            pos_all.append(te)
+            if phase_source == "all" or m["set_id"] in E.TRAIN_SETS:
+                pos_to_end.append(te)
     pos_to_end = np.array(pos_to_end)
+    min_to_end = int(pos_to_end.min())
+    print(f"phase rule from {phase_source!r}: n={len(pos_to_end)} of {len(pos_all)} "
+          f"positives, floor={min_to_end}, median={int(np.median(pos_to_end))}")
+
+    out_dir.mkdir(parents=True, exist_ok=True)
+    (out_dir / "phase_rule.json").write_text(json.dumps(dict(
+        phase_source=phase_source,
+        splits_used=sorted(E.TRAIN_SETS) if phase_source == "train" else "all",
+        n_source_positives=int(len(pos_to_end)),
+        n_all_positives=int(len(pos_all)),
+        min_to_end=min_to_end,
+        quantiles={q: float(np.percentile(pos_to_end, q)) for q in (0, 25, 50, 75, 100)},
+        seed=SEED, obs_len=OBS_LEN,
+        note="Frozen before any negative is drawn; applied unchanged to train, val "
+             "and test. Negative placement uses only this rule and the pedestrian's "
+             "own track bounds."), indent=2))
 
     rng = np.random.default_rng(SEED)
     Xn, yn, mn, dropped = [], [], [], 0
@@ -102,12 +142,12 @@ def build(annotations, out_dir):
         f0, fN = bounds[k]
         idx_sorted, fr_sorted = index[k]
         hi = fN - f0 - (OBS_LEN - 1)                   # largest achievable to_end
-        if hi < MIN_TO_END:
+        if hi < min_to_end:
             dropped += 1
             continue
         for _ in items:                                # same window count as before
             target = int(rng.choice(pos_to_end))
-            te = int(np.clip(target, MIN_TO_END, hi))
+            te = int(np.clip(target, min_to_end, hi))
             anchor = fN - te
             pos = np.searchsorted(fr_sorted, anchor)
             if pos < OBS_LEN - 1 or pos >= len(fr_sorted):
@@ -134,15 +174,23 @@ def main():
     ap = argparse.ArgumentParser()
     ap.add_argument("--annotations",
                     default="/Users/arif/Developer/pedestrian-thesis/pie_annotations.pkl")
-    ap.add_argument("--out", default=str(ROOT / "data" / "pie_phase_matched"))
+    ap.add_argument("--out", default=str(ROOT / "data" / "pie_phase_matched_trainonly"))
+    ap.add_argument("--phase-source", choices=["train", "all"], default="train",
+                    help="which positives estimate the target phase distribution; "
+                         "'train' is correct, 'all' rebuilds the superseded v1 artefact")
+    ap.add_argument("--runs-subdir", default="phase_matched_trainonly",
+                    help="subdirectory of runs/ for this control's checkpoints")
+    ap.add_argument("--results", default=None,
+                    help="output json (default derives from --runs-subdir)")
     args = ap.parse_args()
 
     out_dir = Path(args.out)
+    res_path = HERE / (args.results or f"{args.runs_subdir}_results.json")
     if (out_dir / "X.npy").exists():
         Xn = np.load(out_dir / "X.npy"); yn = np.load(out_dir / "y.npy")
         mn = pickle.load(open(out_dir / "meta.pkl", "rb")); dropped = None
     else:
-        Xn, yn, mn, dropped = build(Path(args.annotations), out_dir)
+        Xn, yn, mn, dropped = build(Path(args.annotations), out_dir, args.phase_source)
 
     te = np.array([m["to_end"] for m in mn])
     print(f"phase-matched set: X{Xn.shape}  pos={int(yn.sum())} neg={int((yn==0).sum())}"
@@ -154,6 +202,14 @@ def main():
     sid = np.array([m["set_id"] for m in mn])
     tr = np.isin(sid, sorted(E.TRAIN_SETS)); va = np.isin(sid, sorted(E.VAL_SETS))
     tt = np.isin(sid, sorted(E.TEST_SETS))
+
+    # phase separability per split: the test-split value is the one that matters, and
+    # under the corrected rule it is no longer propped up by test timing information.
+    sep = {}
+    for nm, msk in (("train", tr), ("val", va), ("test", tt)):
+        sep[nm] = float(auc_of(yn[msk], te[msk]))
+        print(f"  to_end AUC [{nm:5s}] = {sep[nm]:.4f}   "
+              f"(n={int(msk.sum())}, pos={int(yn[msk].sum())})")
     data = (Xn[tr], yn[tr].astype(np.float32), Xn[va], yn[va].astype(np.float32),
             Xn[tt], yn[tt].astype(np.float32))
     pw = float((yn[tr] == 0).sum() / max((yn[tr] == 1).sum(), 1))
@@ -169,7 +225,7 @@ def main():
             continue
         pv, pt = [], []
         for s in M.SEEDS:
-            d = ROOT / "runs" / "phase_matched" / label.replace(" ", "_") / f"seed{s}"
+            d = ROOT / "runs" / args.runs_subdir / label.replace(" ", "_") / f"seed{s}"
             if not (d / "best.pt").exists():
                 d.mkdir(parents=True, exist_ok=True)
                 E.train_run(family, cfg, s, M.DEVICE, data, pos_weight=pw,
@@ -197,13 +253,17 @@ def main():
             auc=(M.auc(yte, ptt), 0.0), pr_auc=(M.pr_auc(yte, ptt), 0.0), f1=(M.f1_at(yte, ptt, t), 0.0)))
         print(f"{name:34s} {M.auc(yte,ptt):8.4f} {M.pr_auc(yte,ptt):8.4f} {M.f1_at(yte,ptt,t):8.4f}")
 
-    (HERE / "phase_matched_results.json").write_text(json.dumps(dict(
+    rule = json.loads((out_dir / "phase_rule.json").read_text()) \
+        if (out_dir / "phase_rule.json").exists() else dict(phase_source="unknown")
+    res_path.write_text(json.dumps(dict(
+        phase_rule=rule,
         dataset=dict(n=int(len(yn)), pos=int(yn.sum()), neg=int((yn == 0).sum()),
                      pos_weight=pw, to_end_auc=float(auc_of(yn, te)),
+                     to_end_auc_by_split=sep,
                      n_train=int(tr.sum()), n_val=int(va.sum()), n_test=int(tt.sum()),
                      n_test_pedestrians=int(len(set(groups)))),
         results=results), indent=2))
-    print(f"\nwrote {HERE/'phase_matched_results.json'}")
+    print(f"\nwrote {res_path}")
 
 
 if __name__ == "__main__":

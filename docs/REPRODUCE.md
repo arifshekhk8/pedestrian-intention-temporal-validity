@@ -136,8 +136,8 @@ python demo/live_demo.py --stage demo --video <clip.mp4> --video-id video_0012 \
 The `verify` stage is the useful part for a reviewer: it re-scores the clean test split through the
 5-checkpoint ensemble and hard-fails unless AUC/F1/accuracy match the published values.
 
-Note before quoting demo output: the deployed ensemble correlates with ego speed at r = −0.908 and
-flags 96.8 % of pedestrians when the vehicle is stopped (`docs/LIMITATIONS.md` §9).
+Note before quoting demo output: the deployed ensemble correlates with ego speed at r = −0.892 and
+flags 96.2 % of pedestrians when the vehicle is stopped (`docs/LIMITATIONS.md` §9).
 
 ## What each results file backs
 

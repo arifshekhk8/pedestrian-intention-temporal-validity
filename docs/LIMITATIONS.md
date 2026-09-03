@@ -7,8 +7,10 @@ Everything below was verified by re-reading the source or re-opening the result 
 
 ## 1. Residual confound: the negative class is anchored at track termination
 
-For **all 855 non-crossing pedestrians in PIE, `crossing_point` equals the last annotated frame
-minus exactly 2** (median = mean = 5th pct = 95th pct = 2.0).
+PIE annotates 1,374 pedestrians — 519 crossers and **855 non-crossers**. For a non-crosser,
+`crossing_point` is not a behavioural event: it sits at the last annotated frame minus 2. Of the 833
+non-crossers that reach `data/pie_clean/`, the gap is **exactly 2 for 824 (98.9 %)** and never
+exceeds 2 (range 0–2).
 
 The clean builder truncates at `crossing_point` for both classes. The consequence:
 
@@ -144,9 +146,13 @@ tested on JAAD — only its prevalence.
 
 ## 9. The deployed model behaves close to a pure function of ego speed
 
-Over 3,652 live window predictions from the demo, the published ensemble gives
-**Pearson r(ego_speed, p_cross) = −0.908**. At 0 km/h it flags **96.8 %** of all tracked pedestrians
-(100 % in six of sixteen segments); above 20 km/h it flags **0.45 %**.
+Recomputed over the four tracked demo prediction files (`pipeline/demo_out/*_predictions.csv` in the
+source project, 19,799 rows), the deployed ensemble gives **Pearson r(ego_speed, p_cross) = −0.892**.
+At 0 km/h it flags **96.2 %** of all tracked pedestrians; above 20 km/h it flags **1.00 %**.
+
+⚠ An earlier version of this section reported 3,652 predictions, r = −0.908, 96.8 % and 0.45 %, over
+"sixteen segments". Those figures do not reproduce from the tracked CSVs and no subset of them yields
+3,652 rows, so they have been replaced by the recomputed values above. The conclusion is unchanged.
 
 This corroborates "the input signal dominates" — and independently matches Diving Deeper (IV 2024)
 Table IV, where PIE action mAP falls from 0.950 at 0 km/h to 0.163 above 30 km/h. But it also means

@@ -83,7 +83,9 @@ what remains is still largely a linear function of ego-vehicle dynamics.
 
 ## C4b. Ego-speed's contribution is architecture-dependent
 
-**Claim.** Removing ego-speed costs +0.0126 AUC (Transformer, n.s.) to +0.1477 (BiLSTM). A single
+**Claim.** Removing ego-speed costs +0.0126 AUC (Transformer, n.s.) to +0.1420 (BiLSTM) on the
+bootstrap-tested ensemble delta; on the 5-seed mean the same range is +0.0156 to +0.1477. Quote one
+convention or the other — do not mix them, as an earlier version of this line did. A single
 "ego speed is worth +0.18 AUC" figure is wrong; that figure describes the BiLSTM.
 
 **Evidence.** `experiments/02_model_comparison/EGO_SPEED_ABLATION.md`.

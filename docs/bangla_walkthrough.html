@@ -1,0 +1,777 @@
+<!DOCTYPE html>
+<html lang="bn">
+<head>
+<meta charset="utf-8">
+<title>গবেষণার পূর্ণ ব্যাখ্যা — বাংলায়</title>
+<style>
+  @page { size: A4; margin: 18mm 16mm 20mm 16mm;
+          @bottom-center { content: counter(page); } }
+  html { font-size: 10.5pt; }
+  body { font-family: "Kohinoor Bangla", "Bangla Sangam MN", "Bangla MN",
+                      "Noto Sans Bengali", sans-serif;
+         line-height: 1.72; color: #16181d; margin: 0; }
+  code, .mono { font-family: "SF Mono", Menlo, Consolas, monospace; font-size: 0.88em; }
+  h1 { font-size: 21pt; margin: 0 0 4px 0; line-height: 1.35; letter-spacing: -0.01em; }
+  h2 { font-size: 14.5pt; margin: 30px 0 10px 0; padding-bottom: 6px;
+       border-bottom: 2px solid #1a1d23; line-height: 1.45; page-break-after: avoid; }
+  h3 { font-size: 12pt; margin: 20px 0 7px 0; color: #1a2b47; line-height: 1.5;
+       page-break-after: avoid; }
+  h4 { font-size: 10.8pt; margin: 15px 0 5px 0; color: #38404d; page-break-after: avoid; }
+  p  { margin: 8px 0; text-align: justify; }
+  ul, ol { margin: 8px 0; padding-left: 22px; }
+  li { margin: 4px 0; }
+  table { border-collapse: collapse; width: 100%; margin: 12px 0; font-size: 9.4pt;
+          page-break-inside: avoid; }
+  th { background: #eef1f6; border: 1px solid #b9c2d0; padding: 5px 8px;
+       text-align: left; font-weight: 600; }
+  td { border: 1px solid #ccd3de; padding: 5px 8px; vertical-align: top; }
+  td.n, th.n { text-align: right; font-variant-numeric: tabular-nums;
+               font-family: "SF Mono", Menlo, monospace; font-size: 9pt; }
+  .box { border: 1px solid #c8d0dc; border-left: 4px solid #2f4f7f; background: #f6f8fb;
+         padding: 11px 14px; margin: 14px 0; page-break-inside: avoid; border-radius: 3px; }
+  .warn { border-left-color: #b3541e; background: #fdf6f0; border-color: #e3c4ab; }
+  .good { border-left-color: #1e6b40; background: #f2f9f5; border-color: #b9d9c7; }
+  .key  { border-left-color: #7a2f7a; background: #faf5fa; border-color: #ddc2dd; }
+  .lead { font-size: 10.6pt; color: #3d4551; margin: 3px 0 0 0; }
+  .rule { border: 0; border-top: 1px solid #d5dbe4; margin: 26px 0; }
+  .small { font-size: 9pt; color: #5a6270; }
+  .tag { display: inline-block; background: #1a2b47; color: #fff; font-size: 7.8pt;
+         padding: 1.5px 7px; border-radius: 9px; vertical-align: 2px; letter-spacing: .02em; }
+  .tag.ok { background: #1e6b40; } .tag.bad { background: #b3541e; }
+  pre { background: #f5f6f8; border: 1px solid #d8dde5; border-radius: 3px;
+        padding: 9px 11px; overflow-x: auto; font-size: 8.9pt; line-height: 1.5;
+        page-break-inside: avoid; }
+  .brk { page-break-before: always; }
+  .toc { columns: 2; column-gap: 26px; font-size: 9.6pt; }
+  .toc div { break-inside: avoid; margin: 2.5px 0; }
+  em { font-style: normal; font-weight: 600; }
+  .src { font-size: 8.4pt; color: #6b7280; font-family: "SF Mono", Menlo, monospace; }
+</style>
+</head>
+<body>
+
+<h1>পথচারীর রাস্তা পারাপার পূর্বাভাস — আমাদের গবেষণার পূর্ণ ব্যাখ্যা</h1>
+<p class="lead">শুরু থেকে শেষ পর্যন্ত, সহজ বাংলায়। প্রতিটি সংখ্যা repository-র ফলাফল ফাইল থেকে যাচাই করা।</p>
+<p class="small">Repository: <span class="mono">pedestrian-intention-temporal-validity</span> &nbsp;·&nbsp;
+Dataset: PIE, JAAD, IDD-PeD &nbsp;·&nbsp; সব যাচাই <span class="mono">docs/bangla_walkthrough.html</span> তৈরির সময় করা</p>
+
+<div class="box key">
+<strong>এই নথিটা কী জন্য</strong><br>
+এটা আমাদের পুরো কাজের গল্প — সুপারভাইজারকে ব্যাখ্যা করার জন্য এবং paper লেখার আগে নিজে পুরোপুরি বোঝার জন্য।
+কোনো দাবি অনুমান থেকে লেখা হয়নি; প্রতিটি সংখ্যার উৎস <strong>§১২ যাচাই লগ</strong>-এ দেওয়া আছে।
+সেখানে <strong>৪টা গরমিলও</strong> সৎভাবে লেখা আছে, যেগুলো যাচাই করতে গিয়ে ধরা পড়েছে।
+</div>
+
+<h3 style="margin-top:22px">সূচিপত্র</h3>
+<div class="toc">
+<div>১. আমরা কী নিয়ে কাজ করছিলাম</div>
+<div>২. সমস্যা ১ — Temporal Contamination</div>
+<div>৩. সমাধান ১ — Event-Anchored Protocol</div>
+<div>৪. পরিষ্কার করার পর যা দেখলাম</div>
+<div>৫. সমস্যা ২ — Class-Dependent Sampling Phase</div>
+<div>৬. AUC = 1.0000 আমরা কীভাবে মাপলাম</div>
+<div>৭. সমাধান ২ — Phase-Matched Control</div>
+<div>৮. ফলাফল কী বদলে গেল</div>
+<div>৯. অন্য dataset-এ যাচাই</div>
+<div>১০. Paper-এর গল্প</div>
+<div>১১. সীমাবদ্ধতা — সৎ তালিকা</div>
+<div>১২. যাচাই লগ ও গরমিল</div>
+</div>
+
+<hr class="rule">
+
+<h2>১. আমরা কী নিয়ে কাজ করছিলাম</h2>
+
+<p>আমরা <strong>PIE dataset</strong> নিয়ে কাজ করছিলাম — গাড়ির সামনে ক্যামেরা লাগানো, রাস্তায় পথচারীদের ভিডিও।
+লক্ষ্য: <strong>একজন পথচারী রাস্তা পার হবে কি না, ঘটনার আগেই বলে দেওয়া।</strong></p>
+
+<h3>Model যা দেখে</h3>
+<ul>
+<li><strong>১৬ ফ্রেমের</strong> একটা ছোট window (প্রায় আধা সেকেন্ড)</li>
+<li>প্রতি ফ্রেমে <strong>৫টা সংখ্যা</strong> — পথচারীর bounding box <span class="mono">[x1, y1, x2, y2]</span> আর গাড়ির গতি <span class="mono">vehicle_speed</span></li>
+<li>কাঁচা pixel স্থানাঙ্ক (1920×1080), image size দিয়ে ভাগ করা <em>নয়</em></li>
+</ul>
+
+<h3>Data ভাগ (কখনো এলোমেলো ভাগ নয়)</h3>
+<p>Recording set অনুযায়ী স্থির ভাগ, যাতে একই পথচারী দুই ভাগে না পড়ে:
+<strong>train = set01/02/04, val = set05/06, test = set03</strong>।</p>
+
+<p>Model ছিল একটা <strong>BiLSTM</strong>। ফলাফল আসছিল AUC ≈ 0.93 — বেশ ভালো দেখাচ্ছিল।
+সমস্যা শুরু হলো যখন আমরা প্রশ্ন করলাম — <em>আসলেই কি model ভবিষ্যদ্বাণী করছে, নাকি অন্য কিছু করছে?</em></p>
+
+<hr class="rule">
+
+<h2>২. সমস্যা ১ — Temporal Contamination (সময়গত দূষণ)</h2>
+
+<h3>সমস্যাটা কী</h3>
+<p>যাচাই করে দেখলাম, যে ১৬ ফ্রেমের window দেখে model "ভবিষ্যদ্বাণী" করছে —
+<strong>সেই window-এর ভেতরেই পথচারী ইতিমধ্যে রাস্তা পার হওয়া শুরু করে ফেলেছে।</strong></p>
+
+<div class="box warn">
+<strong>উপমা:</strong> পরীক্ষার আগে প্রশ্নপত্র ফাঁস হয়ে যাওয়া। ছাত্র ভালো নম্বর পাচ্ছে,
+কিন্তু সেটা তার জ্ঞানের প্রমাণ নয়।<br>
+Model ভবিষ্যদ্বাণী করছে না — <strong>সে উত্তরটা দেখে ফেলছে।</strong>
+</div>
+
+<h3>আমরা কতটুকু মেপেছি</h3>
+<table>
+<tr><th>Dataset</th><th class="n">crossing window মোট</th><th class="n">দূষিত</th><th class="n">শতাংশ</th></tr>
+<tr><td>PIE (পুরনো track-end anchor)</td><td class="n">570</td><td class="n">387</td><td class="n"><strong>67.9%</strong></td></tr>
+<tr><td>JAAD (naive anchor)</td><td class="n">460</td><td class="n">428</td><td class="n"><strong>93.0%</strong></td></tr>
+<tr><td>IDD-PeD (naive anchor)</td><td class="n">—</td><td class="n">—</td><td class="n"><strong>81.3%</strong></td></tr>
+</table>
+
+<p>PIE-তে <strong>369টা window (crossers-এর 64.7%)</strong> ছিল <em>পুরোপুরি</em> crossing-এর ভেতরে —
+মানে ঐগুলোতে কোনো ভবিষ্যদ্বাণীর প্রশ্নই ওঠে না, ওটা নিছক শনাক্তকরণ।</p>
+
+<h3>এটা হলো কেন</h3>
+<p>PIE-র annotation-এ দুইটা আলাদা জিনিস আছে:</p>
+<ul>
+<li><span class="mono">crossing</span> — পথচারী <em>এখন</em> পার হচ্ছে কি না</li>
+<li><span class="mono">crossing_point</span> — পার হওয়া <em>শুরু</em> হয়েছে কোন ফ্রেমে</li>
+</ul>
+<p>প্রচলিত code শুধু <span class="mono">crossing</span> পড়ে, <strong><span class="mono">crossing_point</span> কখনো পড়ে না</strong>।
+তাই window গুলো track-এর শেষ থেকে গোনা হয় — এবং crossing-এর উপর গিয়ে পড়ে।</p>
+
+<div class="box">
+<strong>গুরুত্বপূর্ণ:</strong> এটা কারো bug নয় — এটা পুরো field-এর একটা <strong>গঠনগত ভুল</strong>।
+এজন্যই এটা paper-এর যোগ্য। ধারণাটা PCPA (WACV 2021) আগেই <em>নাম</em> দিয়েছে;
+কিন্তু <strong>কেউ কখনো এর পরিমাণ মাপেনি</strong> — সেটাই আমাদের অবদান।
+</div>
+
+<h3>বাইরের সমর্থন</h3>
+<p>GTransPDM (IEEE SPL 2025), Fig. 4 — তারা TTE ব্যবধান কমাতে কমাতে দেখেছে:
+<em>"TTE = 0-তে accuracy ও F1 পৌঁছায় 99.32% ও 98.73%।"</em>
+মানে ব্যবধান শূন্য হলেই কাজটা প্রায় নিখুঁতভাবে সমাধানযোগ্য হয়ে যায়।
+ওই paper-এর এই তর্কে কোনো পক্ষ নেই — তবু তারা একই ঘটনা দেখাচ্ছে। <strong>আমাদের audit ব্যাখ্যা করে কেন।</strong></p>
+
+<hr class="rule">
+
+<h2>৩. সমাধান ১ — Event-Anchored Protocol</h2>
+
+<p>আমরা window বানানোর নিয়ম বদলে দিলাম।</p>
+
+<table>
+<tr><th style="width:22%">&nbsp;</th><th>নিয়ম</th></tr>
+<tr><td><strong>পুরনো</strong></td><td>track-এর শেষ থেকে পিছিয়ে গিয়ে window নাও</td></tr>
+<tr><td><strong>নতুন</strong></td><td><span class="mono">crossing_point</span>-এ anchor করো, তারপর window বসাও তার <strong>৩০–৬০ ফ্রেম আগে</strong></td></tr>
+</table>
+
+<p>এতে crossing window-এ ঢোকা <strong>গঠনগতভাবেই অসম্ভব</strong> হয়ে যায়।</p>
+
+<h3>আমরা দুইভাবে যাচাই করেছি</h3>
+<ol>
+<li><strong>ফলাফল পরিষ্কার কি না:</strong> নতুন dataset-এ <strong>4,906 window-এর মধ্যে 0টা</strong> দূষিত —
+কোনো window-এ একটাও <span class="mono">crossing</span> ফ্রেম নেই।</li>
+<li><strong>পুনরুৎপাদনযোগ্য কি না:</strong> কাঁচা PIE থেকে dataset-টা <strong>হুবহু (bit-exact)</strong> আবার তৈরি হয়।</li>
+</ol>
+
+<h3>পরিষ্কার dataset-এর গঠন</h3>
+<table>
+<tr><th>&nbsp;</th><th class="n">window</th><th class="n">পথচারী</th></tr>
+<tr><td>মোট</td><td class="n"><strong>4,906</strong></td><td class="n"><strong>1,267</strong></td></tr>
+<tr><td>Positive (পার হয়)</td><td class="n">1,648</td><td class="n">434</td></tr>
+<tr><td>Negative (পার হয় না)</td><td class="n">3,258</td><td class="n">833</td></tr>
+</table>
+
+<hr class="rule">
+
+<h2>৪. পরিষ্কার করার পর যা দেখলাম</h2>
+
+<h3>(ক) "সহজ shortcut" অনেকটা গায়েব হয়ে গেল</h3>
+<p>আগে model শুধু <strong>box-এর আকার</strong> দেখেই উত্তর দিতে পারত (কাছে এলে box বড় হয়)।
+নিচে rank-biserial মান — 0 মানে কোনো পার্থক্য নেই, 0.5 মানে খুব বড় পার্থক্য।</p>
+
+<table>
+<tr><th>সংকেত</th><th class="n">আগে (leaky)</th><th class="n">পরে (clean)</th></tr>
+<tr><td>box area</td><td class="n">+0.654</td><td class="n">+0.247</td></tr>
+<tr><td>box height</td><td class="n">+0.629</td><td class="n">+0.211</td></tr>
+<tr><td>box-এর নিচের কিনারা</td><td class="n">+0.485</td><td class="n">+0.090</td></tr>
+<tr><td>box-এর x-কেন্দ্র</td><td class="n">−0.186</td><td class="n">−0.018 <span class="small">(তাৎপর্যহীন)</span></td></tr>
+</table>
+
+<p>মানে: <strong>box geometry দিয়ে শ্রেণী আলাদা করার সহজ পথটা leakage-এরই একটা উপসর্গ ছিল।</strong></p>
+
+<h3>(খ) চারটা model family — একই নিয়মে তুলনা</h3>
+<p>আমরা চারটা family তুলনা করলাম — <strong>BiLSTM, Transformer, GRU, আর un-gated vanilla RNN</strong> —
+সবাইকে একই engine, একই device (CPU), একই ৫টা seed, একই class weight (1.682), একই checkpoint নিয়ম দিয়ে।
+পরিসংখ্যান: পথচারী-ভিত্তিক bootstrap (B = 10,000) + Holm সংশোধন, ৩০টা তুলনা।</p>
+
+<table>
+<tr><th>Model</th><th class="n">Parameter</th><th class="n">AUC</th><th class="n">F1</th></tr>
+<tr><td><strong>Vanilla RNN</strong></td><td class="n">560,001</td><td class="n"><strong>0.9481</strong></td><td class="n"><strong>0.8487</strong></td></tr>
+<tr><td>Transformer</td><td class="n">794,241</td><td class="n">0.9447</td><td class="n">0.8250</td></tr>
+<tr><td>GRU</td><td class="n">1,678,209</td><td class="n">0.9375</td><td class="n">0.8419</td></tr>
+<tr><td>BiLSTM-h128</td><td class="n">594,561</td><td class="n">0.9349</td><td class="n">0.8256</td></tr>
+<tr><td>BiLSTM</td><td class="n">2,237,313</td><td class="n">0.9242</td><td class="n">0.8276</td></tr>
+</table>
+
+<p>৩০টা তুলনার মধ্যে <strong>৯টা</strong> Holm সংশোধনের পরেও টিকে যায় (সংশোধন ছাড়া ১৮টা)।
+সবচেয়ে ছোট model — Vanilla RNN — সবার উপরে; সে Transformer-এর সাথে <strong>সমান</strong>
+(ΔAUC +0.0006, p = 0.83)।</p>
+
+<h3>(গ) সবচেয়ে গুরুত্বপূর্ণ — একটা সাধারণ Logistic Regression চারটা neural model-এর সমান</h3>
+<p>আমরা একটা <strong>খুব সাধারণ logistic regression</strong> চালালাম — কোনো neural network নয়,
+শুধু ৮০টা কাঁচা সংখ্যার (১৬ ফ্রেম × ৫ feature) উপর একটা সরলরৈখিক model।</p>
+
+<table>
+<tr><th>Baseline</th><th class="n">AUC</th><th class="n">PR-AUC</th><th class="n">F1</th></tr>
+<tr><td><strong>LR — bbox + গাড়ির গতি (৮০ feature)</strong></td><td class="n"><strong>0.9488</strong></td><td class="n"><strong>0.9121</strong></td><td class="n"><strong>0.8546</strong></td></tr>
+<tr><td>LR — শুধু গাড়ির গতি (১৬ feature)</td><td class="n">0.9335</td><td class="n">0.8538</td><td class="n">0.8199</td></tr>
+<tr><td>LR — শুধু একটা ফ্রেম (৫ feature)</td><td class="n">0.9251</td><td class="n">0.8757</td><td class="n">0.7903</td></tr>
+<tr><td>LR — শুধু bbox (৬৪ feature)</td><td class="n">0.9129</td><td class="n">0.8035</td><td class="n">0.7812</td></tr>
+<tr><td>সবাইকে "হ্যাঁ" বলে দেওয়া</td><td class="n">0.500</td><td class="n">0.3252</td><td class="n">0.4908</td></tr>
+</table>
+
+<div class="box key">
+<strong>সেরা neural model-এর সাথে পার্থক্য পরিসংখ্যানগতভাবে শূন্য:</strong><br>
+AUC p = 0.270 &nbsp;·&nbsp; PR-AUC p = 0.773 &nbsp;·&nbsp; F1 p = 0.447<br>
+<span class="small">তিনটাই পথচারী-ভিত্তিক bootstrap, B = 10,000</span>
+</div>
+
+<p>শুধু <strong>গাড়ির গতি</strong> দিয়ে (১৬টা সংখ্যা, সরলরৈখিক) — AUC 0.9335, যা
+2.24M parameter-এর BiLSTM-এর (0.9242) চেয়েও <em>বেশি</em>। শুধু <strong>একটা ফ্রেম</strong> দিয়ে — 0.9251।</p>
+
+<div class="box">
+<strong>কেন এটা নতুন:</strong> এই field-এ কেউ কখনো এত সাধারণ baseline report করেনি।
+PCPA-র সবচেয়ে দুর্বল তুলনাও একটা গভীর CNN। majority-class, শুধু-গতি, বা কাঁচা window-এর উপর
+সরলরৈখিক model — কোনো paper-এ নেই।<br><br>
+<strong>কেন এটা গুরুত্বপূর্ণ:</strong> এটা এই literature-এর <em>সব</em> architecture-দাবির একটা সীমা টেনে দেয় —
+আমাদের নিজেদের দাবিসহ।
+</div>
+
+<div class="brk"></div>
+
+<h2>৫. সমস্যা ২ — Class-Dependent Sampling Phase</h2>
+
+<p>এখানেই গল্পটা সবচেয়ে আকর্ষণীয় হয়।</p>
+
+<h3>প্রথমে: Negative class কেন লাগে?</h3>
+<p>একটা স্বাভাবিক প্রশ্ন — "যারা পার হবে না তাদের নিয়ে ভাবছি কেন?"</p>
+<p>ভাবুন — যদি dataset-এ <em>শুধু</em> crossing পথচারী থাকত, model কী শিখত?
+সে শিখত <strong>"সবাইকে হ্যাঁ বলে দাও"</strong> — ১০০% accuracy, কিন্তু সম্পূর্ণ অকেজো।</p>
+
+<div class="box key">
+<strong>মূল কথা:</strong> Model "crossing behaviour" শেখে না।
+Model শেখে — <em>"যে দুইটা দল আমাকে দেখানো হয়েছে, তাদের মধ্যে পার্থক্যটা কী?"</em><br>
+এবং সে <strong>সবচেয়ে সহজ পার্থক্যটা</strong> ধরে। পার্থক্যটা অর্থপূর্ণ কি না, তার কোনো মাথাব্যথা নেই।
+</div>
+
+<p>আমাদের 4,906 window-এর মধ্যে <strong>3,258টাই negative</strong> — অর্ধেকের বেশি।
+এরাই model-কে বলে দেয় "না" জিনিসটা দেখতে কেমন। <strong>ওরা ভুল হলে model-ও ভুল।</strong></p>
+
+<h3>Negative-দের window আসলে কোথা থেকে আসে?</h3>
+<p><strong>Positive-দের জন্য সহজ</strong> — crossing একটা আসল ঘটনা, ওটার ৩০–৬০ ফ্রেম আগে window বসাই।</p>
+<p><strong>কিন্তু negative-দের?</strong> তাদের তো কোনো ঘটনাই নেই! তাহলে window কোথায় বসাব?</p>
+<p>প্রচলিত code (PIE-র নিজের <span class="mono">extract_tracks_tte</span>) যা করে:
+<strong>track-এর শেষ ফ্রেম − ২</strong>। আমরা মেপে দেখেছি — যে ৮৩৩ জন non-crossing পথচারী
+পরিষ্কার dataset-এ আছে, তাদের <strong>৮২৪ জনের (৯৮.৯%)</strong> ক্ষেত্রে এই দূরত্ব ঠিক ২ ফ্রেম।</p>
+
+<p>এখন প্রশ্ন করুন — <strong>একজন পথচারীর annotation track শেষ হয় কখন?</strong>
+যখন সে ক্যামেরা থেকে হারিয়ে যায়। আর সে হারিয়ে যায় কখন?
+<strong>যখন গাড়ি তাকে পাশ কাটিয়ে চলে যায়।</strong></p>
+
+<h3>ফলে একটা দুর্ঘটনাজনিত পার্থক্য তৈরি হয়ে গেল</h3>
+
+<table>
+<tr><th>শ্রেণী</th><th>window কখন নেওয়া হয়েছে</th><th class="n">track শেষ হতে বাকি (ফ্রেম)</th></tr>
+<tr><td><strong>Negative</strong></td><td>গাড়ি পাশ কাটানোর ঠিক ১–২ সেকেন্ড আগে</td><td class="n">৩২ – ৬২ <span class="small">(মধ্যক ৪৬)</span></td></tr>
+<tr><td><strong>Positive</strong></td><td>crossing-এর আগে, গাড়ি পৌঁছানোর অনেক আগে</td><td class="n">৮৮ – ৬,৬০৬ <span class="small">(মধ্যক ২৮৭)</span></td></tr>
+</table>
+
+<div class="box warn">
+<strong>দুইটার মধ্যে একটাও overlap নেই। শূন্য।</strong><br>
+সবচেয়ে বড় negative = ৬২। সবচেয়ে ছোট positive = ৮৮। <strong>৬২ &lt; ৮৮।</strong><br>
+আমরা যাচাই করেছি: 3,258টা negative-এর মধ্যে <strong>0টা</strong> positive-দের সর্বনিম্নের উপরে।
+</div>
+
+<h3>এটা leakage থেকে আলাদা কেন — এই পার্থক্যটা মনে রাখতে হবে</h3>
+
+<table>
+<tr><th style="width:24%">&nbsp;</th><th>Temporal Leakage</th><th>Class-Dependent Sampling Phase</th></tr>
+<tr><td><strong>সমস্যা</strong></td><td>window-এ <em>উত্তরটা দেখা যায়</em></td><td>window-এ উত্তর নেই, কিন্তু <em>কখন তোলা হয়েছে</em> সেটাই উত্তর ফাঁস করে</td></tr>
+<tr><td><strong>কাকে প্রভাবিত করে</strong></td><td>positive class</td><td><strong>negative class</strong></td></tr>
+<tr><td><strong>আমাদের clean protocol ধরে?</strong></td><td><strong>হ্যাঁ — 0/4906</strong></td><td><strong>না — একটুও না</strong></td></tr>
+</table>
+
+<div class="box key">
+<strong>এটাই আমাদের paper-এর সবচেয়ে বড় কথা।</strong><br>
+আমরা leakage সত্যিই ঠিক করেছি — 4,906টার একটাতেও crossing নেই, যাচাই করা।
+<strong>কিন্তু তারপরেও data-তে AUC 1.0000-এর একটা লুকানো সংকেত রয়ে গেছে।</strong><br>
+মানে: <em>যে সমাধানটা সবাই যথেষ্ট মনে করবে, সেটা যথেষ্ট নয়।</em>
+</div>
+
+<h3>Model এটা কীভাবে ধরে ফেলে?</h3>
+<p>Model তো "কত ফ্রেম বাকি" দেখে না — সে শুধু ৫টা সংখ্যা দেখে। কিন্তু গাড়ি যখন কারো
+পাশ কাটানোর ১–২ সেকেন্ড আগে থাকে, তখন:</p>
+<ul>
+<li>তার bounding box <strong>খুব দ্রুত বড় হচ্ছে</strong> (কাছে চলে এসেছে)</li>
+<li>box <strong>ফ্রেমের কিনারার দিকে সরছে</strong></li>
+<li><strong>গাড়ির গতির</strong> একটা নির্দিষ্ট ধরন থাকে</li>
+</ul>
+<p>Model এগুলো দেখে <em>পরোক্ষভাবে</em> ওই লুকানো সংকেতটাই শিখে ফেলে।
+সে ভাবছে না "এই লোক পার হবে না" — সে ভাবছে <strong>"এই recording এক্ষুনি শেষ হয়ে যাবে"</strong>।</p>
+
+<div class="box warn">
+<strong>উপমা:</strong> আপনি ছবি দেখে বলতে চান কোন ছাত্র পাশ করবে।<br>
+পাশ করা ছাত্রদের ছবি তুললেন পরীক্ষার <strong>৬ মাস আগে, ক্লাসরুমে</strong>।<br>
+ফেল করা ছাত্রদের ছবি তুললেন তাদের <strong>কলেজ ছাড়ার শেষ দিনে, গেটের সামনে ব্যাগ হাতে</strong>।<br><br>
+Model ৯৫% accuracy পাবে। কিন্তু সে শিখেছে <em>"গেটের সামনে ব্যাগ হাতে = ফেল"</em> —
+পড়াশোনা নয়। বাস্তবে চালালে সম্পূর্ণ ব্যর্থ হবে।
+</div>
+
+<div class="brk"></div>
+
+<h2>৬. AUC = 1.0000 আমরা কীভাবে মাপলাম</h2>
+
+<h3>প্রথমে একটা ভুল ধারণা সরাতে হবে</h3>
+<p>অনেকে ভাবেন AUC মানেই <em>model-এর</em> স্কোর। আসলে তা নয়।</p>
+
+<div class="box key">
+<strong>AUC-র জন্য কোনো model লাগে না।</strong>
+AUC শুধু মাপে — <em>"একটামাত্র সংখ্যা দিয়ে দুইটা দলকে কতটা আলাদা করা যায়?"</em>
+</div>
+
+<p>তাই আমরা <strong>কোনো model train করিনি</strong>। শুধু একটা সংখ্যা নিয়ে প্রশ্ন করেছি:
+"এই একটা সংখ্যাই কি উত্তর বলে দিতে পারে?"</p>
+
+<h3>যে সংখ্যাটা নিয়েছি</h3>
+<pre>to_end  =  (track-এর শেষ ফ্রেম)  −  (window-এর anchor ফ্রেম)</pre>
+<p>মানে: <em>"এই window-টার পর ওই পথচারী আর কত ফ্রেম ক্যামেরায় ছিল?"</em></p>
+
+<h3>AUC আসলে যা মাপে</h3>
+<p>সংজ্ঞাটা খুব সহজ: <strong>এলোমেলোভাবে একটা positive আর একটা negative তুললে —
+positive-এর সংখ্যাটা কত শতাংশ ক্ষেত্রে বড় হয়?</strong></p>
+
+<h4>ছোট উদাহরণ</h4>
+<p>ধরুন মাত্র ৩ জন positive (<span class="mono">to_end</span> = 100, 250, 400)
+আর ৩ জন negative (40, 50, 60)। সব জোড়া মিলিয়ে দেখুন — মোট ৩ × ৩ = ৯টা জোড়া:</p>
+<pre>100&gt;40 ✓   100&gt;50 ✓   100&gt;60 ✓
+250&gt;40 ✓   250&gt;50 ✓   250&gt;60 ✓
+400&gt;40 ✓   400&gt;50 ✓   400&gt;60 ✓        →   AUC = 9/9 = 1.0000</pre>
+
+<h4>আমাদের আসল data-তে ঠিক এটাই</h4>
+<p>Negative সবাই ৩২–৬২, positive সবাই ৮৮–৬,৬০৬। তাই <strong>প্রত্যেকটা</strong> positive
+<strong>প্রত্যেকটা</strong> negative-এর চেয়ে বড়। জোড়ার সংখ্যা 1,648 × 3,258 =
+<strong>৫৩ লাখেরও বেশি</strong> — এবং সবগুলোই সঠিক।</p>
+
+<div class="box good">
+<strong>স্বাধীনভাবে পুনঃযাচাই করা:</strong>
+<span class="mono">sklearn.metrics.roc_auc_score</span> দিয়ে সরাসরি হিসাব করে পেয়েছি —<br>
+মূল পরিষ্কার data-তে <span class="mono">AUC(to_end) = <strong>1.000000</strong></span>,
+control-এর পর <span class="mono"><strong>0.777941</strong></span>।
+</div>
+
+<p><strong>এটাই diagnostic। আমরা প্রমাণ করলাম — model ছাড়াই, শুধু "ক্যামেরা আর কতক্ষণ চলবে"
+জানলেই ১০০% নিখুঁত উত্তর দেওয়া যায়।</strong></p>
+
+<hr class="rule">
+
+<h2>৭. সমাধান ২ — Phase-Matched Control</h2>
+
+<div class="box key">
+<strong>মূল ধারণা এক লাইনে:</strong> একই পথচারী, একই ভিডিও, একই আচরণ —
+<strong>শুধু তাকে আমরা আগে গিয়ে দেখব।</strong>
+</div>
+
+<p>আমরা কোনো নকল data বানাইনি, negative class বাদ দিইনি। শুধু <strong>কখন তাকাচ্ছি</strong> সেটা বদলেছি।</p>
+
+<h3>ধাপে ধাপে</h3>
+
+<h4>ধাপ ১ — Positive-দের <span class="mono">to_end</span> জমা করলাম</h4>
+<p>1,648টা positive window-এর মান একটা তালিকায় রাখলাম। এটাই আমাদের <strong>লক্ষ্য-বণ্টন</strong>।</p>
+
+<h4>ধাপ ২ — Positive-দের কিচ্ছু করলাম না</h4>
+<p>তাদের সময় crossing ঘটনা দিয়ে বাঁধা। <strong>হুবহু আগের window রেখে দিলাম।</strong></p>
+
+<h4>ধাপ ৩ — প্রত্যেক negative পথচারীর জন্য নতুন সময় বাছলাম</h4>
+<pre>f0, fN = track-এর প্রথম ও শেষ ফ্রেম
+hi     = fN - f0 - 15                  # সর্বোচ্চ কত পিছনে যাওয়া সম্ভব
+
+if hi &lt; 88:                            # track খুব ছোট
+    বাদ দাও
+
+target = positive তালিকা থেকে এলোমেলোভাবে একটা মান
+te     = clip(target, 88, hi)           # যতটুকু সম্ভব
+anchor = fN - te                        # শেষ থেকে te ফ্রেম পিছনে
+window = ওখানকার ১৬টা <strong>পরপর</strong> ফ্রেম</pre>
+
+<p>৮৮ সংখ্যাটা এলোমেলো নয় — <strong>এটা positive-দের সর্বনিম্ন <span class="mono">to_end</span></strong>,
+অর্থাৎ যেখান থেকে দুই শ্রেণীর একসাথে থাকা সম্ভব তার সীমানা।</p>
+
+<h3>একটা বাস্তব উদাহরণ</h3>
+<p>ধরুন <strong>রহিম</strong> একজন negative পথচারী, তার track ফ্রেম 1000 থেকে 1500।</p>
+<pre>পুরনো:   1000 ─────────────────────────────●── 1500
+                                        anchor 1454  (শেষ থেকে ৪৬ ফ্রেম)
+
+positive তালিকা থেকে এলোমেলোভাবে উঠল 250  →  নতুন anchor = 1500 − 250 = 1250
+
+নতুন:    1000 ──────────────●───────────────── 1500
+                        anchor 1250  (শেষ থেকে ২৫০ ফ্রেম)</pre>
+
+<p><strong>রহিম একই মানুষ। একই ভিডিও। সে এখনো রাস্তা পার হয় না।
+শুধু আমরা তাকে ২০০ ফ্রেম আগে দেখছি — ঠিক যতটা আগে crossing-দের দেখি।</strong></p>
+
+<h3>ফলাফল</h3>
+<table>
+<tr><th>&nbsp;</th><th class="n">Negative <span class="mono">to_end</span></th><th class="n">Positive <span class="mono">to_end</span></th></tr>
+<tr><td><strong>আগে</strong></td><td class="n">৩২ – ৬২ <span class="small">(মধ্যক ৪৬)</span></td><td class="n">৮৮ – ৬,৬০৬ <span class="small">(মধ্যক ২৮৭)</span></td></tr>
+<tr><td><strong>পরে</strong></td><td class="n">৮৮ – ১,৩২১ <span class="small">(মধ্যক ১৮৮)</span></td><td class="n">৮৮ – ৬,৬০৬ <span class="small">(অপরিবর্তিত)</span></td></tr>
+</table>
+
+<ul>
+<li><strong>2,872 / 2,872</strong> negative এখন positive-দের সর্বনিম্ন (৮৮)-এর উপরে</li>
+<li><strong>1,619 / 1,648</strong> positive এখন negative-দের পরিসরের ভেতরে</li>
+</ul>
+
+<p>আগে overlap ছিল <strong>শূন্য</strong>। এখন <strong>প্রায় সম্পূর্ণ</strong>।
+এজন্যই লুকানো সংকেত <strong>1.0000 → 0.7779</strong>।</p>
+
+<h3>দাম কী দিলাম</h3>
+<table>
+<tr><th>&nbsp;</th><th class="n">পরিষ্কার data</th><th class="n">Phase-matched</th></tr>
+<tr><td>মোট window</td><td class="n">4,906</td><td class="n">4,520</td></tr>
+<tr><td>Positive</td><td class="n">1,648</td><td class="n">1,648 <span class="small">(অপরিবর্তিত)</span></td></tr>
+<tr><td>Negative</td><td class="n">3,258</td><td class="n">2,872</td></tr>
+<tr><td>Negative পথচারী</td><td class="n">833</td><td class="n">718 <span class="small">(১১৫ বাদ)</span></td></tr>
+<tr><td>pos_weight</td><td class="n">1.682</td><td class="n">1.5665</td></tr>
+</table>
+
+<h3>0.5000 না হয়ে 0.7779 কেন?</h3>
+<p>সৎ উত্তর: <strong>আমরা সমস্যাটা কমিয়েছি, পুরোপুরি মুছিনি।</strong></p>
+<p>কারণ <span class="mono">clip</span>। <strong>Negative-দের track এমনিতেই ছোট।</strong>
+ধরুন positive তালিকা থেকে উঠল ৮০০, কিন্তু রহিমের পুরো track-ই মাত্র ৪০০ ফ্রেম।
+তখন বাধ্য হয়ে ৪০০-তে কেটে দিতে হয়।</p>
+<p>তাই negative-রা positive-দের <strong>লম্বা লেজটা ছুঁতে পারে না</strong> —
+negative সর্বোচ্চ ১,৩২১, positive সর্বোচ্চ ৬,৬০৬। মধ্যকেও পার্থক্য থাকে: ১৮৮ বনাম ২৮৭।
+<strong>এই অবশিষ্ট পার্থক্যটাই 0.7779।</strong></p>
+
+<div class="box">
+<strong>আরও কমানো যেত?</strong> হ্যাঁ, কিন্তু দাম দিয়ে —
+<span class="mono">MIN_TO_END</span> ৮৮ থেকে ১৫৮ করলে আরও প্রায় ৪০% negative বাদ পড়ত;
+positive-দের track কেটে ছোট করলে তাদের সময়ও কৃত্রিম হয়ে যেত।
+</div>
+
+<div class="brk"></div>
+
+<h2>৮. ফলাফল কী বদলে গেল</h2>
+
+<p>এইটাই সবচেয়ে গুরুত্বপূর্ণ — এবং সবচেয়ে সৎ — অংশ।</p>
+
+<h3>(ক) সব model-এর স্কোর পড়ে গেল</h3>
+
+<table>
+<tr><th>Model</th><th class="n">AUC আগে</th><th class="n">AUC control-এ</th><th class="n">Δ</th><th class="n">F1 আগে</th><th class="n">F1 control-এ</th><th class="n">Δ</th></tr>
+<tr><td>BiLSTM</td><td class="n">0.9242</td><td class="n">0.8842</td><td class="n">−0.040</td><td class="n">0.8276</td><td class="n">0.7644</td><td class="n">−0.063</td></tr>
+<tr><td>Transformer</td><td class="n">0.9447</td><td class="n"><strong>0.8928</strong></td><td class="n">−0.052</td><td class="n">0.8250</td><td class="n">0.7609</td><td class="n">−0.064</td></tr>
+<tr><td>GRU</td><td class="n">0.9375</td><td class="n">0.8828</td><td class="n">−0.055</td><td class="n">0.8419</td><td class="n">0.7642</td><td class="n">−0.078</td></tr>
+<tr><td><strong>Vanilla RNN</strong></td><td class="n"><strong>0.9481</strong></td><td class="n">0.8852</td><td class="n"><strong>−0.063</strong></td><td class="n"><strong>0.8487</strong></td><td class="n">0.7531</td><td class="n"><strong>−0.096</strong></td></tr>
+<tr><td><strong>Logistic Regression (৮০)</strong></td><td class="n">0.9488</td><td class="n"><strong>0.9031</strong></td><td class="n">−0.046</td><td class="n">0.8546</td><td class="n">0.7561</td><td class="n">−0.099</td></tr>
+</table>
+
+<p><strong>মানে আগের 0.93–0.95-এর একটা বড় অংশ ছিল model-এর দক্ষতা নয় — dataset-এর দুর্ঘটনা।</strong></p>
+
+<h3>(খ) আমাদের নিজেদের "সেরা model" আর সেরা রইল না</h3>
+<p>আগে <strong>Vanilla RNN সবার সেরা</strong> ছিল। Control-এর পর সে AUC-তে <strong>দ্বিতীয়</strong>,
+আর F1-এ <strong>সবার শেষে</strong> (0.7531)। এবং সে-ই <strong>সবচেয়ে বেশি নেমেছে</strong>
+(−0.063 AUC, −0.096 F1)।</p>
+<p>এর মানে — RNN-এর জেতাটা মূলত ওই লুকানো সংকেত ব্যবহার করেই হচ্ছিল।</p>
+<p>Control-এ চারটা family-র AUC ছড়ানো মাত্র <strong>0.0100</strong> (0.8828 – 0.8928),
+অথচ প্রতিটি family-র seed-ভিত্তিক SD <strong>0.0113 – 0.0125</strong>।
+মানে <em>পার্থক্যটা এক SD-রও কম</em> — ranking কার্যত মিলিয়ে যায়।</p>
+
+<div class="box warn">
+<strong>সতর্কতা:</strong> control arm-এ এখনো Holm/bootstrap চালানো হয়নি।
+তাই উপরের কথাটা <em>point estimate</em>-এর পর্যবেক্ষণ, <em>পরীক্ষিত</em> দাবি নয়।
+এটা চালানো এখনো বাকি — একটা ছোট কাজ, checkpoint গুলো ইতিমধ্যেই সংরক্ষিত।
+</div>
+
+<h3>(গ) গাড়ির গতির গল্প উল্টে গেল</h3>
+
+<table>
+<tr><th>&nbsp;</th><th class="n">আগে</th><th class="n">control-এ</th><th class="n">Δ</th></tr>
+<tr><td>LR — শুধু গাড়ির গতি</td><td class="n">0.9335</td><td class="n">0.8257</td><td class="n"><strong>−0.108</strong></td></tr>
+<tr><td>LR — শুধু bounding box</td><td class="n">0.9129</td><td class="n">0.8987</td><td class="n">−0.014</td></tr>
+</table>
+
+<p><strong>কারণটা যুক্তিসঙ্গত:</strong> গাড়ির গতি হলো "গাড়ি এই লোককে কতটা কাছ থেকে পাশ কাটাতে যাচ্ছে"
+— এর সবচেয়ে সরাসরি পরিমাপ। তাই timing bias সরানোর পর সে তার শক্তির বড় অংশ হারায়।
+Bounding box পথচারীর <em>আসল</em> কিছু তথ্য বহন করে — সে কোথায় দাঁড়িয়ে, ফুটপাতের কিনারায় কি না,
+কোন দিকে সরছে। তাই সে প্রায় অটুট থাকে।</p>
+
+<div class="box key">
+আমরা এতদিন ভাবছিলাম "গাড়ির গতিই সবচেয়ে শক্তিশালী সংকেত"।
+<strong>Control দেখাল — ওটার বড় অংশ ছিল sampling-এর কৃত্রিম ফল, পথচারীর আচরণ নয়।</strong>
+</div>
+
+<h3>(ঘ) Logistic Regression এখন আর সমান নয় — সে জিতে যায়</h3>
+<p>Control-এ LR (AUC 0.9031) <strong>চারটা neural model-কেই হারায়</strong> (সেরা neural 0.8928)।
+PR-AUC-তে ব্যবধান আরও বড়: 0.8184 বনাম 0.7821।</p>
+<p>মানে আমাদের §৪(গ)-এর দাবিটা control-এ <strong>দুর্বল হয় না, বরং আরও শক্তিশালী হয়।</strong></p>
+
+<h3>(ঙ) ঘটনাক্রমে: 5-D বনাম 4-D ablation</h3>
+<p>গাড়ির গতি বাদ দিলে কী হয় — family অনুযায়ী খুব আলাদা:</p>
+<table>
+<tr><th>Family</th><th class="n">5-D AUC</th><th class="n">4-D AUC</th><th class="n">পার্থক্য</th><th>Holm-এ টেকে?</th></tr>
+<tr><td>BiLSTM</td><td class="n">0.9242</td><td class="n">0.7765</td><td class="n">+0.1477</td><td>হ্যাঁ</td></tr>
+<tr><td>Vanilla RNN</td><td class="n">0.9481</td><td class="n">0.8766</td><td class="n">+0.0715</td><td>হ্যাঁ</td></tr>
+<tr><td>GRU</td><td class="n">0.9375</td><td class="n">0.8836</td><td class="n">+0.0538</td><td>হ্যাঁ</td></tr>
+<tr><td>Transformer</td><td class="n">0.9447</td><td class="n">0.9291</td><td class="n">+0.0156</td><td><strong>না</strong></td></tr>
+</table>
+
+<div class="box warn">
+<strong>এখানে একটা ফাঁদ আছে — paper-এ সাবধান।</strong>
+BiLSTM-এর 4-D স্কোর (0.7765) দেখে মনে হয় "গাড়ির গতি ছাড়া BiLSTM পারে না"।
+কিন্তু <strong>একই bbox-only input-এ logistic regression পায় 0.9129</strong> — চারটার মধ্যে তিনটার উপরে।
+তার মানে তথ্যটা data-তে আছে, <strong>BiLSTM সেটা বের করতে ব্যর্থ হচ্ছে</strong>।
+এটা architecture-এর ক্ষমতার ক্রম নয়, একটা <em>fitting failure</em>।
+</div>
+
+<div class="brk"></div>
+
+<h2>৯. অন্য dataset-এ যাচাই</h2>
+
+<h3>JAAD</h3>
+<p>একই audit চালিয়ে: crossers-এর <strong>93.0%</strong> (428/460) দূষিত, সব sequence মিলিয়ে 81.3%।
+<strong>সমস্যাটা PIE-র একার নয়।</strong> Box geometry shortcut-ও একইভাবে ভেঙে পড়ে
+(area +0.478 → সব |rb| &lt; 0.17)।</p>
+
+<h3>IDD-PeD (ভারতের অগোছালো ট্রাফিক)</h3>
+<table>
+<tr><th>Anchor</th><th class="n">window</th><th class="n">দূষণ</th></tr>
+<tr><td>naive (track-end)</td><td class="n">8,651</td><td class="n">81.3% of crossers</td></tr>
+<tr><td><span class="mono">crossing_point</span> (PIE-র নিয়ম হুবহু)</td><td class="n">7,919</td><td class="n"><strong>29.6% of crossers</strong></td></tr>
+<tr><td>strict — <span class="mono">min(cp, onset)</span></td><td class="n">7,318</td><td class="n"><strong>0.0%</strong></td></tr>
+</table>
+
+<p><strong>এটা একটা স্বতন্ত্র অবদান:</strong> PIE-তে যে নিয়ম 0%-এ নামায়, IDD-PeD-তে সেটা
+<strong>29.6% দূষণ রেখে দেয়</strong> — কারণ ওদের <span class="mono">crossing_point</span>
+নির্ভরযোগ্য onset চিহ্ন নয়। <em>মানে সমাধান দেশান্তরে হুবহু বসে না।</em></p>
+
+<div class="box warn">
+এটা IDD-PeD-র নিজের paper-এর একটা স্পষ্ট দাবির <strong>বিপরীত</strong>
+(তারা লিখেছে সব crossing case-এ observation ও TTE দুটোই crossing-এর আগে)।
+Paper-এ এটা <em>অভিযোগ</em> হিসেবে নয়, <em>তাদের প্রকাশিত ফাইল থেকে পুনরুৎপাদনযোগ্য পর্যবেক্ষণ</em>
+হিসেবে লিখতে হবে। এটাই সবচেয়ে বিতর্কিত দাবি হবে বলে ধরে নেওয়া উচিত।
+</div>
+
+<h3>Zero-shot transfer — PIE-তে শেখা model IDD-PeD-তে</h3>
+<p>Test prevalence 7.13%, তাই "সবাইকে হ্যাঁ" বললে F1 = <strong>0.1331</strong>।</p>
+<table>
+<tr><th>Model</th><th class="n">IDD AUC</th><th class="n">IDD F1</th><th class="n">PIE AUC</th></tr>
+<tr><td>BiLSTM-F1</td><td class="n">0.675</td><td class="n">0.1311</td><td class="n">0.940</td></tr>
+<tr><td>Transformer-F1</td><td class="n">0.698</td><td class="n">0.1296</td><td class="n">0.947</td></tr>
+<tr><td>GRU-F1</td><td class="n">0.713</td><td class="n">0.1291</td><td class="n">0.941</td></tr>
+<tr><td>Vanilla RNN-F1</td><td class="n">0.720</td><td class="n">0.1296</td><td class="n">0.948</td></tr>
+</table>
+<p><strong>চারটাই trivial baseline-এর নিচে।</strong> শুধু ranking ক্ষমতা (AUC) কিছুটা টিকে থাকে।</p>
+
+<div class="box">
+<strong>সততার শর্ত:</strong> উপরের সংখ্যা pre-registered <span class="mono">rescale</span> স্থানাঙ্ক-রূপান্তরের।
+প্রকাশিত sensitivity check <span class="mono">raw</span>-তে F1 0.244–0.268 — যা baseline-এর <em>উপরে</em>।
+<span class="mono">raw</span>-কে ইচ্ছাকৃতভাবে প্রধান ধরা হয়নি, কারণ IDD-PeD-র test AUC দেখে
+রূপান্তর বাছাই করা মানে test-set selection। <strong>Paper-এ কোনটা quote করছেন তা স্পষ্ট বলতে হবে।</strong>
+</div>
+
+<h3>মোতায়েন করা model বাস্তবে কী করে</h3>
+<p>Demo-র ভবিষ্যদ্বাণী ফাইল থেকে (19,799 রেকর্ড, ৪টা ভিডিও অংশ) নিজে হিসাব করে পেয়েছি:</p>
+<ul>
+<li>গাড়ির গতি ও ভবিষ্যদ্বাণীর সম্পর্ক <strong>Pearson r = −0.892</strong></li>
+<li>গাড়ি থেমে থাকলে (0 km/h) <strong>96.2%</strong> পথচারীকে "পার হবে" বলে</li>
+<li>২০ km/h-এর উপরে মাত্র <strong>1.00%</strong></li>
+</ul>
+<p>মানে মোতায়েন করা system পথচারীদের মধ্যে আলাদা করে বিচার প্রায় করছেই না —
+<strong>সে কার্যত একটা গতির থ্রেশহোল্ড</strong>। এটা "input signal-ই প্রধান" কথাটাকে সমর্থন করে,
+এবং Diving Deeper (IV 2024) Table IV-এর সাথেও মেলে।</p>
+
+<hr class="rule">
+
+<h2>১০. Paper-এর গল্প</h2>
+
+<div class="box key">
+<p style="margin-top:0"><strong>এই field-এর benchmark-এ একটা নয়, দুইটা মাপজোখের সমস্যা আছে।</strong></p>
+<p><strong>প্রথম — Temporal contamination:</strong> যে ঘটনা predict করতে বলা হচ্ছে,
+সেটা crossing window-এর <strong>67.9%</strong> ক্ষেত্রে input-এই দেখা যাচ্ছে।</p>
+<p><strong>দ্বিতীয় — Class-dependent sampling phase:</strong> negative-দের সবসময় track শেষ
+হওয়ার ঠিক আগে দেখা হয়, যা একাই <strong>AUC 1.0000</strong> দিয়ে শ্রেণী আলাদা করে।</p>
+<p style="margin-bottom:0"><strong>আসল কথা: প্রথমটার সমাধান দ্বিতীয়টাকে ছোঁয়ও না।</strong>
+দুইটাই নিয়ন্ত্রণ করলে সব model প্রায় <strong>0.05 AUC</strong> হারায়,
+গাড়ির গতির প্রাধান্য <strong>উল্টে যায়</strong>, চারটা architecture-এর পার্থক্য
+<strong>এক seed SD-র ভেতরে</strong> মিলিয়ে যায়, আর একটা সাধারণ <strong>logistic regression
+চারটা neural network-কেই হারিয়ে দেয়</strong>।</p>
+</div>
+
+<p>এটা <em>"আমরা ভালো model বানিয়েছি"</em> ধরনের paper নয়।
+এটা <em>"এই benchmark যা মাপে বলে দাবি করে, তা মাপে না"</em> ধরনের paper।</p>
+
+<h3>Paper-এ contribution গুলো কীভাবে সাজাবেন</h3>
+<table>
+<tr><th>অবদান</th><th>অবস্থা</th></tr>
+<tr><td>দূষণের পরিমাণ মাপা (৩টা dataset)</td><td><span class="tag ok">মেরুদণ্ড</span> control-এ অক্ষত</td></tr>
+<tr><td>Event-anchored protocol (0/4906, bit-exact)</td><td><span class="tag ok">মেরুদণ্ড</span> অক্ষত</td></tr>
+<tr><td>Geometry shortcut = leakage-এর উপসর্গ</td><td><span class="tag ok">মেরুদণ্ড</span> অক্ষত</td></tr>
+<tr><td>Linear baseline সব architecture-দাবির সীমা</td><td><span class="tag ok">শক্তিশালী হয়</span> control-এ LR জিতে যায়</td></tr>
+<tr><td>Sampling-phase আবিষ্কার + control</td><td><span class="tag">নতুন মূল অবদান</span></td></tr>
+<tr><td>গাড়ির গতির প্রাধান্য</td><td><span class="tag bad">পুনর্লিখন লাগবে</span> ক্রম উল্টে যায়</td></tr>
+<tr><td>"Vanilla RNN সেরা"</td><td><span class="tag bad">নামিয়ে আনতে হবে</span> control-এ টেকে না</td></tr>
+<tr><td>Cross-dataset (JAAD, IDD-PeD)</td><td><span class="tag ok">অক্ষত</span></td></tr>
+</table>
+
+<div class="box warn">
+<strong>"Vanilla RNN সেরা" দাবির বদলে যেটা লিখবেন, সেটা আসলে বেশি শক্তিশালী:</strong><br>
+<em>"এই benchmark-এ architecture-এর ক্রম স্থিতিশীল নয় — negative sampling-এ এমন একটা পরিবর্তন,
+যা কাজের সংজ্ঞা বদলায় না, তাতেই প্রথম স্থানের family দ্বিতীয়/শেষ হয়ে যায়।"</em><br>
+এটা একটা পদ্ধতিগত ফলাফল, নিছক একটা leaderboard নয়। আর Chung (2014)-এর বিরুদ্ধে
+"RNN জিতেছে" দাবিটা এমনিতেও টিকত না।
+</div>
+
+<div class="brk"></div>
+
+<h2>১১. সীমাবদ্ধতা — সৎ তালিকা</h2>
+
+<p>এগুলো paper-এর Limitations-এ যাবে। <strong>কিন্তু §৮-এর সংখ্যাগুলো Results-এ যাবে,
+Limitations-এ নয়।</strong></p>
+
+<h3>Control-এর নিজের সীমা</h3>
+<ol>
+<li><strong>একটাই seed</strong> (<span class="mono">SEED = 42</span>) দিয়ে negative আবার তোলা হয়েছে —
+পুনঃনমুনায়নের ভিন্নতা মাপা হয়নি।</li>
+<li><strong>অবশিষ্ট separability 0.7779</strong>, 0.5 নয় — কমেছে, শেষ হয়নি।</li>
+<li><strong>১১৫ জন negative পথচারী বাদ পড়েছে</strong>, তাই population একটু বদলেছে
+(test set 541 → 476 পথচারী)।</li>
+<li><strong>Control arm-এ significance test হয়নি</strong> — এগুলো এখনো শুধু point estimate।</li>
+<li><strong>একটা বিকল্প ব্যাখ্যা বাদ দেওয়া যায়নি:</strong> হয়তো নতুন negative গুলো এমনিতেই কঠিন
+(দূরে, ছোট box) — timing নয়, দূরত্বই কারণ। এটা আলাদা distance-matched design ছাড়া আলাদা করা যায় না।</li>
+</ol>
+
+<h3>মূল কাজের সীমা</h3>
+<ol start="6">
+<li><strong>কোনো equivalence margin আগে থেকে ঠিক করা হয়নি।</strong> "CI-তে শূন্য আছে" মানে
+"সমান" নয় — সেজন্য আগে থেকে δ ঠিক করে TOST লাগে (Bouthillier, MLSys 2021)।</li>
+<li><strong>Power রিপোর্ট করা হয়নি।</strong> এই নমুনা আকারে "তাৎপর্যপূর্ণ নয়" ফলাফল
+স্বাভাবিক — প্রতিটা null পড়তে হবে <em>"আমরা পার্থক্য ধরতে পারিনি"</em> হিসেবে,
+<em>"পার্থক্য নেই"</em> হিসেবে নয়।</li>
+<li><strong>Transformer-এর AUC সুবিধা capacity-matched নয়</strong> — 794,241 বনাম BiLSTM-এর 594,561
+(1.34×), আর search budget 2.2×।</li>
+<li><strong>Validation ছোট এবং বহুবার ব্যবহৃত</strong> — 634 window / 164 পথচারী, চারটা পরপর
+নির্বাচনে + threshold ফিটিংয়ে একই set। তাই সব validation সংখ্যা <em>উপরের সীমা</em>।</li>
+<li><strong>Label track-স্তরের</strong> — একজন পথচারীর পুরো track-এর একটাই label, প্রতিটা window-এ ছড়ানো।</li>
+<li><strong>একটাই test split</strong> (set03), এবং দিনের আলো, শুকনো আবহাওয়া, একটাই শহর।</li>
+<li><strong>Cell-type সমতা মূলত Chung (2014)-এর পুনরাবৃত্তি</strong> — তিনি আগেই দেখিয়েছেন
+ছোট sequence-এ un-gated RNN gated cell-এর সমান। ১৬ ফ্রেম ঠিক সেই ছোট-দিগন্ত অঞ্চল।</li>
+</ol>
+
+<h3>শিরোনাম নিয়ে দুটো পরামর্শ</h3>
+<ul>
+<li>"intention" শব্দটার বদলে <strong>crossing action / outcome</strong> লেখা বেশি সঠিক —
+কারণ label আসলে PIE-র <span class="mono">crossing</span> attribute, উদ্দেশ্য নয়।</li>
+<li>শিরোনামে "statistically rigorous" দাবি না করাই ভালো — Gesnouin (IV 2022) ইতিমধ্যেই
+Friedman + Wilcoxon–Holm ব্যবহার করেছে, BiPed ২০ initialisation-এর SD দেয়, MFT সব metric-এ ± দেয়।
+<strong>যা সত্যিই খালি আছে তা সংকীর্ণ:</strong> পথচারী-ভিত্তিক clustered resampling,
+equivalence margin, এবং তুলনীয় family-দের মধ্যে search budget সমান রাখা।</li>
+</ul>
+
+<hr class="rule">
+
+<h2>১২. যাচাই লগ ও গরমিল</h2>
+
+<p>এই নথির প্রতিটা সংখ্যা repository-র ফলাফল ফাইল থেকে মিলিয়ে দেখা হয়েছে।
+নিচে কোনটা কোথা থেকে, এবং <strong>যে ৪টা গরমিল ধরা পড়েছে</strong>।</p>
+
+<h3>স্বাধীনভাবে পুনরায় হিসাব করা (নতুন করে চালানো)</h3>
+<table>
+<tr><th>যা যাচাই করেছি</th><th class="n">ফল</th></tr>
+<tr><td><span class="mono">AUC(to_end)</span> মূল পরিষ্কার data-তে <span class="src">sklearn</span></td><td class="n"><strong>1.000000</strong></td></tr>
+<tr><td><span class="mono">AUC(to_end)</span> phase-matched data-তে <span class="src">sklearn</span></td><td class="n"><strong>0.777941</strong></td></tr>
+<tr><td>মূল <span class="mono">to_end</span> পরিসর — negative / positive</td><td class="n">32–62 / 88–6606</td></tr>
+<tr><td>Overlap (negative ≥ positive-এর সর্বনিম্ন)</td><td class="n">0 / 3,258</td></tr>
+<tr><td>Phase-matched <span class="mono">to_end</span> — negative</td><td class="n">88–1,321 (মধ্যক 188)</td></tr>
+<tr><td>Negative পথচারী: পরিষ্কার → matched</td><td class="n">833 → 718</td></tr>
+<tr><td>PIE-র সব পথচারী (annotation-এ)</td><td class="n">1,374 = 855 না-পার + 519 পার</td></tr>
+<tr><td><span class="mono">last_frame − crossing_point</span> non-crossers-এ</td><td class="n">824/833 ঠিক ২</td></tr>
+<tr><td>Holm-এ টেকা তুলনা</td><td class="n">9 / 30</td></tr>
+<tr><td>Demo: Pearson r, 0 km/h flag হার</td><td class="n">−0.892, 96.2%</td></tr>
+</table>
+
+<h3>ফলাফল ফাইল থেকে মিলিয়ে নেওয়া</h3>
+<p class="small">
+<span class="mono">results/leakage/pie_legacy_leakage_report.md</span> — 387/570, 369 (64.7%), rank-biserial &nbsp;·&nbsp;
+<span class="mono">results/leakage/pie_clean_leakage_report.md</span> — 0/4906, 1648/3258 &nbsp;·&nbsp;
+<span class="mono">results/cross_dataset/jaad_naive_leakage_report.md</span> — 428/460 &nbsp;·&nbsp;
+<span class="mono">results/cross_dataset/idd_results/table2_temporal_audit.csv</span> — 81.3/29.6/0.0 &nbsp;·&nbsp;
+<span class="mono">table4_zero_shot.csv</span> — AUC ও F1 &nbsp;·&nbsp;
+<span class="mono">experiments/02_model_comparison/trivial_baselines_results.json</span> — সব LR সংখ্যা ও p-মান &nbsp;·&nbsp;
+<span class="mono">matched_comparison_results.json</span> — চার family, parameter, Holm &nbsp;·&nbsp;
+<span class="mono">phase_matched_results.json</span> — control-এর সব ফলাফল &nbsp;·&nbsp;
+<span class="mono">ego_speed_ablation_results.json</span> — 5-D vs 4-D
+</p>
+
+<h3 style="color:#b3541e">যে ৪টা গরমিল ধরা পড়েছে</h3>
+
+<div class="box warn">
+<strong>১. বাদ পড়া পথচারী: ১১৪ নাকি ১১৫?</strong><br>
+Repository-র নথি (<span class="mono">data/README.md</span>, <span class="mono">PHASE_MATCHED_CONTROL.md</span>)
+বলে <strong>১১৪</strong>। কিন্তু data থেকে গুনে পাওয়া যায় <strong>১১৫</strong>।<br>
+<em>কারণ:</em> script-এর <span class="mono">dropped</span> গণনা শুধু "track খুব ছোট" শাখাটা গোনে;
+আরও একজন পথচারী "১৬টা পরপর ফ্রেম নেই" পরীক্ষায় তার সব window হারিয়েছে, যা গোনা হয়নি।<br>
+<strong>করণীয়:</strong> নথিতে ১১৫ করে দিন (বা দুইটাই ব্যাখ্যা করুন)। কোনো ফলাফল বদলায় না।
+</div>
+
+<div class="box warn">
+<strong>২. গাড়ির গতির ablation-এ দুই ধরনের সংখ্যা মেশানো</strong><br>
+<span class="mono">CONTRIBUTIONS.md</span> লেখে "+0.0126 থেকে +0.1477"। কিন্তু
+<strong>0.0126 হলো ensemble bootstrap delta</strong>, আর <strong>0.1477 হলো seed-গড়ের পার্থক্য</strong> —
+দুইটা ভিন্ন রাশি।<br>
+সঙ্গতিপূর্ণ জোড়া: ensemble <strong>+0.0126 … +0.1420</strong>, অথবা seed-গড় <strong>+0.0156 … +0.1477</strong>।<br>
+<strong>করণীয়:</strong> paper-এ যেকোনো একটা বেছে নিয়ে ধারাবাহিকভাবে ব্যবহার করুন।
+</div>
+
+<div class="box warn">
+<strong>৩. "সব ৮৫৫ জন non-crosser-এর crossing_point = শেষ ফ্রেম − ২"</strong><br>
+<span class="mono">LIMITATIONS.md</span> §1-এ "all ... exactly 2" লেখা।<br>
+যাচাইয়ে: <strong>855</strong> সংখ্যাটা ঠিক (পুরো annotation-এ non-crossing পথচারী)।
+কিন্তু যে ৮৩৩ জন পরিষ্কার dataset-এ আসে, তাদের মধ্যে ঠিক ২ হয় <strong>824 জনের (98.9%)</strong>,
+পরিসর 0–2।<br>
+<strong>করণীয়:</strong> "all ... exactly" নরম করে "98.9%, পরিসর 0–2" লিখুন। <em>যুক্তি একটুও বদলায় না</em> —
+negative-রা এখনো track-এর শেষে নোঙর করা।
+</div>
+
+<div class="box warn">
+<strong>৪. Demo-র §9 সংখ্যাগুলো পুনরুৎপাদন হয় না</strong><br>
+<span class="mono">LIMITATIONS.md</span> §9 বলে: 3,652 ভবিষ্যদ্বাণী, r = −0.908, 96.8%, ২০ km/h-এর উপরে 0.45%,
+"ষোলোটা অংশের ছয়টিতে 100%"।<br>
+সংরক্ষিত demo ফাইল থেকে আমি পাই: <strong>৪টা ফাইল, 19,799 রেকর্ড, r = −0.892, 96.2%, 1.00%</strong>।
+৩,৬৫২ রেকর্ডের কোনো স্বাভাবিক উপসেট পাওয়া যায়নি; "ষোলোটা অংশ"-এরও চিহ্ন নেই।<br>
+<strong>করণীয়:</strong> <em>সারবস্তু একই</em> (model কার্যত গতির থ্রেশহোল্ড), কিন্তু সঠিক সংখ্যাগুলো
+হয় পুনরায় হিসাব করে লিখুন, নয়তো কোন উপসেটে সেটা নথিভুক্ত করুন।
+<strong>এই নথিতে আমি নিজের পুনঃহিসাব করা সংখ্যাই ব্যবহার করেছি।</strong>
+</div>
+
+<h3>আরও দুটো জিনিস জেনে রাখা ভালো</h3>
+<div class="box">
+<strong>ক)</strong> পরিষ্কার leakage report-এ একটা ছোট অভ্যন্তরীণ টানাপোড়েন আছে: সে বলে
+"0টা window-এ crossing ফ্রেম", কিন্তু একই সাথে "1,648 জনের মধ্যে 12 জনের (0.7%) onset
+window শেষের আগে বা সমানে"। প্রধান দাবিটা (<strong>0/4906</strong>) সরাসরি
+<span class="mono">cross == "crossing"</span> গুনে পাওয়া, তাই সেটাই quote করুন।<br><br>
+<strong>খ)</strong> Zero-shot ব্যর্থতার দাবি <span class="mono">rescale</span> রূপান্তরের জন্য সত্য;
+<span class="mono">raw</span>-তে F1 0.244–0.268 (baseline-এর উপরে)। কোনটা quote করছেন
+<strong>স্পষ্ট করে বলুন</strong>, নইলে reviewer এটাকে cherry-picking বলবে।
+</div>
+
+<hr class="rule">
+
+<div class="box good">
+<strong>এক লাইনে মনে রাখার কথা</strong><br><br>
+Leakage ঠিক করার পরেও data-তে একটা লুকানো সংকেত রয়ে গিয়েছিল — শুধু
+<em>"negative-দের কখন দেখা হয়েছে"</em> সেটাই। সেটা সরালে সব model প্রায় 0.05 AUC হারায়,
+আমাদের সেরা model আর সেরা থাকে না, এবং গাড়ির গতির প্রাধান্যের গল্পটা উল্টে যায়।<br><br>
+<strong>এজন্যই এটা Limitations-এ লুকানো যাবে না — এটাই paper-এর সবচেয়ে শক্তিশালী প্রমাণ
+যে প্রথম সমাধানটাই যথেষ্ট নয়।</strong>
+</div>
+
+<p class="small" style="margin-top:26px; text-align:center; color:#8a919c">
+এই নথির সব সংখ্যা তৈরির সময় যাচাই করা। উৎস ফাইলের তালিকা §১২-এ।
+</p>
+
+</body>
+</html>

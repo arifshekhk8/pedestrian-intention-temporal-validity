@@ -49,7 +49,9 @@ fixes.
 
 This set re-samples negatives earlier, drawing frames-to-track-end from the positive empirical
 distribution (floor 88 = the positive minimum, clipped to each track's length, seed 42). Positives
-are untouched. 114 negative pedestrians are dropped because their tracks are too short.
+are untouched. 115 negative pedestrians are dropped (833 → 718): 114 because their tracks are too
+short to place an early window, and one more that loses every window to the 16-consecutive-frames
+check. The script prints 114 because its counter tracks only the first cause.
 
 Separability of `to_end` falls from 1.0000 to **0.7779** — reduced, not eliminated,
 because negative tracks are simply shorter than positive ones.

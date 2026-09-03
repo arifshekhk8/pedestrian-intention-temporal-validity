@@ -221,6 +221,10 @@ docs/               CONTRIBUTIONS, LIMITATIONS, PROTOCOL, REPRODUCE
 3. [docs/LIMITATIONS.md](docs/LIMITATIONS.md) — what this work does **not** establish.
 4. [docs/REPRODUCE.md](docs/REPRODUCE.md) — step by step, cheapest path first.
 
+Also: [docs/bangla_walkthrough.pdf](docs/bangla_walkthrough.pdf) — the whole study explained end to
+end in Bengali, with a verification log recording where every number comes from and four numbering
+discrepancies found while writing it. Source: `docs/bangla_walkthrough.html`.
+
 ## A note on the task name
 
 This work predicts PIE's per-track **`crossing`** attribute — a behavioural *outcome*. PIE also ships

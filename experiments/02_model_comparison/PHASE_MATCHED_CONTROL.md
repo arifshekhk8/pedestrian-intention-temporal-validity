@@ -26,7 +26,11 @@ earlier, with frames-to-track-end drawn from the positive empirical distribution
 seeds, selection rule are unchanged; `pos_weight` is recomputed for the new train split.
 
 - windows 4520 (pos 1648, neg 2872) vs 4,906 originally
-- 114 negative pedestrians dropped: track too short to place an early window
+- 115 negative pedestrians dropped. The script's `dropped` counter reports 114 — it only counts the
+  `hi < MIN_TO_END` branch (track too short to place an early window). One further pedestrian lost
+  every window to the 16-consecutive-frames check, which `continue`s without incrementing the
+  counter. Counting pedestrians present in `data/pie_clean/` but absent from `data/pie_phase_matched/`
+  gives 833 − 718 = **115**.
 - splits 2084/563/1873, pos_weight 1.5665
 - **AUC of `to_end` alone: 1.0000 → 0.7779** (reduced, not eliminated —
   negative tracks are shorter, so the distributions cannot be fully matched)

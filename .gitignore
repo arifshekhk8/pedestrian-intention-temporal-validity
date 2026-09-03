@@ -20,3 +20,6 @@ venv/
 
 # OS / editor
 .DS_Store
+
+# paper figures/tables: generated locally, not part of the published repo
+paper_assets/

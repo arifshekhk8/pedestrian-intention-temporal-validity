@@ -50,7 +50,7 @@ import numpy as np
 
 HERE = Path(__file__).resolve().parent
 FOLDER = HERE.parent
-sys.path.insert(0, str(FOLDER / "src"))
+sys.path.insert(0, str(HERE / "lib"))
 from iddped_parser import CROSSING_BEHAVIOR_SCALARS  # noqa: E402
 
 DB_PATH = FOLDER / "data" / "iddped_database.pkl"

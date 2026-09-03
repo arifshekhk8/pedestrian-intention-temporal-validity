@@ -1,12 +1,18 @@
-"""00_common.py — shared utilities for the F1-first optimization program (PLAN.md).
+"""metrics.py — metric, threshold and bootstrap plumbing for the checkpoint-based analyses.
 
-Everything here is metric/selection plumbing used by scripts 01-06: data loading with
-the frozen split asserts, model builders (classes imported from the frozen sources —
-pipeline/03_bilstm_model.py and transformer/phase1_setup/00_transformer_model.py, never
-copied), checkpoint->probability loaders (CPU, full-batch, matching
-transformer/phase5_analysis/05_compare_vs_lstm.py exactness), the pre-registered
-threshold-selection rule (PLAN.md section 3.1), and metric/bootstrap helpers with F1
-first-class (PLAN.md section 7).
+Data loading with the frozen split asserts, model builders, checkpoint->probability
+loaders (CPU, full-batch), the pre-registered threshold-selection rule, and metric and
+bootstrap helpers with F1 first-class.
+
+Scope note. This module is only needed by the analyses that score **pre-trained
+checkpoints** (`experiments/03_statistics/`, `transformer_vs_bilstm.py`). Those need the
+checkpoint tree, which is not in git — set `PCIP_CKPT_ROOT`. Nothing in the Tier 1 path
+imports this file: `src/engine.py` trains from `data/pie_clean/` and carries its own
+metric code, and `matched_comparison.py` carries its own `best_threshold`/`auc`/`pr_auc`.
+
+Originally `f1_optimization/00_common.py` in the source project. The two model classes
+were loaded from that project's paths; they are now imported from this repository's own
+`src/model_bilstm_legacy.py` and `src/model_transformer.py`, which are the same classes.
 """
 import importlib.util
 import pickle
@@ -48,8 +54,8 @@ def _load_module(name, path):
     return mod
 
 
-BiLSTM = _load_module("m03_bilstm", ROOT / "pipeline" / "03_bilstm_model.py").BiLSTMIntentPredictor
-_tfm = _load_module("m00_tfmodel", ROOT / "transformer" / "phase1_setup" / "00_transformer_model.py")
+BiLSTM = _load_module("m_bilstm_legacy", HERE / "model_bilstm_legacy.py").BiLSTMIntentPredictor
+_tfm = _load_module("m_transformer", HERE / "model_transformer.py")
 TransformerIntentPredictor = _tfm.TransformerIntentPredictor
 count_params = _tfm.count_params
 

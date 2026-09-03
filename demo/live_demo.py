@@ -54,13 +54,22 @@ import cv2
 import numpy as np
 import torch
 
-BiLSTM = import_module("03_bilstm_model").BiLSTMIntentPredictor
-
 OBS_LEN = 16
 PERSON_CLASS = 0
 EXPECTED_W, EXPECTED_H = 1920, 1080
 
 ROOT = Path(__file__).resolve().parent.parent
+
+
+def _load(name, path):
+    import importlib.util
+    spec = importlib.util.spec_from_file_location(name, path)
+    mod = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(mod)
+    return mod
+
+
+BiLSTM = _load("m_bilstm_legacy", ROOT / "src" / "model_bilstm_legacy.py").BiLSTMIntentPredictor
 
 # The published headline arm: f1_optimization/05_final_arms.json -> arms.A3
 F1_RUN_ROOT = ROOT / "f1_optimization" / "runs_f1" / "lstm_lr1e-03_do0.3_h256_nl2" / "pw1.682"
@@ -157,7 +166,7 @@ def predict_batch(models, X: np.ndarray, mean, std, device) -> np.ndarray:
 def stage_verify(args, device):
     """Score the clean test set through the assembled ensemble and require it to
     reproduce the published arm. Nothing downstream is trustworthy until this passes."""
-    eng_path = ROOT / "journal_prep" / "issue12_unified_pipeline" / "12_unified_engine.py"
+    eng_path = ROOT / "src" / "engine.py"
     import importlib.util
     spec = importlib.util.spec_from_file_location("eng", eng_path)
     eng = importlib.util.module_from_spec(spec)

@@ -42,8 +42,8 @@ def _load(name, path):
     return mod
 
 
-E = _load("engine12", ROOT / "journal_prep" / "issue12_unified_pipeline" / "12_unified_engine.py")
-C = _load("f1_common", ROOT / "f1_optimization" / "00_common.py")
+E = _load("engine12", ROOT / "src" / "engine.py")
+C = _load("f1_common", ROOT / "src" / "metrics.py")
 
 CPU = torch.device("cpu")
 SEEDS = [42, 0, 1, 2, 3]

@@ -37,7 +37,7 @@ YW = ROOT / "yolo26m.pt"
 CLIPS = {"video_0012": ROOT / "PIE_clips" / "set03" / "video_0012.mp4",
          "video_0016": ROOT / "PIE_clips" / "set03" / "video_0016.mp4"}
 
-_spec = importlib.util.spec_from_file_location("m03", ROOT / "pipeline" / "03_bilstm_model.py")
+_spec = importlib.util.spec_from_file_location("m03", ROOT / "src" / "model_bilstm_legacy.py")
 _m = importlib.util.module_from_spec(_spec); _spec.loader.exec_module(_m)
 BiLSTM = _m.BiLSTMIntentPredictor
 

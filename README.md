@@ -166,15 +166,22 @@ Test set touched once. Inference is pedestrian-clustered and Holm-corrected acro
 | **Vanilla RNN (un-gated)** | **560,001** | **0.8487 ± 0.0154** | **0.9481 ± 0.0058** | 0.8925 |
 | BiLSTM-h128 (baseline) | 594,561 | 0.8256 ± 0.0130 | 0.9349 ± 0.0053 | 0.8808 |
 
-**The families do not tie.** Nine of thirty comparisons survive Holm correction, six of them with
-the vanilla RNN as winner: it beats the BiLSTM (AUC, F1), the h128 baseline (AUC, PR-AUC) and the
-GRU (AUC, F1). The smallest model tested is the best one.
+**The families do not tie under the standard sampling.** Nine of thirty comparisons survive Holm
+correction, six of them with the vanilla RNN as winner: it beats the BiLSTM (AUC, F1), the h128
+baseline (AUC, PR-AUC) and the GRU (AUC, F1). The smallest model tested is the best one.
 
 **Transformer ≈ Vanilla RNN is a genuine tie** (AUC p = 0.83). Correction can only remove
 differences, never create them, so this null is the most robust entry in the table.
 
 Not established, and not claimed: Transformer > GRU (p_holm = 0.0546, just over the line).
 Full table and caveats in [MATCHED_COMPARISON.md](experiments/02_model_comparison/MATCHED_COMPARISON.md).
+
+⚠ **The ranking does not survive the phase-matched control described above.** Re-sampling the
+negatives leaves **0 of 18** family-vs-family contrasts significant, against **7 of the same 18**
+under the standard sampling. So part of the measured architecture gap was differential exploitation
+of the timing artefact, not modelling capacity. Quote the ranking only with that condition attached.
+Note also that "not resolvable" is not "equivalent" — the strongest remaining contrast misses the
+corrected threshold narrowly (p = 0.0032 against 0.00278).
 
 **The transformer's advantage is not a search-budget artefact.** Its 78 configurations decompose
 into 36 architecture + 42 recipe configs; the winner is an architecture config ranked #2 of 36, so a
@@ -209,8 +216,9 @@ src/                the protocol and the training engine
   build_windows_clean.py   event-anchored builder (the fix)
   build_windows_legacy.py  track-end builder (the reference implementation of the bug)
   leakage_audit.py         measures contamination in any window set
-  engine.py                one training loop, four families
-  metrics.py               thresholds, bootstraps, split loading
+  engine.py                one training loop, four families — the Tier 1 entry point
+  metrics.py               thresholds, bootstraps, split loading; only the
+                           checkpoint-scoring analyses import it (needs PCIP_CKPT_ROOT)
 experiments/        the studies, grouped by claim
 results/            machine-written artifacts backing every number quoted above
 demo/               YOLO26 + ByteTrack live demo (needs PIE clips; optional)
@@ -223,6 +231,8 @@ docs/               CONTRIBUTIONS, LIMITATIONS, PROTOCOL, REPRODUCE
 2. [docs/CONTRIBUTIONS.md](docs/CONTRIBUTIONS.md) — each claim with the file that proves it.
 3. [docs/LIMITATIONS.md](docs/LIMITATIONS.md) — what this work does **not** establish.
 4. [docs/REPRODUCE.md](docs/REPRODUCE.md) — step by step, cheapest path first.
+5. [docs/AUDIT_2026-09-04.md](docs/AUDIT_2026-09-04.md) — a full consistency audit of this repository:
+   what was checked, what was wrong, what was fixed, and what is still not reproducible here.
 
 Also: [docs/bangla_walkthrough.pdf](docs/bangla_walkthrough.pdf) — the whole study explained end to
 end in Bengali, with a verification log recording where every number comes from and four numbering

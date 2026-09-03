@@ -43,7 +43,7 @@ B = 10000
 RNG_SEED = 42
 
 # --- model classes ---
-_spec_lstm = importlib.util.spec_from_file_location("v6b", I2 / "06b_local_verify_seed42.py")
+_spec_lstm = importlib.util.spec_from_file_location("v6b", REPO / "src" / "model_bilstm_legacy.py")
 _lstm_m = importlib.util.module_from_spec(_spec_lstm)
 _spec_lstm.loader.exec_module(_lstm_m)
 BiLSTM = _lstm_m.BiLSTMIntentPredictor

@@ -46,7 +46,7 @@ Test = PIE **set03**, 2,094 windows (32.5% positive), obs_len 16, TTE∈[30,60].
 
 ## Observation-window extension (OW 32 & 64 · F1-optimised model per family)
 
-*(Supervisor directive 2026-07-19; full method in `journal_prep/obs_window_extension/PLAN.md`.)*
+*(Supervisor directive 2026-07-19; full method in `experiments/04_observation_window/`.)*
 The headline comparison above is at **OW = 16 frames (0.5 s @ 30 fps)**. This section extends the
 window to **32 (1.07 s)** and **64 (2.13 s)** for the **F1-optimised model of each family** — the same
 architecture and F1 recipe, only the observation window changes. OW-16 is the already-published

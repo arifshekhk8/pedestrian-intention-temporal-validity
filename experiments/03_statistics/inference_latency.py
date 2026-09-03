@@ -35,7 +35,7 @@ CKPT = ROOT / "paper_and_artifacts" / "runs" / "bilstm_baseline" / "best.pt"
 YOLO_WEIGHTS = ROOT / "yolo26m.pt"
 CLIP = ROOT / "PIE_clips" / "set03" / "video_0012.mp4"
 
-_spec = importlib.util.spec_from_file_location("m03", ROOT / "pipeline" / "03_bilstm_model.py")
+_spec = importlib.util.spec_from_file_location("m03", ROOT / "src" / "model_bilstm_legacy.py")
 _m = importlib.util.module_from_spec(_spec); _spec.loader.exec_module(_m)
 BiLSTM = _m.BiLSTMIntentPredictor
 

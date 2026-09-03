@@ -37,10 +37,15 @@ RUN_DIR = HERE / "runs_clean" / "bilstm_baseline_clean"
 
 TEST_SETS = {"set03"}
 
-# Import the baseline arch the same way training does (filenames start with a digit).
-import sys
-sys.path.insert(0, str(ROOT))
-BiLSTM = import_module("03_bilstm_model").BiLSTMIntentPredictor
+def _load(name, path):
+    import importlib.util
+    spec = importlib.util.spec_from_file_location(name, path)
+    mod = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(mod)
+    return mod
+
+
+BiLSTM = _load("m_bilstm_legacy", ROOT / "src" / "model_bilstm_legacy.py").BiLSTMIntentPredictor
 
 
 def main():

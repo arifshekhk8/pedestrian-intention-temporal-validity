@@ -45,7 +45,7 @@ def _load(name, path):
     return mod
 
 
-C = _load("gru_common", ROOT / "f1_optimization" / "00_common.py")
+C = _load("gru_common", ROOT / "src" / "metrics.py")
 
 yte = np.load(GRU_PCACHE / "y_test.npy")
 assert np.array_equal(yte, np.load(TF_PCACHE / "y_test.npy")), "y_test mismatch across caches"

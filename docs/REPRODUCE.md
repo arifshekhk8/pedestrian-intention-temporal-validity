@@ -56,19 +56,22 @@ will not reproduce (see `docs/PROTOCOL.md`).
 ### Tier 1b — the headline comparisons (still no download, ~35 CPU-minutes)
 
 ```bash
-python experiments/02_model_comparison/matched_comparison.py   # four families, Holm-corrected
-python experiments/02_model_comparison/ego_speed_ablation.py   # 5-D vs 4-D, per family
-python experiments/02_model_comparison/trivial_baselines.py    # linear baselines
+python experiments/02_model_comparison/matched_comparison.py    # four families, Holm-corrected
+python experiments/02_model_comparison/ego_speed_ablation.py    # 5-D vs 4-D, per family
+python experiments/02_model_comparison/trivial_baselines.py     # linear baselines
 python experiments/02_model_comparison/phase_matched_control.py # timing-bias control*
+python experiments/02_model_comparison/phase_matched_stats.py   # its bootstrap + Holm arms
 ```
 
-*The control re-trains from the tracked `data/pie_phase_matched/`, so it needs no download either;
-only *rebuilding* that dataset requires `pie_annotations.pkl` (Tier 2), via `--annotations`.
+*The control re-trains from the tracked `data/pie_phase_matched_trainonly/`, so it needs no download
+either; only *rebuilding* that dataset requires `pie_annotations.pkl` (Tier 2), via `--annotations`.
+Both scripts default to the corrected train-only artefacts. To rebuild the superseded first version,
+pass `--phase-source all --out data/pie_phase_matched --runs-subdir phase_matched`; see
+`experiments/02_model_comparison/PHASE_RULE_LEAK_FIX.md`.
 
 These produce `MATCHED_COMPARISON.md`, `EGO_SPEED_ABLATION.md`, `TRIVIAL_BASELINES.md` and
-`PHASE_MATCHED_CONTROL.md`
-beside themselves. They supersede the older per-study numbers in `results/model_comparison/` for any
-cross-family claim.
+`PHASE_MATCHED_CONTROL.md` beside themselves. They supersede the older per-study numbers in
+`results/model_comparison/` for any cross-family claim.
 
 ## Tier 2 — verify the leakage claim (needs PIE annotations only, no video)
 
@@ -99,22 +102,28 @@ a=np.load('data/pie_clean/X.npy'); b=np.load('build/clean/X.npy')
 print('identical:', np.array_equal(a,b))"
 ```
 
-## Tier 3 — the statistical comparisons (needs the checkpoint release)
+## Tier 3 — the older per-study analyses (**archival: not runnable here**)
 
-The trained checkpoints are **not in git** — 757 MB of them would make the repository unusable.
-Download the release asset and point the code at it:
+⚠ **Read this before trying.** These scripts are kept as provenance for numbers that are already
+shipped as JSON and CSV under `results/`. They are **not reproducible from this repository**, for two
+independent reasons, and no release currently exists that would fix it:
 
-```bash
-gh release download v1.0 --repo arifshekhk8/pedestrian-intention-temporal-validity
-tar -xzf checkpoints.tar.gz            # → checkpoints/
-export PCIP_CKPT_ROOT=$PWD/checkpoints
-python experiments/03_statistics/cluster_bootstrap.py
-python experiments/02_model_comparison/transformer_vs_bilstm.py
-```
+1. **The checkpoints are not in git** — 757 MB of trained models, plus the cached probability
+   tensors (`probs_cache/`) the comparison scripts read. Nothing here provides them.
+2. **Five of the scripts read source files that were never copied over** from the source project.
+   They are listed in `experiments/README.md` under "Archival scripts".
 
-⚠ The published F1 arm reproduces **only from these checkpoints**, not by re-running the search: all
-65 of its runs trained on Apple MPS, where recurrent training is not context-free. This is a stated
-limitation, not a convenience — see `docs/LIMITATIONS.md` §6.
+The scripts affected are `experiments/03_statistics/*`, `transformer_vs_bilstm.py`, `gru_compare.py`,
+`rnn_compare.py`, `generate_comparison_tables.py` and `experiments/04_observation_window/`.
+
+**What to do instead.** Every claim these scripts support is already backed by a machine-written file
+in `results/`, listed in the table at the end of this document. For anything cross-family, the Tier 1b
+scripts above are the authoritative, fully reproducible replacement — they retrain from
+`data/pie_clean/` and need no checkpoints.
+
+⚠ Separately: the published F1 arm could not be regenerated even with the sources, because all 65 of
+its runs trained on Apple MPS, where recurrent training is not context-free. See
+`docs/LIMITATIONS.md` §6.
 
 ## Tier 4 — cross-dataset (needs external datasets)
 
@@ -147,10 +156,12 @@ flags 96.2 % of pedestrians when the vehicle is stopped (`docs/LIMITATIONS.md` �
 | `results/leakage/pie_clean_leakage_report.md` | 0/4906 after the fix |
 | `results/clean_protocol/bilstm_multiseed_results.csv` | clean 5-seed AUC 0.932 ± 0.011 |
 | `results/clean_protocol/variants_multiseed_results.csv` | the *superseded* bbox-only arm (0.753 ± 0.020). Provenance is mixed — see EGO_SPEED_ABLATION.md |
-| `experiments/02_model_comparison/ego_speed_ablation_results.json` | the matched ego-speed ablation (+0.0126 to +0.1477 by family) |
+| `experiments/02_model_comparison/ego_speed_ablation_results.json` | the matched ego-speed ablation (5-seed mean: +0.0156 to +0.1477 by family) |
 | `experiments/02_model_comparison/trivial_baselines_results.json` | logistic regression matches all four neural families |
 | `experiments/02_model_comparison/matched_comparison_results.json` | the matched four-family comparison, Holm-corrected |
-| `experiments/02_model_comparison/phase_matched_results.json` | the timing-bias control; ego-speed advantage reverses |
+| `experiments/02_model_comparison/phase_matched_trainonly_results.json` | the timing-bias control; ego-speed advantage reverses |
+| `experiments/02_model_comparison/phase_matched_trainonly_stats.json` | its bootstrap and Holm arms; 0 of 18 family contrasts survive |
+| `experiments/02_model_comparison/phase_matched_{results,stats}.json` | **superseded** first version of the control — see `PHASE_RULE_LEAK_FIX.md` |
 | `results/clean_protocol/eval_parity_report.md` | overlapping windows do not inflate the estimate |
 | `results/model_comparison/transformer_vs_bilstm.json` | ΔAUC +0.0135 and the un-searched control tie |
 | `results/model_comparison/f1_final_arms.json` | the F1 headline arms and τ\* |

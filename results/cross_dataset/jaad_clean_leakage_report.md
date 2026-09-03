@@ -2,7 +2,7 @@
 
 **Verdict: CLEAN**
 
-Mirrors `journal_prep/issue1_leakage_audit/01_leakage_audit.py`'s method; ground truth = JAAD's own per-frame `cross` behavior attribute (0=not-crossing, 1=crossing, -1=irrelevant), read directly from `jaad_data.py`'s `generate_database()` -- no re-parsing hack needed (unlike PIE, JAAD's own interface never dropped this field).
+Mirrors `src/leakage_audit.py`'s method; ground truth = JAAD's own per-frame `cross` behavior attribute (0=not-crossing, 1=crossing, -1=irrelevant), read directly from the JAAD repository's own `jaad_data.py::generate_database()` -- no re-parsing hack needed (unlike PIE, JAAD's own interface never dropped this field).
 
 ## Setup
 

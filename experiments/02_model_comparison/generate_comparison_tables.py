@@ -63,7 +63,7 @@ def _load(name, path):
     m = importlib.util.module_from_spec(spec); spec.loader.exec_module(m); return m
 
 
-BiLSTM = _load("m03", ROOT / "pipeline" / "03_bilstm_model.py").BiLSTMIntentPredictor
+BiLSTM = _load("m03", ROOT / "src" / "model_bilstm_legacy.py").BiLSTMIntentPredictor
 Attn = _load("m07", ROOT / "pipeline" / "07_bilstm_attention.py").BiLSTMAttentionIntentPredictor
 
 

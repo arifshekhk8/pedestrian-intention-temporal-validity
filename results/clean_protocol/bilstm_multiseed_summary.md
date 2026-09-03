@@ -1,6 +1,6 @@
 # Issue 2 hardening — Multi-seed clean baseline (5-D)
 
-`04_train_bilstm.py` on `sequences_clean/`, pos_weight 1.682, seeds [42, 0, 1, 2, 3]. Test split = set03 (2,094 windows), touched once per seed on the best-val checkpoint.
+the legacy BiLSTM trainer (source project `pipeline/04_train_bilstm.py`) on the clean window set, now `data/pie_clean/`, pos_weight 1.682, seeds [42, 0, 1, 2, 3]. Test split = set03 (2,094 windows), touched once per seed on the best-val checkpoint.
 
 ## Per-seed test metrics
 

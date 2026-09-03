@@ -54,7 +54,7 @@ def _load(name, path):
     return mod
 
 
-C = _load("rnn_common", F1OPT / "00_common.py")
+C = _load("rnn_common", ROOT / "src" / "metrics.py")
 
 yte = np.load(RNN_PCACHE / "y_test.npy")
 assert np.array_equal(yte, np.load(TF_PCACHE / "y_test.npy")), "y_test mismatch RNN vs f1_opt"

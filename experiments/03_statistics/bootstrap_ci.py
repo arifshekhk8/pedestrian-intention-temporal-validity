@@ -26,7 +26,7 @@ SEQ_DIR = I2 / "sequences_clean"
 SEEDS = [42, 0, 1, 2, 3]
 
 # reuse the verbatim model classes from the local cross-check script
-_spec = importlib.util.spec_from_file_location("v6b", I2 / "06b_local_verify_seed42.py")
+_spec = importlib.util.spec_from_file_location("v6b", HERE.parent.parent / "src" / "model_bilstm_legacy.py")
 _m = importlib.util.module_from_spec(_spec); _spec.loader.exec_module(_m)
 
 MODELS = {

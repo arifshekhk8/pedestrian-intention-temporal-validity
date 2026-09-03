@@ -138,6 +138,16 @@ baseline on AUC and PR-AUC, and the GRU on AUC and F1. It **ties the searched Tr
 
 **Evidence.** `experiments/02_model_comparison/MATCHED_COMPARISON.md`. Nine of 30 tests survive Holm.
 
+⚠ **This ranking does not survive the phase-matched control, and that must be stated wherever C6 is
+stated.** Under the control (`PHASE_MATCHED_CONTROL.md`) **no** contrast between the four families
+survives correction, against **7 of the same 18** under the standard sampling. So part of the measured
+architecture gap was differential exploitation of the class-dependent sampling artefact described in
+C4b and LIMITATIONS §1, not modelling capacity. The honest form of C6 is therefore conditional: *under
+the standard PIE sampling the families differ and the un-gated RNN is best; once negatives are
+phase-matched the ranking is no longer resolvable.* Note also that "not resolvable" is not
+"equivalent" — the strongest remaining contrast (Transformer over GRU on AUC) has p = 0.0032 against
+a corrected threshold of 0.00278, so it misses narrowly.
+
 The ablation is structurally genuine: parameter counts sit in an exact **4 : 3 : 1** recurrent ratio
 (594,561 / 446,081 / 149,121 at h128) with identical non-recurrent parts and identical state-dict
 keys, so "only the cell changed" is verified, not asserted.

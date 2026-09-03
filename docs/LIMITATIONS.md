@@ -17,7 +17,7 @@ The clean builder truncates at `crossing_point` for both classes. The consequenc
 | | anchor position relative to end of track |
 |---|---|
 | negatives | 32–62 frames before track end (median 46) |
-| positives | 158–741 frames before track end (median 287) |
+| positives | 88–6606 frames before track end (median 287) |
 
 Negatives are therefore **always observed as the ego vehicle is about to reach them**, while
 positives are observed 1–2 s before a mid-track crossing. Any cue correlated with imminent passing —
@@ -120,8 +120,10 @@ compares at matched *hidden width*, which at h128 means a 149,121-parameter RNN 
 
 All 65 runs in the F1-optimisation program record `device: mps`, and `nn.LSTM` training on Apple MPS
 is process-history-dependent (same config + same seed gives different results depending on what ran
-earlier in the process). **The published arm reproduces only from the saved checkpoints**, which is
-why they are published as a release asset rather than regenerated on demand.
+earlier in the process). **The published arm reproduces only from the saved checkpoints.** Those
+checkpoints are not in this repository and no release currently carries them, so that arm is not
+reproducible from here at all — its numbers stand on the shipped JSON in `results/` and nothing else.
+See `docs/REPRODUCE.md` Tier 3.
 
 CPU training *is* bit-reproducible — that is the path `src/engine.py` uses and the one this
 repository recommends.

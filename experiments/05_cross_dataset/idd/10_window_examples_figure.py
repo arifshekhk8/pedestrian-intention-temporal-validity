@@ -32,7 +32,7 @@ from matplotlib.patches import Patch, Rectangle  # noqa: E402
 
 HERE = Path(__file__).resolve().parent
 FOLDER = HERE.parent
-sys.path.insert(0, str(FOLDER / "src"))
+sys.path.insert(0, str(HERE / "lib"))
 from iddped_parser import CROSSING_BEHAVIOR_SCALARS as CB  # noqa: E402
 
 DB = FOLDER / "data" / "iddped_database.pkl"

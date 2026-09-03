@@ -32,7 +32,7 @@ import matplotlib.pyplot as plt  # noqa: E402
 HERE = Path(__file__).resolve().parent
 FOLDER = HERE.parent
 ROOT = FOLDER.parent
-sys.path.insert(0, str(FOLDER / "src"))
+sys.path.insert(0, str(HERE / "lib"))
 from pie_bridge import PIE_ARMS  # noqa: E402
 RES = FOLDER / "results"
 FIG = FOLDER / "figures"

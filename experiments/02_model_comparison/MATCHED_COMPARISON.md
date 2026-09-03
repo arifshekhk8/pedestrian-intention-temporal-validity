@@ -75,6 +75,11 @@ These must **not** be reported as significant. They are suggestive at best.
 
 ## What this establishes
 
+> ⚠ **Everything in this section holds under the standard PIE negative sampling only.** Under the
+> phase-matched control ([`PHASE_MATCHED_CONTROL.md`](PHASE_MATCHED_CONTROL.md)) **none** of the 18
+> family-vs-family contrasts survives correction, against 7 of the same 18 here. Do not quote the
+> ranking below without that condition attached.
+
 - **The four families do not tie.** Nine comparisons survive correction.
 - **The un-gated vanilla RNN (560k params, the smallest model) is the best.** It beats the
   BiLSTM on AUC and F1, beats the BiLSTM-h128 baseline on AUC and PR-AUC, and beats the GRU
@@ -99,9 +104,10 @@ These must **not** be reported as significant. They are suggestive at best.
 
 ## Matched search budget: does the transformer's larger search explain its result?
 
-The transformer received 78 configurations; the recurrent families received 36. Re-selecting from
-the cached search files (`transformer/phase2_kaggle_search/runs_search/`, read-only) answers this
-without retraining:
+The transformer received 78 configurations; the recurrent families received 36. Re-selecting from the
+cached search files answers this without retraining. Those files live in the source project
+(`transformer/phase2_kaggle_search/runs_search/`) and were not copied here, so this sub-analysis is
+archival — the conclusion below is recorded, not re-derivable from this repository:
 
 - The 78 configs decompose into **36 architecture configs** (all sharing the pre-registered default
   recipe `adam lr1e-03 plateau do0.1 wd1e-05`) and **42 recipe/transfer configs**.

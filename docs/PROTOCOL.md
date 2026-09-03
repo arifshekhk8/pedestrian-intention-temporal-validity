@@ -54,7 +54,7 @@ cross-split pedestrian leakage.
 | split | sets | windows | pedestrians | positives |
 |---|---|---|---|---|
 | train | set01, set02, set04 | 2,178 | 562 | 812 (37.3 %) |
-| val | set05, set06 | 634 | 164 | 155 (24.5 %) |
+| val | set05, set06 | 634 | 164 | 155 (24.4 %) |
 | test | **set03** | 2,094 | 541 | 681 (32.5 %) |
 
 `pos_weight` = 1366 / 812 = **1.682** (the train split's own negative/positive ratio).

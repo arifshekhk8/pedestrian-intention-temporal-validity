@@ -25,7 +25,7 @@ from sklearn.metrics import (accuracy_score, average_precision_score, f1_score,
 HERE = Path(__file__).resolve().parent
 I2 = HERE.parent / "issue2_clean_protocol"
 SEQ_DIR = I2 / "sequences_clean"
-_spec = importlib.util.spec_from_file_location("v6b", I2 / "06b_local_verify_seed42.py")
+_spec = importlib.util.spec_from_file_location("v6b", HERE.parent.parent / "src" / "model_bilstm_legacy.py")
 _m = importlib.util.module_from_spec(_spec); _spec.loader.exec_module(_m)
 BiLSTM = _m.BiLSTMIntentPredictor   # the locked 5-D baseline architecture
 

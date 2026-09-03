@@ -34,7 +34,7 @@ import matplotlib.pyplot as plt  # noqa: E402
 
 HERE = Path(__file__).resolve().parent
 FOLDER = HERE.parent
-sys.path.insert(0, str(FOLDER / "src"))
+sys.path.insert(0, str(HERE / "lib"))
 from pie_bridge import load_common, load_iddped, ped_clusters, split_masks  # noqa: E402
 
 RES = FOLDER / "results"

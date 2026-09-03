@@ -22,7 +22,7 @@ from pathlib import Path
 import numpy as np
 
 HERE = Path(__file__).resolve().parent
-_spec = importlib.util.spec_from_file_location("f1_common", HERE / "00_common.py")
+_spec = importlib.util.spec_from_file_location("f1_common", HERE.parent.parent / "src" / "metrics.py")
 C = importlib.util.module_from_spec(_spec)
 _spec.loader.exec_module(C)
 

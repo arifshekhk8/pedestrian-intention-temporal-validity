@@ -38,7 +38,7 @@ from sklearn.metrics import roc_auc_score
 
 HERE = Path(__file__).resolve().parent
 FOLDER = HERE.parent
-sys.path.insert(0, str(FOLDER / "src"))
+sys.path.insert(0, str(HERE / "lib"))
 from pie_bridge import (PIE_ARMS, SEEDS, BASELINE_LSTM_CFG, LSTM_PARITY_DIR,  # noqa: E402
                         arm_run_dir, load_common, load_engine, load_iddped,
                         ped_clusters, split_masks, to_pie_frame)

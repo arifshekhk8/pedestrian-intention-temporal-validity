@@ -1,0 +1,1014 @@
+{
+  "protocol": {
+    "bootstrap": 10000,
+    "correction": "Holm-Bonferroni within each arm separately",
+    "seeds": [
+      42,
+      0,
+      1,
+      2,
+      3
+    ],
+    "device": "cpu",
+    "pos_weight": 1.5665024630541873,
+    "n_test": 1873,
+    "n_test_pedestrians": 476,
+    "n_test_standard": 2094,
+    "n_test_pedestrians_standard": 541,
+    "threshold": "one tau per model per protocol, fitted on that protocol's validation split"
+  },
+  "point": {
+    "BiLSTM": {
+      "tau": 0.39155739545822144,
+      "auc": 0.8906932166474489,
+      "pr_auc": 0.7773532014603706,
+      "f1": 0.777120315581854
+    },
+    "Transformer": {
+      "tau": 0.63347327709198,
+      "auc": 0.9007283012545704,
+      "pr_auc": 0.7807093051905879,
+      "f1": 0.7696629213483146
+    },
+    "GRU": {
+      "tau": 0.28233134746551514,
+      "auc": 0.8866944584060157,
+      "pr_auc": 0.7602563440311632,
+      "f1": 0.7680311890838206
+    },
+    "Vanilla RNN": {
+      "tau": 0.4502285420894623,
+      "auc": 0.890226325281613,
+      "pr_auc": 0.7807111148222043,
+      "f1": 0.7725150100066711
+    },
+    "LR bbox + ego-speed (80)": {
+      "tau": 0.5281798243522644,
+      "auc": 0.9031095704106673,
+      "pr_auc": 0.8184107338337844,
+      "f1": 0.7561156412157154
+    },
+    "LR ego-speed only (16)": {
+      "tau": 0.41806548833847046,
+      "auc": 0.8257053878524475,
+      "pr_auc": 0.6593726859705651,
+      "f1": 0.715765247410817
+    },
+    "LR bbox only (64)": {
+      "tau": 0.349721759557724,
+      "auc": 0.898742473070593,
+      "pr_auc": 0.8117925149806418,
+      "f1": 0.7577639751552795
+    }
+  },
+  "between_models": {
+    "BiLSTM - Transformer [AUC]": {
+      "delta": -0.010035084607121436,
+      "ci": [
+        -0.01845462799607705,
+        -0.0015795595619862743
+      ],
+      "p": 0.021397860213978603,
+      "p_holm": 0.9843015698430158,
+      "significant_holm": false,
+      "significant_uncorrected": true
+    },
+    "BiLSTM - Transformer [PR-AUC]": {
+      "delta": -0.00335610373021733,
+      "ci": [
+        -0.031932507460303176,
+        0.020089822341658105
+      ],
+      "p": 0.7227277272272773,
+      "p_holm": 1.0,
+      "significant_holm": false,
+      "significant_uncorrected": false
+    },
+    "BiLSTM - Transformer [F1@tau]": {
+      "delta": 0.007457394233539416,
+      "ci": [
+        -0.015480831089126,
+        0.0324282522396097
+      ],
+      "p": 0.5423457654234577,
+      "p_holm": 1.0,
+      "significant_holm": false,
+      "significant_uncorrected": false
+    },
+    "BiLSTM - GRU [AUC]": {
+      "delta": 0.003998758241433253,
+      "ci": [
+        -0.00042005409913268,
+        0.008408962952389264
+      ],
+      "p": 0.06919308069193081,
+      "p_holm": 1.0,
+      "significant_holm": false,
+      "significant_uncorrected": false
+    },
+    "BiLSTM - GRU [PR-AUC]": {
+      "delta": 0.017096857429207413,
+      "ci": [
+        -0.0024329501717666067,
+        0.0358016878716705
+      ],
+      "p": 0.08759124087591241,
+      "p_holm": 1.0,
+      "significant_holm": false,
+      "significant_uncorrected": false
+    },
+    "BiLSTM - GRU [F1@tau]": {
+      "delta": 0.009089126498033395,
+      "ci": [
+        -0.003853695543050986,
+        0.02334494445806708
+      ],
+      "p": 0.18538146185381463,
+      "p_holm": 1.0,
+      "significant_holm": false,
+      "significant_uncorrected": false
+    },
+    "BiLSTM - Vanilla RNN [AUC]": {
+      "delta": 0.0004668913658358864,
+      "ci": [
+        -0.004535803657310572,
+        0.005132958372195084
+      ],
+      "p": 0.8439156084391561,
+      "p_holm": 1.0,
+      "significant_holm": false,
+      "significant_uncorrected": false
+    },
+    "BiLSTM - Vanilla RNN [PR-AUC]": {
+      "delta": -0.0033579133618337753,
+      "ci": [
+        -0.030600509858125548,
+        0.019051218695781132
+      ],
+      "p": 0.83991600839916,
+      "p_holm": 1.0,
+      "significant_holm": false,
+      "significant_uncorrected": false
+    },
+    "BiLSTM - Vanilla RNN [F1@tau]": {
+      "delta": 0.004605305575182905,
+      "ci": [
+        -0.008050055138301778,
+        0.018588175588239428
+      ],
+      "p": 0.50994900509949,
+      "p_holm": 1.0,
+      "significant_holm": false,
+      "significant_uncorrected": false
+    },
+    "BiLSTM - LR bbox + ego-speed (80) [AUC]": {
+      "delta": -0.012416353763218368,
+      "ci": [
+        -0.029644838733044836,
+        0.004912358388600015
+      ],
+      "p": 0.15198480151984803,
+      "p_holm": 1.0,
+      "significant_holm": false,
+      "significant_uncorrected": false
+    },
+    "BiLSTM - LR bbox + ego-speed (80) [PR-AUC]": {
+      "delta": -0.04105753237341381,
+      "ci": [
+        -0.09511914547966603,
+        0.015169034255262783
+      ],
+      "p": 0.14158584141585842,
+      "p_holm": 1.0,
+      "significant_holm": false,
+      "significant_uncorrected": false
+    },
+    "BiLSTM - LR bbox + ego-speed (80) [F1@tau]": {
+      "delta": 0.02100467436613862,
+      "ci": [
+        -0.013678975116513729,
+        0.05624460583269921
+      ],
+      "p": 0.2283771622837716,
+      "p_holm": 1.0,
+      "significant_holm": false,
+      "significant_uncorrected": false
+    },
+    "BiLSTM - LR ego-speed only (16) [AUC]": {
+      "delta": 0.06498782879500142,
+      "ci": [
+        0.03281751721481,
+        0.09718132504414621
+      ],
+      "p": 0.00019998000199980003,
+      "p_holm": 0.012598740125987402,
+      "significant_holm": true,
+      "significant_uncorrected": true
+    },
+    "BiLSTM - LR ego-speed only (16) [PR-AUC]": {
+      "delta": 0.11798051548980548,
+      "ci": [
+        0.035654069925058006,
+        0.18530750628547216
+      ],
+      "p": 0.0037996200379962005,
+      "p_holm": 0.19378062193780624,
+      "significant_holm": false,
+      "significant_uncorrected": true
+    },
+    "BiLSTM - LR ego-speed only (16) [F1@tau]": {
+      "delta": 0.061355068171036975,
+      "ci": [
+        0.022934770725982125,
+        0.10076160539586172
+      ],
+      "p": 0.0021997800219978004,
+      "p_holm": 0.11878812118788122,
+      "significant_holm": false,
+      "significant_uncorrected": true
+    },
+    "BiLSTM - LR bbox only (64) [AUC]": {
+      "delta": -0.008049256423144024,
+      "ci": [
+        -0.02315345920683609,
+        0.006620386169211971
+      ],
+      "p": 0.282971702829717,
+      "p_holm": 1.0,
+      "significant_holm": false,
+      "significant_uncorrected": false
+    },
+    "BiLSTM - LR bbox only (64) [PR-AUC]": {
+      "delta": -0.034439313520271186,
+      "ci": [
+        -0.09026721877824993,
+        0.0234163877005531
+      ],
+      "p": 0.2343765623437656,
+      "p_holm": 1.0,
+      "significant_holm": false,
+      "significant_uncorrected": false
+    },
+    "BiLSTM - LR bbox only (64) [F1@tau]": {
+      "delta": 0.019356340426574525,
+      "ci": [
+        -0.009144423750934156,
+        0.049822248369722426
+      ],
+      "p": 0.19018098190180982,
+      "p_holm": 1.0,
+      "significant_holm": false,
+      "significant_uncorrected": false
+    },
+    "Transformer - GRU [AUC]": {
+      "delta": 0.01403384284855469,
+      "ci": [
+        0.005158254309242422,
+        0.023023218151557407
+      ],
+      "p": 0.0027997200279972004,
+      "p_holm": 0.1483851614838516,
+      "significant_holm": false,
+      "significant_uncorrected": true
+    },
+    "Transformer - GRU [PR-AUC]": {
+      "delta": 0.020452961159424743,
+      "ci": [
+        -0.007911655813528104,
+        0.05241268404889939
+      ],
+      "p": 0.15258474152584742,
+      "p_holm": 1.0,
+      "significant_holm": false,
+      "significant_uncorrected": false
+    },
+    "Transformer - GRU [F1@tau]": {
+      "delta": 0.0016317322644939791,
+      "ci": [
+        -0.02361683387142273,
+        0.02624337657831611
+      ],
+      "p": 0.9005099490050995,
+      "p_holm": 1.0,
+      "significant_holm": false,
+      "significant_uncorrected": false
+    },
+    "Transformer - Vanilla RNN [AUC]": {
+      "delta": 0.010501975972957323,
+      "ci": [
+        0.001277390439311549,
+        0.0197492827784156
+      ],
+      "p": 0.025197480251974803,
+      "p_holm": 1.0,
+      "significant_holm": false,
+      "significant_uncorrected": true
+    },
+    "Transformer - Vanilla RNN [PR-AUC]": {
+      "delta": -1.8096316164450954e-06,
+      "ci": [
+        -0.04011343231242131,
+        0.044261063807052296
+      ],
+      "p": 0.9513048695130487,
+      "p_holm": 1.0,
+      "significant_holm": false,
+      "significant_uncorrected": false
+    },
+    "Transformer - Vanilla RNN [F1@tau]": {
+      "delta": -0.002852088658356511,
+      "ci": [
+        -0.02430790935066536,
+        0.017230362443054096
+      ],
+      "p": 0.7999200079992,
+      "p_holm": 1.0,
+      "significant_holm": false,
+      "significant_uncorrected": false
+    },
+    "Transformer - LR bbox + ego-speed (80) [AUC]": {
+      "delta": -0.0023812691560969323,
+      "ci": [
+        -0.016098894540991386,
+        0.010955030742314202
+      ],
+      "p": 0.7349265073492651,
+      "p_holm": 1.0,
+      "significant_holm": false,
+      "significant_uncorrected": false
+    },
+    "Transformer - LR bbox + ego-speed (80) [PR-AUC]": {
+      "delta": -0.03770142864319648,
+      "ci": [
+        -0.08952084367410798,
+        0.019638789758139652
+      ],
+      "p": 0.20137986201379862,
+      "p_holm": 1.0,
+      "significant_holm": false,
+      "significant_uncorrected": false
+    },
+    "Transformer - LR bbox + ego-speed (80) [F1@tau]": {
+      "delta": 0.013547280132599204,
+      "ci": [
+        -0.013982794585937583,
+        0.04193422928659458
+      ],
+      "p": 0.3501649835016498,
+      "p_holm": 1.0,
+      "significant_holm": false,
+      "significant_uncorrected": false
+    },
+    "Transformer - LR ego-speed only (16) [AUC]": {
+      "delta": 0.07502291340212286,
+      "ci": [
+        0.046054464489811875,
+        0.10501185043067249
+      ],
+      "p": 0.00019998000199980003,
+      "p_holm": 0.012598740125987402,
+      "significant_holm": true,
+      "significant_uncorrected": true
+    },
+    "Transformer - LR ego-speed only (16) [PR-AUC]": {
+      "delta": 0.12133661922002281,
+      "ci": [
+        0.04231483621704913,
+        0.19120099514875669
+      ],
+      "p": 0.001999800019998,
+      "p_holm": 0.10998900109989,
+      "significant_holm": false,
+      "significant_uncorrected": true
+    },
+    "Transformer - LR ego-speed only (16) [F1@tau]": {
+      "delta": 0.05389767393749756,
+      "ci": [
+        0.009314679921925549,
+        0.09797335830014585
+      ],
+      "p": 0.0197980201979802,
+      "p_holm": 0.9305069493050695,
+      "significant_holm": false,
+      "significant_uncorrected": true
+    },
+    "Transformer - LR bbox only (64) [AUC]": {
+      "delta": 0.0019858281839774117,
+      "ci": [
+        -0.012091361785050204,
+        0.01556029696835927
+      ],
+      "p": 0.7559244075592441,
+      "p_holm": 1.0,
+      "significant_holm": false,
+      "significant_uncorrected": false
+    },
+    "Transformer - LR bbox only (64) [PR-AUC]": {
+      "delta": -0.031083209790053856,
+      "ci": [
+        -0.08470634900003374,
+        0.027645373482877354
+      ],
+      "p": 0.31556844315568444,
+      "p_holm": 1.0,
+      "significant_holm": false,
+      "significant_uncorrected": false
+    },
+    "Transformer - LR bbox only (64) [F1@tau]": {
+      "delta": 0.01189894619303511,
+      "ci": [
+        -0.01446509430179046,
+        0.038689064507462616
+      ],
+      "p": 0.38216178382161786,
+      "p_holm": 1.0,
+      "significant_holm": false,
+      "significant_uncorrected": false
+    },
+    "GRU - Vanilla RNN [AUC]": {
+      "delta": -0.003531866875597367,
+      "ci": [
+        -0.008371682910418654,
+        0.001019521073588081
+      ],
+      "p": 0.1321867813218678,
+      "p_holm": 1.0,
+      "significant_holm": false,
+      "significant_uncorrected": false
+    },
+    "GRU - Vanilla RNN [PR-AUC]": {
+      "delta": -0.020454770791041188,
+      "ci": [
+        -0.04306545875381834,
+        0.0012512124079224682
+      ],
+      "p": 0.0685931406859314,
+      "p_holm": 1.0,
+      "significant_holm": false,
+      "significant_uncorrected": false
+    },
+    "GRU - Vanilla RNN [F1@tau]": {
+      "delta": -0.00448382092285049,
+      "ci": [
+        -0.0190551927740654,
+        0.009994682665723693
+      ],
+      "p": 0.5555444455554445,
+      "p_holm": 1.0,
+      "significant_holm": false,
+      "significant_uncorrected": false
+    },
+    "GRU - LR bbox + ego-speed (80) [AUC]": {
+      "delta": -0.016415112004651622,
+      "ci": [
+        -0.03343143040913355,
+        0.0004059397014461824
+      ],
+      "p": 0.059194080591940805,
+      "p_holm": 1.0,
+      "significant_holm": false,
+      "significant_uncorrected": false
+    },
+    "GRU - LR bbox + ego-speed (80) [PR-AUC]": {
+      "delta": -0.05815438980262122,
+      "ci": [
+        -0.10950622973866417,
+        -0.003892332005740837
+      ],
+      "p": 0.035396460353964605,
+      "p_holm": 1.0,
+      "significant_holm": false,
+      "significant_uncorrected": true
+    },
+    "GRU - LR bbox + ego-speed (80) [F1@tau]": {
+      "delta": 0.011915547868105225,
+      "ci": [
+        -0.023628358843398856,
+        0.047459278141644176
+      ],
+      "p": 0.5169483051694831,
+      "p_holm": 1.0,
+      "significant_holm": false,
+      "significant_uncorrected": false
+    },
+    "GRU - LR ego-speed only (16) [AUC]": {
+      "delta": 0.06098907055356817,
+      "ci": [
+        0.028959655554803048,
+        0.09296944636548511
+      ],
+      "p": 0.00039996000399960006,
+      "p_holm": 0.022797720227977204,
+      "significant_holm": true,
+      "significant_uncorrected": true
+    },
+    "GRU - LR ego-speed only (16) [PR-AUC]": {
+      "delta": 0.10088365806059807,
+      "ci": [
+        0.018849320886256217,
+        0.16749593446954525
+      ],
+      "p": 0.014798520147985201,
+      "p_holm": 0.7103289671032896,
+      "significant_holm": false,
+      "significant_uncorrected": true
+    },
+    "GRU - LR ego-speed only (16) [F1@tau]": {
+      "delta": 0.05226594167300358,
+      "ci": [
+        0.0131887471523249,
+        0.09099711746654719
+      ],
+      "p": 0.009599040095990401,
+      "p_holm": 0.47035296470352966,
+      "significant_holm": false,
+      "significant_uncorrected": true
+    },
+    "GRU - LR bbox only (64) [AUC]": {
+      "delta": -0.012048014664577278,
+      "ci": [
+        -0.02763825694968452,
+        0.003269615269739451
+      ],
+      "p": 0.11798820117988201,
+      "p_holm": 1.0,
+      "significant_holm": false,
+      "significant_uncorrected": false
+    },
+    "GRU - LR bbox only (64) [PR-AUC]": {
+      "delta": -0.0515361709494786,
+      "ci": [
+        -0.10598906044534255,
+        0.006161880011962152
+      ],
+      "p": 0.07899210078992101,
+      "p_holm": 1.0,
+      "significant_holm": false,
+      "significant_uncorrected": false
+    },
+    "GRU - LR bbox only (64) [F1@tau]": {
+      "delta": 0.01026721392854113,
+      "ci": [
+        -0.0184255667944699,
+        0.040283203044390446
+      ],
+      "p": 0.48075192480751927,
+      "p_holm": 1.0,
+      "significant_holm": false,
+      "significant_uncorrected": false
+    },
+    "Vanilla RNN - LR bbox + ego-speed (80) [AUC]": {
+      "delta": -0.012883245129054255,
+      "ci": [
+        -0.028038854669871043,
+        0.002825084127146462
+      ],
+      "p": 0.10438956104389562,
+      "p_holm": 1.0,
+      "significant_holm": false,
+      "significant_uncorrected": false
+    },
+    "Vanilla RNN - LR bbox + ego-speed (80) [PR-AUC]": {
+      "delta": -0.03769961901158003,
+      "ci": [
+        -0.0848252134680615,
+        0.01161014011733392
+      ],
+      "p": 0.12238776122387761,
+      "p_holm": 1.0,
+      "significant_holm": false,
+      "significant_uncorrected": false
+    },
+    "Vanilla RNN - LR bbox + ego-speed (80) [F1@tau]": {
+      "delta": 0.016399368790955715,
+      "ci": [
+        -0.01620240333674064,
+        0.04944369978425732
+      ],
+      "p": 0.3213678632136786,
+      "p_holm": 1.0,
+      "significant_holm": false,
+      "significant_uncorrected": false
+    },
+    "Vanilla RNN - LR ego-speed only (16) [AUC]": {
+      "delta": 0.06452093742916554,
+      "ci": [
+        0.032898948043929246,
+        0.09599804380649407
+      ],
+      "p": 0.00019998000199980003,
+      "p_holm": 0.012598740125987402,
+      "significant_holm": true,
+      "significant_uncorrected": true
+    },
+    "Vanilla RNN - LR ego-speed only (16) [PR-AUC]": {
+      "delta": 0.12133842885163926,
+      "ci": [
+        0.03885125638396634,
+        0.18707056139434733
+      ],
+      "p": 0.0031996800319968005,
+      "p_holm": 0.16638336166383363,
+      "significant_holm": false,
+      "significant_uncorrected": true
+    },
+    "Vanilla RNN - LR ego-speed only (16) [F1@tau]": {
+      "delta": 0.05674976259585407,
+      "ci": [
+        0.017167645553072784,
+        0.09639177758326975
+      ],
+      "p": 0.0047995200479952005,
+      "p_holm": 0.23997600239976002,
+      "significant_holm": false,
+      "significant_uncorrected": true
+    },
+    "Vanilla RNN - LR bbox only (64) [AUC]": {
+      "delta": -0.008516147788979911,
+      "ci": [
+        -0.021683149212200558,
+        0.004905849655326096
+      ],
+      "p": 0.21077892210778923,
+      "p_holm": 1.0,
+      "significant_holm": false,
+      "significant_uncorrected": false
+    },
+    "Vanilla RNN - LR bbox only (64) [PR-AUC]": {
+      "delta": -0.03108140015843741,
+      "ci": [
+        -0.07780818906767487,
+        0.021037241827329738
+      ],
+      "p": 0.22957704229577042,
+      "p_holm": 1.0,
+      "significant_holm": false,
+      "significant_uncorrected": false
+    },
+    "Vanilla RNN - LR bbox only (64) [F1@tau]": {
+      "delta": 0.01475103485139162,
+      "ci": [
+        -0.013717167038154007,
+        0.04473890740836686
+      ],
+      "p": 0.32096790320967905,
+      "p_holm": 1.0,
+      "significant_holm": false,
+      "significant_uncorrected": false
+    },
+    "LR bbox + ego-speed (80) - LR ego-speed only (16) [AUC]": {
+      "delta": 0.07740418255821979,
+      "ci": [
+        0.05365478129634316,
+        0.10184863284918223
+      ],
+      "p": 0.00019998000199980003,
+      "p_holm": 0.012598740125987402,
+      "significant_holm": true,
+      "significant_uncorrected": true
+    },
+    "LR bbox + ego-speed (80) - LR ego-speed only (16) [PR-AUC]": {
+      "delta": 0.1590380478632193,
+      "ci": [
+        0.08314518622663811,
+        0.2191673427753722
+      ],
+      "p": 0.00019998000199980003,
+      "p_holm": 0.012598740125987402,
+      "significant_holm": true,
+      "significant_uncorrected": true
+    },
+    "LR bbox + ego-speed (80) - LR ego-speed only (16) [F1@tau]": {
+      "delta": 0.040350393804898355,
+      "ci": [
+        -0.0052766022728658315,
+        0.08546491187669684
+      ],
+      "p": 0.0857914208579142,
+      "p_holm": 1.0,
+      "significant_holm": false,
+      "significant_uncorrected": false
+    },
+    "LR bbox + ego-speed (80) - LR bbox only (64) [AUC]": {
+      "delta": 0.004367097340074344,
+      "ci": [
+        -0.00927356280381062,
+        0.0177501737349206
+      ],
+      "p": 0.5251474852514748,
+      "p_holm": 1.0,
+      "significant_holm": false,
+      "significant_uncorrected": false
+    },
+    "LR bbox + ego-speed (80) - LR bbox only (64) [PR-AUC]": {
+      "delta": 0.006618218853142621,
+      "ci": [
+        -0.012924185412259837,
+        0.026448529327242527
+      ],
+      "p": 0.525947405259474,
+      "p_holm": 1.0,
+      "significant_holm": false,
+      "significant_uncorrected": false
+    },
+    "LR bbox + ego-speed (80) - LR bbox only (64) [F1@tau]": {
+      "delta": -0.001648333939564095,
+      "ci": [
+        -0.027536049085141706,
+        0.02369453651148917
+      ],
+      "p": 0.9265073492650735,
+      "p_holm": 1.0,
+      "significant_holm": false,
+      "significant_uncorrected": false
+    },
+    "LR ego-speed only (16) - LR bbox only (64) [AUC]": {
+      "delta": -0.07303708521814545,
+      "ci": [
+        -0.10568510591360869,
+        -0.04069013239411529
+      ],
+      "p": 0.00019998000199980003,
+      "p_holm": 0.012598740125987402,
+      "significant_holm": true,
+      "significant_uncorrected": true
+    },
+    "LR ego-speed only (16) - LR bbox only (64) [PR-AUC]": {
+      "delta": -0.15241982901007667,
+      "ci": [
+        -0.21847856132161486,
+        -0.0713418394151647
+      ],
+      "p": 0.00039996000399960006,
+      "p_holm": 0.022797720227977204,
+      "significant_holm": true,
+      "significant_uncorrected": true
+    },
+    "LR ego-speed only (16) - LR bbox only (64) [F1@tau]": {
+      "delta": -0.04199872774446245,
+      "ci": [
+        -0.08721428140579453,
+        0.004642750130283575
+      ],
+      "p": 0.07439256074392561,
+      "p_holm": 1.0,
+      "significant_holm": false,
+      "significant_uncorrected": false
+    }
+  },
+  "standard_vs_matched": {
+    "BiLSTM [AUC]": {
+      "standard": 0.9319700743983131,
+      "matched": 0.8906932166474489,
+      "delta": -0.041276857750864204,
+      "ci": [
+        -0.07842649213228443,
+        -0.004204327847181256
+      ],
+      "p": 0.030396960303969604,
+      "p_holm": 0.17278272172782722,
+      "significant_holm": false
+    },
+    "BiLSTM [PR-AUC]": {
+      "standard": 0.8768263023465308,
+      "matched": 0.7773532014603706,
+      "delta": -0.09947310088616024,
+      "ci": [
+        -0.18720867731448365,
+        -0.011333685265715097
+      ],
+      "p": 0.0287971202879712,
+      "p_holm": 0.17278272172782722,
+      "significant_holm": false
+    },
+    "BiLSTM [F1@tau]": {
+      "standard": 0.8313338038108681,
+      "matched": 0.777120315581854,
+      "delta": -0.05421348822901406,
+      "ci": [
+        -0.11356555818031992,
+        0.004940106822787602
+      ],
+      "p": 0.070992900709929,
+      "p_holm": 0.283971602839716,
+      "significant_holm": false
+    },
+    "Transformer [AUC]": {
+      "standard": 0.9550284592513612,
+      "matched": 0.9007283012545704,
+      "delta": -0.05430015799679078,
+      "ci": [
+        -0.08804323099353324,
+        -0.0217032909323321
+      ],
+      "p": 0.000999900009999,
+      "p_holm": 0.016998300169983,
+      "significant_holm": true
+    },
+    "Transformer [PR-AUC]": {
+      "standard": 0.907388374472804,
+      "matched": 0.7807093051905879,
+      "delta": -0.12667906928221606,
+      "ci": [
+        -0.21418992238697576,
+        -0.036993511408317754
+      ],
+      "p": 0.0047995200479952005,
+      "p_holm": 0.0527947205279472,
+      "significant_holm": false
+    },
+    "Transformer [F1@tau]": {
+      "standard": 0.8523391812865497,
+      "matched": 0.7696629213483146,
+      "delta": -0.08267625993823513,
+      "ci": [
+        -0.1435182052920807,
+        -0.024133791415517303
+      ],
+      "p": 0.006199380061993801,
+      "p_holm": 0.05599440055994401,
+      "significant_holm": false
+    },
+    "GRU [AUC]": {
+      "standard": 0.9423363709959854,
+      "matched": 0.8866944584060157,
+      "delta": -0.055641912589969755,
+      "ci": [
+        -0.09237117274312674,
+        -0.018241977290270644
+      ],
+      "p": 0.0035996400359964,
+      "p_holm": 0.046795320467953205,
+      "significant_holm": true
+    },
+    "GRU [PR-AUC]": {
+      "standard": 0.8924385494969761,
+      "matched": 0.7602563440311632,
+      "delta": -0.13218220546581294,
+      "ci": [
+        -0.22384523021416286,
+        -0.042519955607567286
+      ],
+      "p": 0.0031996800319968005,
+      "p_holm": 0.044795520447955206,
+      "significant_holm": true
+    },
+    "GRU [F1@tau]": {
+      "standard": 0.8448275862068966,
+      "matched": 0.7680311890838206,
+      "delta": -0.07679639712307595,
+      "ci": [
+        -0.13496076977387927,
+        -0.018608095882229066
+      ],
+      "p": 0.007799220077992201,
+      "p_holm": 0.059194080591940805,
+      "significant_holm": false
+    },
+    "Vanilla RNN [AUC]": {
+      "standard": 0.9544672762776526,
+      "matched": 0.890226325281613,
+      "delta": -0.06424095099603955,
+      "ci": [
+        -0.0986089424366137,
+        -0.03003248481554961
+      ],
+      "p": 0.00039996000399960006,
+      "p_holm": 0.007599240075992401,
+      "significant_holm": true
+    },
+    "Vanilla RNN [PR-AUC]": {
+      "standard": 0.9049660213589138,
+      "matched": 0.7807111148222043,
+      "delta": -0.12425490653670945,
+      "ci": [
+        -0.21280968207942413,
+        -0.03996567191146162
+      ],
+      "p": 0.003999600039996,
+      "p_holm": 0.047995200479952004,
+      "significant_holm": true
+    },
+    "Vanilla RNN [F1@tau]": {
+      "standard": 0.8633720930232558,
+      "matched": 0.7725150100066711,
+      "delta": -0.09085708301658468,
+      "ci": [
+        -0.14796781419253507,
+        -0.03453577476594937
+      ],
+      "p": 0.0027997200279972004,
+      "p_holm": 0.041995800419958006,
+      "significant_holm": true
+    },
+    "LR bbox + ego-speed (80) [AUC]": {
+      "standard": 0.9488367404414432,
+      "matched": 0.9031095704106673,
+      "delta": -0.045727170030775866,
+      "ci": [
+        -0.07933032850132646,
+        -0.013513137279212835
+      ],
+      "p": 0.005599440055994401,
+      "p_holm": 0.05599440055994401,
+      "significant_holm": false
+    },
+    "LR bbox + ego-speed (80) [PR-AUC]": {
+      "standard": 0.9121223267248602,
+      "matched": 0.8184107338337844,
+      "delta": -0.09371159289107578,
+      "ci": [
+        -0.1679017894217772,
+        -0.021740121235945264
+      ],
+      "p": 0.007399260073992601,
+      "p_holm": 0.059194080591940805,
+      "significant_holm": false
+    },
+    "LR bbox + ego-speed (80) [F1@tau]": {
+      "standard": 0.854559155990957,
+      "matched": 0.7561156412157154,
+      "delta": -0.0984435147752416,
+      "ci": [
+        -0.15852456019591152,
+        -0.038829406550566284
+      ],
+      "p": 0.0015998400159984002,
+      "p_holm": 0.025597440255974404,
+      "significant_holm": true
+    },
+    "LR ego-speed only (16) [AUC]": {
+      "standard": 0.9334509739122663,
+      "matched": 0.8257053878524475,
+      "delta": -0.10774558605981877,
+      "ci": [
+        -0.14853283833926492,
+        -0.06754372494346186
+      ],
+      "p": 0.00019998000199980003,
+      "p_holm": 0.004199580041995801,
+      "significant_holm": true
+    },
+    "LR ego-speed only (16) [PR-AUC]": {
+      "standard": 0.8538403330513125,
+      "matched": 0.6593726859705651,
+      "delta": -0.19446764708074737,
+      "ci": [
+        -0.27702297976852774,
+        -0.09443374846654873
+      ],
+      "p": 0.00019998000199980003,
+      "p_holm": 0.004199580041995801,
+      "significant_holm": true
+    },
+    "LR ego-speed only (16) [F1@tau]": {
+      "standard": 0.8198675496688742,
+      "matched": 0.715765247410817,
+      "delta": -0.10410230225805717,
+      "ci": [
+        -0.16670042901079724,
+        -0.04276990804430521
+      ],
+      "p": 0.0007999200079992001,
+      "p_holm": 0.014398560143985602,
+      "significant_holm": true
+    },
+    "LR bbox only (64) [AUC]": {
+      "standard": 0.9128685491237751,
+      "matched": 0.898742473070593,
+      "delta": -0.014126076053182168,
+      "ci": [
+        -0.05006419643756958,
+        0.021634173920454323
+      ],
+      "p": 0.44275572442755723,
+      "p_holm": 1.0,
+      "significant_holm": false
+    },
+    "LR bbox only (64) [PR-AUC]": {
+      "standard": 0.8034984076633108,
+      "matched": 0.8117925149806418,
+      "delta": 0.008294107317330934,
+      "ci": [
+        -0.08376405518099912,
+        0.09989478130413072
+      ],
+      "p": 0.8619138086191381,
+      "p_holm": 1.0,
+      "significant_holm": false
+    },
+    "LR bbox only (64) [F1@tau]": {
+      "standard": 0.7812301838934687,
+      "matched": 0.7577639751552795,
+      "delta": -0.023466208738189165,
+      "ci": [
+        -0.08413193349295106,
+        0.03678024130769149
+      ],
+      "p": 0.44755524447555245,
+      "p_holm": 1.0,
+      "significant_holm": false
+    }
+  },
+  "note_on_cross_protocol": "Arm B is unpaired: phase-matching drops 115 negative pedestrians, so the two protocols have different test sets (1,873 windows / 476 pedestrians vs 2,094 / 541). Each arm is bootstrapped over its own pedestrians and the difference of the two independent distributions is reported. This is valid but less powerful than the paired procedure used in arm A."
+}

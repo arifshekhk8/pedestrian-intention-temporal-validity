@@ -65,10 +65,65 @@ encoding *"the car is about to pass this pedestrian"* rather than crossing behav
 0.024 on the original sampling — so part of the measured architecture gap was differential
 exploitation of the artefact, not modelling capacity.
 
+## Significance testing (`phase_matched_stats.py`)
+
+The table above is per-seed means. The tests below use the 5-seed **ensemble** on the same
+checkpoints, with pedestrian-clustered bootstrap (B = 10,000) and Holm correction applied
+separately within each arm.
+
+### Arm A — between models, on phase-matched data. **8 of 63 survive Holm.**
+
+**None of them is a family-vs-family contrast.** All 18 tests among BiLSTM / Transformer /
+GRU / Vanilla RNN fail correction on every metric. Every survivor is some model beating the
+speed-only linear baseline:
+
+| contrast | Δ | p_Holm |
+|---|---|---|
+| LR(80) − LR speed-only [PR-AUC] | +0.1590 | 0.0126 |
+| LR(80) − LR speed-only [AUC] | +0.0774 | 0.0126 |
+| Transformer − LR speed-only [AUC] | +0.0750 | 0.0126 |
+| LR box-only − LR speed-only [AUC] | +0.0730 | 0.0126 |
+| BiLSTM − LR speed-only [AUC] | +0.0650 | 0.0126 |
+| Vanilla RNN − LR speed-only [AUC] | +0.0645 | 0.0126 |
+| LR box-only − LR speed-only [PR-AUC] | +0.1524 | 0.0228 |
+| GRU − LR speed-only [AUC] | +0.0610 | 0.0228 |
+
+> Under the standard protocol 9 of 30 contrasts survive Holm and the families demonstrably
+> differ. Under the control, **0 of 18 family contrasts survive**. The architecture ranking
+> does not merely reorder — it stops being detectable.
+
+### Arm B — standard vs phase-matched, per model. **10 of 21 survive Holm.**
+
+Unpaired: phase-matching drops 115 negative pedestrians, so the two protocols have different
+test sets (1,873 / 476 pedestrians vs 2,094 / 541). Each arm is bootstrapped over its own
+pedestrians and the difference of the two independent distributions is reported — valid, but
+less powerful than pairing.
+
+| model | metric | standard → matched | Δ | 95 % CI | p_Holm |
+|---|---|---|---|---|---|
+| Vanilla RNN | AUC | 0.9545 → 0.8902 | −0.0642 | [−0.0986, −0.0300] | **0.0076** |
+| Vanilla RNN | PR-AUC | 0.9050 → 0.7807 | −0.1243 | [−0.2128, −0.0400] | **0.0480** |
+| Vanilla RNN | F1 | 0.8634 → 0.7725 | −0.0909 | [−0.1480, −0.0345] | **0.0420** |
+| Transformer | AUC | 0.9550 → 0.9007 | −0.0543 | [−0.0880, −0.0217] | **0.0170** |
+| GRU | AUC | 0.9423 → 0.8867 | −0.0556 | [−0.0924, −0.0182] | **0.0468** |
+| GRU | PR-AUC | 0.8924 → 0.7603 | −0.1322 | [−0.2238, −0.0425] | **0.0448** |
+| BiLSTM | AUC | 0.9320 → 0.8907 | −0.0413 | [−0.0784, −0.0042] | 0.1728 |
+| **LR speed-only** | AUC | 0.9335 → 0.8257 | **−0.1077** | [−0.1485, −0.0675] | **0.0042** |
+| **LR speed-only** | PR-AUC | 0.8538 → 0.6594 | **−0.1945** | [−0.2770, −0.0944] | **0.0042** |
+| **LR speed-only** | F1 | 0.8199 → 0.7158 | **−0.1041** | [−0.1667, −0.0428] | **0.0144** |
+| **LR box-only** | AUC | 0.9129 → 0.8987 | −0.0141 | [−0.0501, +0.0216] | **1.0000** |
+| **LR box-only** | PR-AUC | 0.8035 → 0.8118 | +0.0083 | [−0.0838, +0.0999] | **1.0000** |
+| **LR box-only** | F1 | 0.7812 → 0.7578 | −0.0235 | [−0.0841, +0.0368] | **1.0000** |
+
+> The reversal is now tested, not asserted: **ego-speed-only degrades significantly on all
+> three metrics, box-only on none.** Every box-only interval contains zero.
+
+The Vanilla RNN — the family the standard protocol ranks first — is the only model whose
+degradation is significant on all three metrics, which is what one expects if its advantage
+came from the artefact.
+
 ## Caveats — read before quoting these numbers
 
-- **The two conditions have different test sets** (1,873 vs 2,094 windows), so the drops are
-  not a paired comparison and no significance test is reported for them.
 - **Residual bias remains**: `to_end` still scores 0.7779, not 0.5. Negative tracks are simply
   shorter than positive ones. A stricter floor (e.g. 158) would tighten this at the cost of
   ~40 % of the negative class.

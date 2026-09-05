@@ -85,6 +85,59 @@ time — effectively a learned temporal filter — so the redundancy is useful t
 axis-aligned tree must pick one timestep at a time and cannot combine them, so the extra
 columns are mostly noise that dilutes each split.
 
+## Under the phase-matched control
+
+Re-run on `data/pie_phase_matched_trainonly/` (`--data ... --runs-subdir phase_matched_trainonly`),
+with the class weight recomputed from that split's own training data (1.5665) and the neural
+reference taken from its own checkpoints. Test partition 1,873 windows from 476 pedestrians.
+
+| model, 80 features | AUC | PR-AUC | F1 |
+|---|---|---|---|
+| Decision tree | 0.7050 ± 0.0059 | 0.5542 | 0.6217 |
+| Extra trees | 0.8337 ± 0.0031 | 0.7326 | 0.6890 |
+| Random forest | 0.8565 ± 0.0036 | 0.7682 | 0.7041 |
+| *Vanilla RNN* | *0.8872 ± 0.0113* | *0.7749* | *0.7553* |
+| **Logistic regression** | **0.9053** | **0.8283** | **0.7621** |
+
+Searched trees, same protocol:
+
+| model | selected | AUC | PR-AUC | F1 |
+|---|---|---|---|---|
+| Decision tree | depth 5, leaf 20 | 0.8625 ± 0.0038 | 0.7560 | 0.7362 |
+| Random forest | 300 trees, depth 8, leaf 1 | 0.8724 ± 0.0015 | 0.7775 | 0.7312 |
+| Extra trees | 300 trees, depth 8, leaf 5 | 0.8786 ± 0.0009 | 0.7824 | 0.7313 |
+
+Three things change, and they are worth separating.
+
+**1. The ranking does not change.** Logistic regression is still first on every metric, and every
+tree contrast on AUC and PR-AUC still survives Holm, searched or not. The headline conclusion is
+protocol-independent.
+
+**2. On F1, the searched trees stop being distinguishable from it.** Decision tree −0.0142
+(p_Holm 0.4108), random forest −0.0269 (0.3020), extra trees −0.0318 (0.1578). On the
+event-anchored data all nine contrasts survived; here only the six AUC and PR-AUC ones do. The
+F1 gap narrows because every model's F1 falls and the spread widens.
+
+**3. The linear model pulls slightly ahead of the best network.** On the event-anchored data the
+vanilla RNN and logistic regression were indistinguishable (AUC p_Holm 0.8105). Under phase
+matching the RNN is *numerically behind*: ΔAUC −0.0140 (p_Holm 0.0876) and ΔPR-AUC −0.0448
+(p_Holm 0.0540). Both are significant before correction and neither survives it, so this is a
+trend and not a result — but it runs the opposite way from what the architecture literature
+would predict.
+
+Every model degrades, and the linear one degrades least:
+
+| model | AUC, event-anchored → phase-matched | Δ |
+|---|---|---|
+| **Logistic regression** | 0.9488 → 0.9053 | **−0.0436** |
+| Random forest | 0.9154 → 0.8565 | −0.0589 |
+| Vanilla RNN | 0.9481 → 0.8872 | −0.0609 |
+| Extra trees | 0.9252 → 0.8337 | −0.0915 |
+| Decision tree | 0.8170 → 0.7050 | −0.1121 |
+
+Searched, the three trees lose an almost identical amount (−0.0541, −0.0530, −0.0543), which is
+what one expects if they were all exploiting the same sampling artefact to the same degree.
+
 ## What this establishes
 
 **1. The linear result is not "any simple model works".** It is specific to a *linear* model

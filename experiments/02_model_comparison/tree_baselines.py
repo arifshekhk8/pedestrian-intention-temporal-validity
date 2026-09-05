@@ -52,7 +52,7 @@ E = _load("engine", ROOT / "src" / "engine.py")
 M = _load("matched", HERE / "matched_comparison.py")
 
 SEEDS = M.SEEDS                  # [42, 0, 1, 2, 3]
-POS_WEIGHT = M.POS_WEIGHT        # 1.682
+POS_WEIGHT = M.POS_WEIGHT        # set from the chosen dataset's own train split
 
 # the same four flattened views the linear baselines use
 VIEWS = {
@@ -90,13 +90,29 @@ def fit_linear(Xtr, ytr, Xva, Xte, view):
 
 
 def main():
+    global POS_WEIGHT
     ap = argparse.ArgumentParser()
     ap.add_argument("--bootstrap", type=int, default=10000)
+    ap.add_argument("--data", default=str(ROOT / "data" / "pie_clean"),
+                    help="window set to run on; the phase-matched control is "
+                         "data/pie_phase_matched_trainonly")
+    ap.add_argument("--runs-subdir", default="matched",
+                    help="where the neural reference checkpoints live")
+    ap.add_argument("--out", default=None)
     args = ap.parse_args()
 
-    Xtr, ytr, Xva, yva, Xte, yte = E.load_splits()
-    with open(E.SEQ_DIR / "meta.pkl", "rb") as f:
+    SEQ = Path(args.data)
+    X = np.load(SEQ / "X.npy").astype(np.float32)
+    y = np.load(SEQ / "y.npy").astype(np.float32)
+    with open(SEQ / "meta.pkl", "rb") as f:
         meta = pickle.load(f)
+    sid = np.array([m["set_id"] for m in meta])
+    tr, va, tt = (np.isin(sid, sorted(s)) for s in
+                  (E.TRAIN_SETS, E.VAL_SETS, E.TEST_SETS))
+    Xtr, ytr, Xva, yva, Xte, yte = X[tr], y[tr], X[va], y[va], X[tt], y[tt]
+    # the class weight is a property of the split, not a constant
+    POS_WEIGHT = float((ytr == 0).sum() / max((ytr == 1).sum(), 1))
+    print(f"data {SEQ.name}   pos_weight {POS_WEIGHT:.4f}")
     test_meta = [m for m in meta if m["set_id"] in E.TEST_SETS]
     groups = np.array([f"{m['set_id']}/{m['video_id']}/{m['ped_id']}" for m in test_meta])
     print(f"train {len(ytr)}  val {len(yva)}  test {len(yte)}  "
@@ -144,7 +160,7 @@ def main():
     fam, cfg = M.FAMILIES["Vanilla RNN"]
     pv_l, pt_l = [], []
     for s in SEEDS:
-        d = ROOT / "runs" / "matched" / "Vanilla_RNN" / f"seed{s}"
+        d = ROOT / "runs" / args.runs_subdir / "Vanilla_RNN" / f"seed{s}"
         pv_l.append(M.probs_for(d, fam, cfg, Xva))
         pt_l.append(M.probs_for(d, fam, cfg, Xte))
     tau_nn = M.best_threshold(yva, np.mean(pv_l, axis=0))
@@ -284,7 +300,7 @@ def main():
               f"[{v['ci'][0]:+.4f},{v['ci'][1]:+.4f}]  p_holm={v['p_holm']:.4f}  {verdict}")
 
     out = dict(
-        protocol=dict(data=str(E.SEQ_DIR), seeds=SEEDS, pos_weight=POS_WEIGHT,
+        protocol=dict(data=str(SEQ), seeds=SEEDS, pos_weight=POS_WEIGHT,
                       threshold="one tau per model, pooled validation, argmax F1",
                       search="none - library defaults, matching the linear baselines",
                       bootstrap=f"pedestrian-clustered, shared replicates, B={args.bootstrap}",
@@ -292,8 +308,10 @@ def main():
                       n_test=int(len(yte)), n_test_pedestrians=int(len(set(groups)))),
         results=table, vs_linear=tests, searched_trees=searched,
         vs_linear_searched=tests_s)
-    (HERE / "tree_baselines_results.json").write_text(json.dumps(out, indent=2))
-    print(f"\nwrote {HERE / 'tree_baselines_results.json'}")
+    name = args.out or ("tree_baselines_results.json" if SEQ.name == "pie_clean"
+                        else f"tree_baselines_{SEQ.name}_results.json")
+    (HERE / name).write_text(json.dumps(out, indent=2))
+    print(f"\nwrote {HERE / name}")
 
 
 if __name__ == "__main__":

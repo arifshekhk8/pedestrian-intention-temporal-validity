@@ -59,6 +59,7 @@ will not reproduce (see `docs/PROTOCOL.md`).
 python experiments/02_model_comparison/matched_comparison.py    # four families, Holm-corrected
 python experiments/02_model_comparison/ego_speed_ablation.py    # 5-D vs 4-D, per family
 python experiments/02_model_comparison/trivial_baselines.py     # linear baselines
+python experiments/02_model_comparison/tree_baselines.py        # tree ensembles vs linear
 python experiments/02_model_comparison/phase_matched_control.py # timing-bias control*
 python experiments/02_model_comparison/phase_matched_stats.py   # its bootstrap + Holm arms
 ```
@@ -158,6 +159,7 @@ flags 96.2 % of pedestrians when the vehicle is stopped (`docs/LIMITATIONS.md` �
 | `results/clean_protocol/variants_multiseed_results.csv` | the *superseded* bbox-only arm (0.753 ± 0.020). Provenance is mixed — see EGO_SPEED_ABLATION.md |
 | `experiments/02_model_comparison/ego_speed_ablation_results.json` | the matched ego-speed ablation (5-seed mean: +0.0156 to +0.1477 by family) |
 | `experiments/02_model_comparison/trivial_baselines_results.json` | logistic regression matches all four neural families |
+| `experiments/02_model_comparison/tree_baselines_results.json` | tree ensembles lose to the linear reference, even after a search it never got |
 | `experiments/02_model_comparison/matched_comparison_results.json` | the matched four-family comparison, Holm-corrected |
 | `experiments/02_model_comparison/phase_matched_trainonly_results.json` | the timing-bias control; ego-speed advantage reverses |
 | `experiments/02_model_comparison/phase_matched_trainonly_stats.json` | its bootstrap and Holm arms; 0 of 18 family contrasts survive |

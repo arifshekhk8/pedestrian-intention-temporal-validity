@@ -22,7 +22,7 @@ These need **no checkpoint download** — they train from `data/pie_clean/` and 
 | `tree_baselines.py` | decision tree / random forest / extra trees vs the linear reference → `TREE_BASELINES.md` | ~4 min |
 | `phase_matched_control.py` | control for class-dependent timing bias → `PHASE_MATCHED_CONTROL.md` | ~20 min |
 | `phase_matched_stats.py` | that control's bootstrap and Holm arms | ~8 min |
-| `ego_speed_ablation_phase_matched.py` | 5-D vs 4-D per family **under that control** → `ego_speed_ablation_phase_matched_results.md` | ~8 min |
+| `ego_speed_ablation_phase_matched.py` | 5-D vs 4-D per family **under that control** → `EGO_SPEED_ABLATION_PHASE_MATCHED.md` + per-seed and contrast CSVs | ~8 min |
 
 Run them in that order; each reuses the previous one's cached runs.
 

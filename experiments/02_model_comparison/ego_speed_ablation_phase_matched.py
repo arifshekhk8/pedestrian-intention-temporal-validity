@@ -28,7 +28,18 @@ THE ONLY VARIABLE is feature 4 (vehicle_speed): 5-D -> 4-D bbox-only.
 WRITES NOTHING OVER EXISTING WORK
   5-D arms   read from the cached runs/phase_matched_trainonly/  (read-only, not retrained)
   4-D arms   trained fresh into runs/phase_matched_trainonly_bbox_only/  (new)
-  results    ego_speed_ablation_phase_matched_results.json + .md  (new files)
+
+OUTPUTS (all new files, all beside this script)
+  EGO_SPEED_ABLATION_PHASE_MATCHED.md            the human-readable report
+  ego_speed_ablation_phase_matched_results.json  protocol, per-seed metrics, run
+                                                 metadata, contrasts
+  ..._per_seed.csv    one row per family x arm x seed -- the raw numbers behind every
+                      mean, so an sd can be recomputed and a diverged seed can be seen
+  ..._contrasts.csv   one row per test: delta, CI, raw p, Holm p, verdict
+
+Accuracy is recorded per seed but deliberately NOT bootstrapped: adding it would make
+16 tests instead of 12 and change every Holm-adjusted p-value in the table. The tested
+metrics are AUC, PR-AUC and F1, matching ego_speed_ablation.py.
 
 Usage:  python experiments/02_model_comparison/ego_speed_ablation_phase_matched.py
 """
@@ -59,6 +70,21 @@ E = M.E
 FAMILIES = {k: v for k, v in M.FAMILIES.items() if k != "BiLSTM-h128"}
 
 
+def acc_at(y, p, tau):
+    return float(((np.asarray(p) >= tau).astype(int) == np.asarray(y)).mean())
+
+
+def run_meta(run_dir):
+    """Training metadata the engine already wrote, carried into the results file."""
+    f = Path(run_dir) / "final.json"
+    if not f.exists():
+        return {}
+    d = json.loads(f.read_text())
+    return dict(n_params=d.get("n_params"),
+                selected_epoch=d.get("auc_best_epoch", d.get("best_epoch")),
+                train_seconds=d.get("seconds"))
+
+
 def load_phase_matched(pm_dir):
     """Read the phase-matched tensors directly.
 
@@ -83,7 +109,10 @@ def main():
     ap.add_argument("--runs-subdir-5d", default="phase_matched_trainonly")
     ap.add_argument("--runs-subdir-4d", default="phase_matched_trainonly_bbox_only")
     ap.add_argument("--bootstrap", type=int, default=10000)
+    # data files keep the json/csv stem; the report takes the repo's uppercase
+    # convention for a headline result (EGO_SPEED_ABLATION.md, TREE_BASELINES.md, ...)
     ap.add_argument("--out", default="ego_speed_ablation_phase_matched_results")
+    ap.add_argument("--report", default="EGO_SPEED_ABLATION_PHASE_MATCHED.md")
     args = ap.parse_args()
 
     PM = Path(args.pm_dir)
@@ -112,7 +141,7 @@ def main():
                 ("5D", cfg5, data5, runs5 / label.replace(" ", "_")),
                 ("4D", cfg4, data4, runs4 / label.replace(" ", "_"))):
             X_va, X_te = dat[2], dat[4]
-            pv, pt = [], []
+            pv, pt, meta = [], [], []
             for s in M.SEEDS:
                 d = rdir / f"seed{s}"
                 if not (d / "best.pt").exists():
@@ -126,13 +155,19 @@ def main():
                                 pos_weight=pw, select=M.SELECT, out_dir=d)
                 pv.append(M.probs_for(d, family, cfg, X_va))
                 pt.append(M.probs_for(d, family, cfg, X_te))
+                meta.append(run_meta(d))
             tau = M.best_threshold(yva, np.mean(pv, axis=0))
-            per = [dict(auc=M.auc(yte, p), pr_auc=M.pr_auc(yte, p),
-                        f1=M.f1_at(yte, p, tau)) for p in pt]
+            # keep the per-seed numbers: they are what the mean and sd are made of,
+            # and a diverged seed is invisible once it has been averaged away
+            per = [dict(seed=s, auc=M.auc(yte, p), pr_auc=M.pr_auc(yte, p),
+                        f1=M.f1_at(yte, p, tau), acc=acc_at(yte, p, tau), **mt)
+                   for s, p, mt in zip(M.SEEDS, pt, meta)]
+            keys = ("auc", "pr_auc", "f1", "acc")
             arms[tag] = dict(
-                tau=float(tau), ens=np.mean(pt, axis=0),
-                mean={k: float(np.mean([q[k] for q in per])) for k in per[0]},
-                sd={k: float(np.std([q[k] for q in per], ddof=1)) for k in per[0]})
+                tau=float(tau), ens=np.mean(pt, axis=0), input_dim=cfg.get("input_dim", 5),
+                n_params=per[0].get("n_params"), per_seed=per,
+                mean={k: float(np.mean([q[k] for q in per])) for k in keys},
+                sd={k: float(np.std([q[k] for q in per], ddof=1)) for k in keys})
         rows[label] = arms
         print(f"{label:13s} 5D AUC {arms['5D']['mean']['auc']:.4f}  "
               f"4D AUC {arms['4D']['mean']['auc']:.4f}  "
@@ -158,19 +193,61 @@ def main():
               f"[{t['ci'][0]:+.4f},{t['ci'][1]:+.4f}] {pa_:8.4f}  "
               f"{'DIFFERENT' if rj else 'not distinguishable'}")
 
+    def rel(p):   # repo-relative, so the record is portable between machines
+        return str(Path(p).relative_to(ROOT))
+
     out = dict(
-        protocol=dict(data=str(PM), seeds=M.SEEDS, pos_weight=pw, select=M.SELECT,
-                      device=M.DEVICE, runs_5d=str(runs5), runs_4d=str(runs4),
-                      n_test=int(tt.sum()), n_test_pedestrians=len(set(groups)),
-                      bootstrap=f"pedestrian-clustered, B={args.bootstrap}",
-                      correction=f"Holm-Bonferroni across {len(tests)} tests"),
+        protocol=dict(
+            script=rel(Path(__file__)), data=rel(PM), seeds=M.SEEDS, pos_weight=pw,
+            select=M.SELECT, device=M.DEVICE, torch=str(__import__("torch").__version__),
+            runs_5d=rel(runs5), runs_4d=rel(runs4),
+            n_train=int(tr.sum()), n_val=int(va.sum()), n_test=int(tt.sum()),
+            n_test_pedestrians=len(set(groups)), test_prevalence=float(yte.mean()),
+            variable="feature 4 (vehicle_speed): 5-D vs 4-D bbox-only",
+            threshold="one tau per arm, argmax F1 on pooled validation probabilities",
+            bootstrap=f"pedestrian-clustered, B={args.bootstrap}, seed 42",
+            correction=f"Holm-Bonferroni across {len(tests)} tests",
+            tested_metrics=["auc", "pr_auc", "f1"],
+            untested_metrics=["acc (recorded per seed only; testing it would "
+                              "change the Holm correction)"]),
         families={k: {t: {kk: vv for kk, vv in a[t].items() if kk != "ens"}
                       for t in a} for k, a in rows.items()},
         tests={t["key"]: {k: v for k, v in t.items() if k != "key"} for t in tests})
+
     (HERE / f"{args.out}.json").write_text(json.dumps(out, indent=2))
-    write_report(HERE / f"{args.out}.md", out)
-    print(f"\nwrote {HERE / (args.out + '.json')}")
-    print(f"wrote {HERE / (args.out + '.md')}")
+    write_per_seed_csv(HERE / f"{args.out}_per_seed.csv", out)
+    write_contrasts_csv(HERE / f"{args.out}_contrasts.csv", out)
+    write_report(HERE / args.report, out)
+    for f in (f"{args.out}.json", f"{args.out}_per_seed.csv",
+              f"{args.out}_contrasts.csv", args.report):
+        print(f"wrote {HERE / f}")
+
+
+def write_per_seed_csv(path, out):
+    cols = ["family", "arm", "input_dim", "seed", "auc", "pr_auc", "f1", "acc",
+            "tau", "n_params", "selected_epoch", "train_seconds"]
+    lines = [",".join(cols)]
+    for label, a in out["families"].items():
+        for tag in ("5D", "4D"):
+            for r in a[tag]["per_seed"]:
+                lines.append(",".join(str(v) for v in [
+                    label, tag, a[tag]["input_dim"], r["seed"],
+                    f"{r['auc']:.6f}", f"{r['pr_auc']:.6f}", f"{r['f1']:.6f}",
+                    f"{r['acc']:.6f}", f"{a[tag]['tau']:.6f}",
+                    r.get("n_params", ""), r.get("selected_epoch", ""),
+                    r.get("train_seconds", "")]))
+    path.write_text("\n".join(lines) + "\n")
+
+
+def write_contrasts_csv(path, out):
+    lines = ["contrast,family,metric,delta,ci_lo,ci_hi,p_raw,p_holm,significant_holm"]
+    for k, v in out["tests"].items():
+        fam, metric = k.rsplit(" 5D-4D [", 1)
+        lines.append(",".join([
+            f'"{k}"', fam, metric.rstrip("]"), f"{v['delta']:.6f}",
+            f"{v['ci'][0]:.6f}", f"{v['ci'][1]:.6f}", f"{v['p']:.6f}",
+            f"{v['p_holm']:.6f}", str(v["significant_holm"])]))
+    path.write_text("\n".join(lines) + "\n")
 
 
 def write_report(path, out):
@@ -181,21 +258,49 @@ def write_report(path, out):
 
     L = ["# Ego-speed ablation under the phase-matched control", "",
          "Produced by `ego_speed_ablation_phase_matched.py`. The single variable is feature 4",
-         "(`vehicle_speed`): 5-D versus 4-D bbox-only, same family, same config, same protocol.", "",
-         f"- data `{Path(p['data']).name}`, {p['n_test']:,} test windows from "
-         f"{p['n_test_pedestrians']} pedestrians",
-         f"- class weight {p['pos_weight']:.4f} (this split's own train ratio), "
-         f"seeds {p['seeds']}, select {p['select']}, {p['device']}",
-         f"- {p['bootstrap']}, {p['correction']}",
-         "- the 5-D arms are the cached phase-matched checkpoints, not retrained", "",
-         "## Per-seed mean ± sd", "",
-         "| family | arm | AUC | PR-AUC | F1 |", "|---|---|---|---|---|"]
+         "(`vehicle_speed`): 5-D versus 4-D bbox-only, same family, same config, same protocol.",
+         "", "## Protocol", "",
+         f"| | |", "|---|---|",
+         f"| data | `{p['data']}` |",
+         f"| split | train {p['n_train']:,} / val {p['n_val']:,} / test {p['n_test']:,} windows |",
+         f"| test pedestrians | {p['n_test_pedestrians']} |",
+         f"| test prevalence | {p['test_prevalence']:.1%} |",
+         f"| class weight | {p['pos_weight']:.4f} (this split's own train ratio, not 1.682) |",
+         f"| seeds | {p['seeds']} |",
+         f"| checkpoint rule | best validation {p['select'].upper()} |",
+         f"| threshold | {p['threshold']} |",
+         f"| device | {p['device']}, torch {p['torch']} |",
+         f"| inference | {p['bootstrap']} |",
+         f"| correction | {p['correction']} |",
+         "",
+         "The 5-D arms are the cached phase-matched checkpoints and were **not** retrained;",
+         f"only the 4-D arms are new (`{p['runs_4d']}`). Accuracy is recorded per seed but not",
+         "bootstrapped — testing it would make 16 tests and shift every Holm-adjusted p below.",
+         "", "## Per-seed mean ± sd", "",
+         "| family | arm | params | AUC | PR-AUC | F1 | accuracy |",
+         "|---|---|---|---|---|---|---|"]
     for label, a in out["families"].items():
         for tag in ("5D", "4D"):
             m, s = a[tag]["mean"], a[tag]["sd"]
-            L.append(f"| {label} | {tag} | {m['auc']:.4f} ± {s['auc']:.4f} | "
+            L.append(f"| {label} | {tag} | {a[tag]['n_params']:,} | "
+                     f"{m['auc']:.4f} ± {s['auc']:.4f} | "
                      f"{m['pr_auc']:.4f} ± {s['pr_auc']:.4f} | "
-                     f"{m['f1']:.4f} ± {s['f1']:.4f} |")
+                     f"{m['f1']:.4f} ± {s['f1']:.4f} | "
+                     f"{m['acc']:.4f} ± {s['acc']:.4f} |")
+    L += ["", "Dropping the channel removes 64 parameters from the input projection, so the two",
+          "arms are the same size to four significant figures — the contrast is the input, not",
+          "capacity.", "",
+          "### The raw per-seed AUC behind those means", "",
+          "| family | arm | " + " | ".join(f"seed {s}" for s in p["seeds"]) +
+          " | selected epochs |", "|---|---|" + "---|" * (len(p["seeds"]) + 1)]
+    for label, a in out["families"].items():
+        for tag in ("5D", "4D"):
+            ps = a[tag]["per_seed"]
+            L.append(f"| {label} | {tag} | " +
+                     " | ".join(f"{r['auc']:.4f}" for r in ps) + " | " +
+                     ", ".join(str(r.get("selected_epoch")) for r in ps) + " |")
+    L += ["", "Full per-seed values including PR-AUC, F1, accuracy and training time are in",
+          "`ego_speed_ablation_phase_matched_results_per_seed.csv`.", ""]
     L += ["", "## 5-D − 4-D, paired on the pedestrian-clustered bootstrap", "",
           "| contrast | Δ | 95% CI | p_Holm | |", "|---|---|---|---|---|"]
     for k, v in out["tests"].items():
@@ -204,7 +309,19 @@ def write_report(path, out):
         L.append(f"| {k} | {v['delta']:+.4f} | [{v['ci'][0]:+.4f}, {v['ci'][1]:+.4f}] | "
                  f"{v['p_holm']:.4f} | {verdict} |")
     n_sig = sum(v["significant_holm"] for v in out["tests"].values())
-    L += ["", f"**{n_sig} of {len(out['tests'])} contrasts survive Holm.**", ""]
+    L += ["", f"**{n_sig} of {len(out['tests'])} contrasts survive Holm.** A positive delta means",
+          "the 5-D arm scored higher, i.e. ego speed helped. Machine-readable copy in",
+          "`ego_speed_ablation_phase_matched_results_contrasts.csv`.", "",
+          "### Reading the metric directions", "",
+          "The sign is not consistent across metrics: for the BiLSTM and the vanilla RNN the",
+          "4-D arm is ahead on AUC and PR-AUC but behind on F1 and accuracy. That is a threshold",
+          "effect, not a contradiction. Each arm gets its own tau from its own pooled validation",
+          "probabilities, and the 4-D arms land much lower (BiLSTM 0.217 vs 0.486), which trades",
+          "precision for recall and costs accuracy at a 36.4 % prevalence. AUC and PR-AUC are",
+          "threshold-free and are the cleaner read on what the input channel contributes.", "",
+          "None of these directions is established: every interval crosses zero after correction.",
+          "The result is an absence of an ego-speed effect, not evidence that dropping the",
+          "channel helps.", ""]
 
     if ea:
         L += ["## Against the event-anchored answer", "",

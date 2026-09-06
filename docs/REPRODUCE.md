@@ -53,7 +53,7 @@ done
 ⚠ Use `--device cpu`. On Apple MPS, `nn.LSTM` training is process-history-dependent and the numbers
 will not reproduce (see `docs/PROTOCOL.md`).
 
-### Tier 1b — the headline comparisons (still no download, ~35 CPU-minutes)
+### Tier 1b — the headline comparisons (still no download, ~43 CPU-minutes)
 
 ```bash
 python experiments/02_model_comparison/matched_comparison.py    # four families, Holm-corrected
@@ -62,7 +62,12 @@ python experiments/02_model_comparison/trivial_baselines.py     # linear baselin
 python experiments/02_model_comparison/tree_baselines.py        # tree ensembles vs linear
 python experiments/02_model_comparison/phase_matched_control.py # timing-bias control*
 python experiments/02_model_comparison/phase_matched_stats.py   # its bootstrap + Holm arms
+python experiments/02_model_comparison/ego_speed_ablation_phase_matched.py  # 5-D vs 4-D under that control
 ```
+
+The last one reuses the cached phase-matched 5-D checkpoints and trains only the 4-D arms, so
+it must run after `phase_matched_control.py`; it refuses to start otherwise rather than
+silently retrain the existing arms.
 
 *The control re-trains from the tracked `data/pie_phase_matched_trainonly/`, so it needs no download
 either; only *rebuilding* that dataset requires `pie_annotations.pkl` (Tier 2), via `--annotations`.
@@ -70,9 +75,10 @@ Both scripts default to the corrected train-only artefacts. To rebuild the super
 pass `--phase-source all --out data/pie_phase_matched --runs-subdir phase_matched`; see
 `experiments/02_model_comparison/PHASE_RULE_LEAK_FIX.md`.
 
-These produce `MATCHED_COMPARISON.md`, `EGO_SPEED_ABLATION.md`, `TRIVIAL_BASELINES.md` and
-`PHASE_MATCHED_CONTROL.md` beside themselves. They supersede the older per-study numbers in
-`results/model_comparison/` for any cross-family claim.
+These produce `MATCHED_COMPARISON.md`, `EGO_SPEED_ABLATION.md`, `TRIVIAL_BASELINES.md`,
+`PHASE_MATCHED_CONTROL.md` and `ego_speed_ablation_phase_matched_results.md` beside themselves.
+They supersede the older per-study numbers in `results/model_comparison/` for any cross-family
+claim.
 
 ## Tier 2 — verify the leakage claim (needs PIE annotations only, no video)
 
@@ -158,6 +164,7 @@ flags 96.2 % of pedestrians when the vehicle is stopped (`docs/LIMITATIONS.md` �
 | `results/clean_protocol/bilstm_multiseed_results.csv` | clean 5-seed AUC 0.932 ± 0.011 |
 | `results/clean_protocol/variants_multiseed_results.csv` | the *superseded* bbox-only arm (0.753 ± 0.020). Provenance is mixed — see EGO_SPEED_ABLATION.md |
 | `experiments/02_model_comparison/ego_speed_ablation_results.json` | the matched ego-speed ablation (5-seed mean: +0.0156 to +0.1477 by family) |
+| `experiments/02_model_comparison/ego_speed_ablation_phase_matched_results.json` | the same ablation under the phase-matched control: ΔAUC −0.0064 to +0.0012, 0 of 12 contrasts survive Holm |
 | `experiments/02_model_comparison/trivial_baselines_results.json` | logistic regression matches all four neural families |
 | `experiments/02_model_comparison/tree_baselines_results.json` | tree ensembles lose to the linear reference, even after a search it never got |
 | `experiments/02_model_comparison/matched_comparison_results.json` | the matched four-family comparison, Holm-corrected |

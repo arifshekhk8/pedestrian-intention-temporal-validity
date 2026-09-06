@@ -5,7 +5,7 @@ Grouped by the claim each supports. Tier numbers refer to `docs/REPRODUCE.md`.
 | folder | what it establishes | needs |
 |---|---|---|
 | `01_leakage/` | overlapping windows do not inflate the estimate; the clean 5-seed baseline | Tier 1 |
-| `02_model_comparison/` | four-family comparison; ego-speed ablation; trivial baselines | Tier 1 for the three matched scripts; Tier 3 for the older per-study ones |
+| `02_model_comparison/` | four-family comparison; ego-speed ablation on both protocols; trivial baselines | Tier 1 for the three matched scripts; Tier 3 for the older per-study ones |
 | `03_statistics/` | pedestrian-clustered bootstraps, LOSO, latency, detector-vs-GT robustness | Tier 3 |
 | `04_observation_window/` | 32- and 64-frame windows — **read the caveat below** | Tier 3 + rebuilt tensors |
 | `05_cross_dataset/` | JAAD and IDD-PeD replication and transfer | Tier 4 (external datasets) |
@@ -22,6 +22,7 @@ These need **no checkpoint download** — they train from `data/pie_clean/` and 
 | `tree_baselines.py` | decision tree / random forest / extra trees vs the linear reference → `TREE_BASELINES.md` | ~4 min |
 | `phase_matched_control.py` | control for class-dependent timing bias → `PHASE_MATCHED_CONTROL.md` | ~20 min |
 | `phase_matched_stats.py` | that control's bootstrap and Holm arms | ~8 min |
+| `ego_speed_ablation_phase_matched.py` | 5-D vs 4-D per family **under that control** → `ego_speed_ablation_phase_matched_results.md` | ~8 min |
 
 Run them in that order; each reuses the previous one's cached runs.
 
